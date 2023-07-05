@@ -42,7 +42,7 @@
       <form action="{{route('category.store')}}" method="POST">
         @csrf
         <div class="card-style mb-30">
-          <!-- <div class="row"> -->
+          <div class="row">
             <div class="col-sm-6">
               <div class="input-style-1">
                 <label>Name</label>
@@ -64,18 +64,22 @@
               <div class="select-style-1">
                 <label>Select Parent</label>
                 <div class="select-position">
-                  <select class="select2" name="ParentId" id="ParentId" style="width: 100%">
+                  <select name="ParentId" id="ParentId" style="width:100%">
                   <option value="" selected disabled> Select Category Parent</option>
-                  <option value="">Root</option>
+                  <option value="">Root</option>  
                     @foreach($category as $category)
                     <option value="<?= $category->CategoryId?>">
                       <?= $category->Name?>
                     </option>
                     @endforeach
                   </select>
-                    <button class="main-btn primary-btn btn-hover w-25 text-center" type="submit">
-            Submit
-          </button>
+                  <div class="card-footer">
+                            <br>
+                            <button type="submit" class="btn btn-success">Simpan</button>
+                            <a href="{{route('category.index')}}" class="btn btn-light">
+                                Batal
+                            </a>
+                        </div>
         </div>
     </div>
     <!-- end row -->
