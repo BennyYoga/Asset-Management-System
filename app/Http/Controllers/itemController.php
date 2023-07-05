@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use Illuminate\Support\Facades\DB;
+use App\Models\m_category;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 
 class itemController extends Controller
@@ -13,14 +16,45 @@ class itemController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
-        $item = Item::all();
-        dd($item);
-        return view('item.index', compact('item'));
+        if ($request->ajax()) {
+            $item  = Item::all();
+            return DataTables::of($item)
+                ->addColumn('Status', function ($row) {
+                    return $row->Active == 0 ? 'Nonactive' : 'Active';
+                })
+                ->addColumn('ItemBehavior', function ($row) {
+                    if ($row['ItemBehavior'] == 1) {
+                        return 'Hour Usage Monitor';
+                    } else if ($row['ItemBehavior'] == 2) {
+                        return 'Consumable';
+                    } else if ($row['ItemBehavior'] == 3) {
+                        return 'Non Consumable';
+                    }
+                })
+                ->addColumn('Alert', function ($row) {
+                    if ($row['ItemBehavior'] == 1) {
+                        return ($row['AlertHourMaintenance'] . ' Hour');
+                    } else if ($row['ItemBehavior'] == 2) {
+                        return ($row['AlertConsumable'] . ' Item');
+                    } else if ($row['ItemBehavior'] == 3) {
+                        return '-';
+                    }
+                })
+                ->addColumn('Action', function ($row) {
+                    $btn = '<a href=' . route('item.edit', $row->ItemId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                    $btn .= '<a href=' . route('item.delete', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
+                    return $btn;
+                })
+                ->rawColumns(['Action'])
+                ->make(true);
+        }
+
+        return view('item.index');
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -29,7 +63,8 @@ class itemController extends Controller
     public function create()
     {
         //
-        return view('item.create');
+        $category = m_category::all();
+        return view('item.create', compact('category'));
     }
 
     /**
@@ -41,32 +76,42 @@ class itemController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate(
+            [
+                'Name' => 'required',
+                'Unit' => 'required',
+                'Status' => 'required',
+            ]
+        );
+
+        $Uuid = (string) Str::uuid();
         $data = [
             'ItemId' => (string) Str::uuid(),
             'Name' => request('Name'),
-            'Unit' => request('Unit'),
+            'Unit' => (int) request('Unit'),
             'ItemBehavior' => (int) request('ItemBehavior'),
-            'Active' => 1,
+            'AlertHourMaintenance' => (int) request('AlertHourMaintenance'),
+            'AlertConsumable' => (int) request('AlertConsumable'),
+            'Active' => (int) request('Status'),
             'IsPermanentDelete' => 0,
             'CreatedBy' => 32,
             'CreatedByLocation' => 11,
             'UpdatedBy' => 32
         ];
 
-        if($data['ItemBehavior'] == 1){
-            $data['AlertHourMaintenance'] = request('alert');
-            $data['alertConsumable'] = 0;
-        }
-        elseif ($data['ItemBehavior'] == 2) {
-            $data['AlertHourMaintenance'] = 0;
-            $data['alertConsumable'] = request('alert');
-        }
-        else if($data['ItemBehavior'] == 3){
-            $data['AlertHourMaintenance'] = 0;
-            $data['alertConsumable'] = 0;
-        }
+        // dd($data);
 
         Item::create($data);
+        foreach ($request->Category as $category) {
+            $data = [
+                'Uuid' => (string) Str::uuid(),
+                'ItemId' => $data['ItemId'],
+                'CategoryId' => $category,
+            ];
+            DB::table('CategoryItem')->insert($data);
+        }
+
+        return view('item.index',);
     }
 
     /**
@@ -89,6 +134,9 @@ class itemController extends Controller
     public function edit($id)
     {
         //
+        //
+        $item = Item::where('ItemId', $id)->first();
+        return view('Item.edit', compact('item'));
     }
 
     /**
