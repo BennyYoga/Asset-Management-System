@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\c_category;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
@@ -26,3 +27,14 @@ Route::get('location/create', [LocationController::class, 'create'])->name('loca
 Route::post('location/store', [LocationController::class, 'store'])->name('location.store');
 Route::get('location/edit/{id}', [LocationController::class, 'edit'])->name('location.edit');
 Route::post('location/update/{id}', [LocationController::class, 'update'])->name('location.update');
+Route::get('location/delete/{id}', [LocationController::class, 'destroy'])->name('location.destroy');
+
+Route::get('category/index', [c_category::class, 'index'])->name('category.index');
+Route::get('category/create', [c_category::class, 'create'])->name('category.create');
+Route::post('category/store', [c_category::class, 'store'])->name('category.store');
+Route::get('category/edit/{id}', [c_category::class, 'edit'])->name('category.edit');
+Route::put('category/update/{id}', [c_category::class, 'update'])->name('category.update');
+Route::get('category/delete/{id}', [c_category::class, 'destroy'])->name('category.destroy');
+
+
+
