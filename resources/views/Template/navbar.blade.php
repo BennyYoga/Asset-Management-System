@@ -4,7 +4,7 @@
             <div class="col-lg-8 col-md-8 col-6">
                 <div class="header-left d-flex align-items-center">
                     <div class="menu-toggle-btn mr-20">
-                        <button id="menu-toggle" class="main-btn success-btn btn-hover">
+                        <button id="menu-toggle" class="main-btn primary-btn btn-hover">
                             <i class="lni lni-chevron-left me-2"></i> Menu
                         </button>
                     </div>

@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Trash Monitoring System | Create Pegawai')
+@section('title','Assets Management System | Create Location')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -23,7 +23,7 @@
                     </div>
                     @endif --}}
                     <div class="title mb-30">
-                        <h2>Tambah Data Lokasi</h2>
+                        <h2>Add Location</h2>
                     </div>
                 </div>
                 <!-- end col -->
@@ -32,7 +32,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="location.index">Lokasi</a>
+                                    <a href="location.index">Location</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Create
@@ -58,17 +58,17 @@
                     <div class="card-style mb-30">
                         <div class="row">
                         <div class="input-style-1 col-lg-6">
-                            <label>Nama Lokasi</label>
-                            <input type="text" placeholder="Nama Lokasi" name="Name" required/>
+                            <label>Location Name</label>
+                            <input type="text" placeholder="Location Name" name="Name" required/>
                         </div>
                         <!-- end input -->
                         <div class="select-style-1 col-lg-6">
-                            <label>Proses Procurement</label>
+                            <label>Have Procurement Process</label>
                             <div class="select-position">
                                 <select name="HaveProcurementProcess" required>
-                                  <option value="" disabled selected>Pilih</option>
-                                  <option value="1" >Ada</option>
-                                  <option value="0" >Tidak ada</option>
+                                  <option value="" disabled selected>Choose contidion</option>
+                                  <option value="1" >Yes</option>
+                                  <option value="0" >No</option>
                                 </select>
                               </div>
                        </div>
@@ -79,21 +79,21 @@
                             <label>Status</label>
                             <div class="select-position">
                                 <select name="Active" required>
-                                  <option value="" disabled selected>Pilih Status</option>
-                                  <option value="1" >Aktif</option>
-                                  <option value="0" >Nonaktif</option>
+                                  <option value="" disabled selected>Choose status</option>
+                                  <option value="1" >Active</option>
+                                  <option value="0" >Non-Active</option>
                                 </select>
                               </div>
                         </div>
                         <!-- end input -->
                         <div class="select-style-1 col-lg-6">
-                            <label>Pilih Kantor Pusat</label>
+                            <label>Choose Headquarter</label>
                             <div class="select-position">
                                 <select name="ParentId" id="ParentId" required>
-                                  <option value="" disabled selected>Pilih Kantor</option>
+                                  <option value="" disabled selected>Choose location</option>
                                   <option value="">None</option>
-                                  @foreach ($location as $location)
-                                  <option value="<?= $location->LocationId ?>" >{{$location->Name}}</option>
+                                  @foreach ($location as $loc)
+                                  <option value="{{ $loc->LocationId }}" >{{$loc->Name}}</option>
                                   @endforeach
                                 </select>
                               </div>
@@ -101,9 +101,9 @@
                         <!-- end input -->
                         </div>
                             <div class="card-footer mb">
-                                <button type="submit" class="btn btn-success">Simpan</button>
-                                <a href="/location" class="btn btn-deactive">
-                                    Batal
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <a href="/location" class="btn btn-light">
+                                    Back
                                 </a>
                             </div>
                     </div>

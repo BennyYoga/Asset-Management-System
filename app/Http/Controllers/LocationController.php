@@ -14,21 +14,20 @@ class LocationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // if ($request->ajax()) {
-        //     $location = Location::all();
-        //     return DataTables::of($location)
-        //         ->addIndexColumn()
-        //         ->addColumn('action', function ($row) {
-        //             // $btn = '<a href=' . route('pegawai.edit', $row->id_pegawai) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-        //             // $btn .= '<a href=' . route('pegawai.destroy', $row->id_pegawai) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
-        //             // return $btn;
-        //         // ->make(true);
-        // });
-        // }
-        $location = Location::all();
-        return view('Location.index', compact('location'));
+        if ($request->ajax()) {
+            $location = Location::all();
+            return DataTables::of($location)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $btn = '<a href=' . route('location.edit', $row->LocationId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                    $btn .= '<a href=' . route('location.destroy', $row->LocationId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
+                    return $btn;
+                })
+                ->make(true);
+        }
+        return view('Location.index');
     }
 
     /**
@@ -78,17 +77,6 @@ class LocationController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Location  $location
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Location $location)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Location  $location
@@ -96,12 +84,14 @@ class LocationController extends Controller
      */
     public function edit($LocationId)
     {
-        $location = Location::where('LocationId', $LocationId)->first();
+        // $location = Location::where('LocationId', $LocationId)->first();
+        $location = Location::find($LocationId);
         // dd($location);
         if (!$location) {
             return redirect()->back()->with('error', 'Location not found');
         }
-        return view('Location.edit', compact('location'));
+        $locations = Location::where('LocationId', '!=', $LocationId)->get();
+        return view('Location.edit', compact('location', 'locations'));
     }
 
     /**
@@ -135,10 +125,8 @@ class LocationController extends Controller
         $data['UpdatedBy'] = 123;
         // dd($request->ParentId);
         // Location::find($LocationId)->update($data);
-        Location::where('LocationId', $LocationId)->update($data);
-
-
-
+        Location::find($LocationId)->update($data);
+        
         return redirect()->route('location.index')->with('success', 'Lokasi berhasil diubah.');
     }
 
@@ -148,8 +136,20 @@ class LocationController extends Controller
      * @param  \App\Models\Location  $location
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Location $location)
+    public function destroy($LocationId)
     {
-        //
+        $location = Location::find($LocationId);
+        if (!$location) {
+            return redirect()->back()->with('error', 'Lokasi tidak ditemukan.');
+        }
+        if ($location->ParentId === null) {
+            return redirect()->back()->with('error', 'Tidak dapat menghapus Kantor Pusat.');
+        }
+        $hasChild = Location::where('ParentId', $location->LocationId)->exists();
+            if ($hasChild) {
+            return redirect()->back()->with('error', 'Tidak dapat menghapus kantor yang memiliki anak cabang.');
+        }
+        $location->delete();
+        return redirect()->route('location.index')->with('success', 'Lokasi berhasil dihapus.');
     }
-}
+}   

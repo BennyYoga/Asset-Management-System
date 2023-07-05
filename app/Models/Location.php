@@ -11,9 +11,11 @@ class Location extends Model
     use HasFactory;
 
     public $timestamps = false;
+    protected $primaryKey = 'LocationId';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $table = 'Location';
     // protected $guarded = ['id'];
-    // protected $primaryKey = 'LocationId';
     protected $fillable = [
         'LocationId',
         'ParentId',
@@ -26,5 +28,12 @@ class Location extends Model
         'UpdatedBy',
         'UpdatedDate',
     ];
+
+    protected static function boot() {
+        parent::boot();
+        static::creating(function ($model) {
+                $model->{$model->getKeyName()} = (string) Str::uuid();
+        });
+    }
 
 }

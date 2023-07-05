@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Trash Monitoring System | Create Pegawai')
+@section('title','Assets Management System | Edit Location')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -23,7 +23,7 @@
                     </div>
                     @endif --}}
                     <div class="title mb-30">
-                        <h2>Edit Data Lokasi</h2>
+                        <h2>Edit Location</h2>
                     </div>
                 </div>
                 <!-- end col -->
@@ -32,7 +32,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="location.index">Lokasi</a>
+                                    <a href="location.index">Location</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Edit
@@ -59,16 +59,16 @@
                     <div class="card-style mb-30">
                         <div class="row">
                         <div class="input-style-1 col-lg-6">
-                            <label>Nama Lokasi</label>
-                            <input type="text" placeholder="Nama Lokasi" id="Name" name="Name" required autofocus value="{{$location->Name}}"/>
+                            <label>Location Name</label>
+                            <input type="text" placeholder="Location Name" id="Name" name="Name" required autofocus value="{{$location->Name}}"/>
                         </div>
                         <!-- end input -->
                         <div class="select-style-1 col-lg-6">
-                            <label>Proses Procurement</label>
+                            <label>Have Procurement Process</label>
                             <div class="select-position">
                                 <select name="HaveProcurementProcess" required>
-                                    <option value="0" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 0) ? "selected" : ""; ?>>Tidak ada</option>  
-                                    <option value="1" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 1) ? "selected" : ""; ?>>Ada</option>  
+                                    <option value="0" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 0) ? "selected" : ""; ?>>Yes</option>  
+                                    <option value="1" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 1) ? "selected" : ""; ?>>No</option>  
                                 </select>
                               </div>
                        </div>
@@ -79,29 +79,29 @@
                             <label>Status</label>
                             <div class="select-position">
                                 <select name="Active" required>
-                                    <option value="0" <?php echo (isset($location->Active) && $location->Active == 0) ? "selected" : ""; ?>>Nonaktif</option>  
-                                    <option value="1" <?php echo (isset($location->Active) && $location->Active == 1) ? "selected" : ""; ?>>Aktif</option>  
+                                    <option value="0" <?php echo (isset($location->Active) && $location->Active == 0) ? "selected" : ""; ?>>Non-active</option>  
+                                    <option value="1" <?php echo (isset($location->Active) && $location->Active == 1) ? "selected" : ""; ?>>Active</option>  
                                 </select>
                               </div>
                         </div>
                         <!-- end input -->
                         <div class="select-style-1 col-lg-6">
-                            <label>Pilih Kantor Pusat</label>
+                            <label>Choose Headquarter</label>
                             <div class="select-position">
                                 <select name="ParentId" required>
                                   <option value=" ">None</option>
-                                  {{-- @foreach ($location as $location)
-                                  <option value="<?= $location->LocationId ?>" >{{$location->Name}}</option>
-                                  @endforeach --}}
+                                  @foreach ($locations as $loc)
+                                  <option value="<?= $loc->LocationId ?>" >{{$loc->Name}}</option>
+                                  @endforeach
                                 </select>
                               </div>
                         </div>
                         <!-- end input -->
                         </div>
                             <div class="card-footer mb">
-                                <button type="submit" class="btn btn-success">Simpan</button>
-                                <a href="/location" class="btn btn-deactive">
-                                    Batal
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <a href="/location" class="btn btn-light">
+                                    Back
                                 </a>
                             </div>
                     </div>

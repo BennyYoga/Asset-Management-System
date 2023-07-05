@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Trash Monitoring System | Pegawai')
+@section('title','Assets Management System | Locations')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -23,7 +23,7 @@
                     </div>
                     @endif --}}
                     <div class="title mb-30">
-                        <h2>Data Lokasi</h2>
+                        <h2>Locations</h2>
                     </div>
                 </div>
                 <!-- end col -->
@@ -32,7 +32,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="#">Lokasi</a>
+                                    <a href="#">Location</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Page
@@ -76,27 +76,28 @@
                                         <!-- end select -->
                                     </div> --}}
                                 </div>
-                                <table class="table">
+                                <table class="table" id="location">
                                     <thead>
                                         <tr class="text-left">
                                             <th>No</th>
-                                            <th>Nama Lokasi</th>
+                                            <th>Location Name</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    {{-- <tbody>
                                         @foreach($location as $key => $location)
                                         <tr>
                                             <td>{{$key+1}}</td>
                                             <td>{{$location->Name}}</td>
                                             <td class="{{ $location->Active ? 'text-success' : 'text-danger' }}">{{$location->Active ? 'Aktif' : 'Nonaktif'}}</td>
                                             <td>
-                                                <a href="{{ route('location.edit', $location->LocationId) }}" class="btn btn-warning btn-sm">Edit</a>
+                                                <a href="{{ route('location.edit', $location->LocationId) }}" style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>
+                                                <a href="{{ route('location.destroy', $location->LocationId) }}" style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>
                                             </td>
                                         </tr>
                                         @endforeach
-                                    </tbody>
+                                    </tbody> --}}
                                 </table>
                             </div>
                         </div>
@@ -112,11 +113,11 @@
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-{{-- <form action="" id="delete-form" method="post">
+<form action="" id="delete-form" method="post">
     @method('get')
     @csrf
-</form> --}}
-{{-- <script>
+</form>
+<script>
     $(document).ready(function () {
         // Menggunakan event click untuk button dengan id hapusBtn
         $('#pegawai').on('click', '#hapusBtn', function (e) {
@@ -142,19 +143,19 @@
             $("#delete-form").submit();
         });
     });
-</script> --}}
+</script>
 <script type="text/javascript">
-    // $('#example2').DataTable({
-    //         "responsive": true,
-    //     });
+    $('#example2').DataTable({
+            "responsive": true,
+        });
 
-        // function notificationBeforeDelete(event, el) {
-        //     event.preventDefault();
-        //     if (confirm('Apakah anda yakin akan menghapus data ? ')) {
-        //         $("#delete-form").attr('action', $(el).attr('href'));
-        //         $("#delete-form").submit();
-        //     }
-        // }
+        function notificationBeforeDelete(event, el) {
+            event.preventDefault();
+            if (confirm('Apakah anda yakin akan menghapus data ? ')) {
+                $("#delete-form").attr('action', $(el).attr('href'));
+                $("#delete-form").submit();
+            }
+        }
     $(document).ready(function () {
     var table = $('#location').DataTable({
         processing: true,
@@ -174,8 +175,15 @@
             searchable: false
             },
             {data: 'Name', name: 'Name'},
-            {data: 'Active', name: 'Active'},
-            {data: 'CreatedBy', name: 'CreatedBy'},
+            {
+                data: 'Active',
+                name: 'Active',
+                render: function (data, type, row) {
+                    var status = data == 1 ? 'Active' : 'Non-active';
+                    var classColor = data == 1 ? 'text-success' : 'text-danger';
+                    return '<span class="' + classColor + '">' + status + '</span>';
+                }
+            },
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ]
     });    
