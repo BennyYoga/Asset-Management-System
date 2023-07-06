@@ -7,6 +7,18 @@
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<style>
+    .input-tags {
+        width: 100%;
+        background: rgba(239, 239, 239, 0.5);
+        border: 1px solid #e5e5e5;
+        border-radius: 4px;
+        padding: 16px;
+        color: #5d657b;
+        resize: none;
+        transition: all 0.3s;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -66,6 +78,21 @@
                                 <div class="input-style-1">
                                     <label>Unit</label>
                                     <input type="number" placeholder="Unit" name="Unit" value="{{$item->Unit}}" />
+                                </div>
+
+                                <div class="select-sm select-style-1">
+                                    <label>Category Item</label>
+                                    <div class="select-position input-tags">
+                                        <select class="js-example-basic-single form-" id="tags" multiple name="Category[]">
+                                            @for($i =0; $i < count($unselectedCategory); $i++)
+                                            <option value="{{$unselectedCategory[$i]['CategoryId']}}">{{$unselectedCategory[$i]['Name']}}</option>
+                                            @endfor
+                                            @for($i =0; $i < count($selectedCategory); $i++)
+                                            <option selected="selected" value="{{$selectedCategory[$i]['CategoryId']}}">{{$selectedCategory[$i]['Name']}}</option>
+                                            @endfor
+                                        </select>
+                                        @error('Category') <span class="text-danger">{{$message}}</span> @enderror
+                                    </div>
                                 </div>
                                 <!-- end input -->
                             </div>
@@ -147,6 +174,11 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+
+        $('.js-example-basic-single').select2({
+            theme: "classic",
+        }, 'val', ['1', '2']);
+
         let Hourly = $('#Alert-Hour');
         let Consumable = $('#Alert-Consumable');
         let placeholder = $('#alert-input');
@@ -179,6 +211,7 @@
             Hourly.addClass('d-none');
         }
     });
+</script>
 </script>
 
 @endpush

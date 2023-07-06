@@ -23,7 +23,22 @@ class itemController extends Controller
             $item  = Item::all();
             return DataTables::of($item)
                 ->addColumn('Status', function ($row) {
-                    return $row->Active == 0 ? 'Nonactive' : 'Active';
+                    // $btn = '<button type="button" class="btn btn-primary btn-sm">' . $data . '</button>';
+                    if ($row->Active == 0) {
+                        $data = 'Nonactive';
+                        $btn = '<button type="button" class="btn btn-danger" disabled
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+                        ' . $data . ' 
+                        </button>';
+                        return $btn;
+                    } else if ($row->Active == 1) {
+                        $data = 'Active';
+                        $btn = '<button type="button" class="btn btn-primary" disabled
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+                        ' . $data . ' 
+                        </button>';
+                        return $btn;
+                    }
                 })
                 ->addColumn('ItemBehavior', function ($row) {
                     if ($row['ItemBehavior'] == 1) {
@@ -45,10 +60,10 @@ class itemController extends Controller
                 })
                 ->addColumn('Action', function ($row) {
                     $btn = '<a href=' . route('item.edit', $row->ItemId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                    $btn .= '<a href=' . route('item.delete', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
+                    $btn .= '<a href=' . route('item.delete', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
                     return $btn;
                 })
-                ->rawColumns(['Action'])
+                ->rawColumns(['Action', 'Status'])
                 ->make(true);
         }
 
@@ -133,10 +148,36 @@ class itemController extends Controller
      */
     public function edit($id)
     {
-        //
-        //
         $item = Item::where('ItemId', $id)->first();
-        return view('Item.edit', compact('item'));
+        $category = m_category::all();
+        $CategoryItem = DB::table('CategoryItem')->where('ItemId', $id)->get();
+        $selectedCategory = [];
+        $unselectedCategory = [];
+
+        foreach ($category as $category) {
+            $isCategorySelected = false;
+
+            for ($i = 0; $i < count($CategoryItem); $i++) {
+                if ($CategoryItem[$i]->CategoryId == $category['CategoryId']) {
+                    $isCategorySelected = true;
+                    break;
+                }
+            }
+            if ($isCategorySelected) {
+                $data = [
+                    'CategoryId' => $category['CategoryId'],
+                    'Name' => $category['Name'],
+                ];
+                array_push($selectedCategory, $data);
+            } else {
+                $data = [
+                    'CategoryId' => $category['CategoryId'],
+                    'Name' => $category['Name'],
+                ];
+                array_push($unselectedCategory, $data);
+            }
+        }
+        return view('Item.edit', compact('item', 'selectedCategory', 'unselectedCategory'));
     }
 
     /**
@@ -159,6 +200,8 @@ class itemController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = Item::where('ItemId', $id);
+        $data->update(['IsPermanentDelete' => 1]);
+        return redirect()->route('item.index');
     }
 }

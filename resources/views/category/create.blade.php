@@ -43,43 +43,43 @@
         @csrf
         <div class="card-style mb-30">
           <!-- <div class="row"> -->
-            <div class="col-sm-6">
-              <div class="input-style-1">
-                <label>Name</label>
-                <input type="text" placeholder="Name" id="Name" name="Name" required autofocus />
-              </div>
+          <div class="col-sm-6">
+            <div class="input-style-1">
+              <label>Name</label>
+              <input type="text" placeholder="Name" id="Name" name="Name" required autofocus />
             </div>
-            <div class="col-sm-6">
-              <div class="select-style-1">
-                <label>Status</label>
-                <div class="select-position">
-                  <select name="Active" id="Active" style="width: 100%">
-                  <option value="1" selected>Active</option>
-                  <option value="0" selected>Non-Active</option>
-                  </select>
-                </div>
-              </div>
           </div>
           <div class="col-sm-6">
-              <div class="select-style-1">
-                <label>Select Parent</label>
-                <div class="select-position">
-                  <select class="select2" name="ParentId" id="ParentId" style="width: 100%">
+            <div class="select-style-1">
+              <label>Status</label>
+              <div class="select-position">
+                <select name="Active" id="Active" style="width: 100%">
+                  <option value="1" selected>Active</option>
+                  <option value="0" selected>Non-Active</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="select-style-1">
+              <label>Select Parent</label>
+              <div class="select-position">
+                <select class="select2" name="ParentId" id="ParentId" style="width: 100%">
                   <option value="" selected disabled> Select Category Parent</option>
                   <option value="">Root</option>
-                    @foreach($category as $category)
-                    <option value="<?= $category->CategoryId?>">
-                      <?= $category->Name?>
-                    </option>
-                    @endforeach
-                  </select>
-                    <button class="main-btn primary-btn btn-hover w-25 text-center" type="submit">
-            Submit
-          </button>
-        </div>
-    </div>
-    <!-- end row -->
-  </div>
+                  @foreach($category as $category)
+                  <option value="<?= $category->CategoryId ?>">
+                    <?= $category->Name ?>
+                  </option>
+                  @endforeach
+                </select>
+                <button class="main-btn primary-btn btn-hover w-25 text-center" type="submit">
+                  Submit
+                </button>
+              </div>
+            </div>
+            <!-- end row -->
+          </div>
 </section>
 @endsection
 

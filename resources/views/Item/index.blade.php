@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end mb-3">
-                    <a href="" class="btn btn-primary">Add</a>
+                    <a href="{{route('item.create')}}" class="btn btn-primary">Add</a>
                 </div>
             </div>
         </div>
