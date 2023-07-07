@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Trash Monitoring System | Dashboard')
+@section('title','Asset Monitoring System | Dashboard')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -11,11 +11,6 @@
 
 @section('content')
 <section class="section">
-    @php
-    $date = date('d');
-    $day = date('l');
-    $monthYear = date('F Y');
-    @endphp
     <div class="container-fluid">
         <!-- ========== title-wrapper start ========== -->
         <div class="title-wrapper pt-30">

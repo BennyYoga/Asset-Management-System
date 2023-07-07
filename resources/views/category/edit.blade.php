@@ -63,36 +63,41 @@
                             <label>Name</label>
                             <input type="text" placeholder="Name" id="Name" name="Name" required autofocus value="{{$category->Name}}"/>
                         </div>
-                        <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="Jabatan">Active</label>
+                                <div class="select-style-1">
+                                    <label>Status</label>
+                                    <div class="select-position">
                                     <select name="Active" id="Active" class="form-control" required="required">
                                         <option value="" selected disabled>Pilih</option>
-                                        <option value="0" <?php echo (isset($Category->Active) && $Category->Active == 0) ? "selected" : ""; ?>>Non-active</option>
-                                        <option value="1" <?php echo (isset($Category->Active) && $Category->Active == 1) ? "selected" : ""; ?>>Active</option> 
-                                    </select>
+                                        <option value="0" <?php echo (isset($category->Active) && $category->Active == 0) ? "selected" : ""; ?>>Non-active</option>
+                                        <option value="1" <?php echo (isset($category->Active) && $category->Active == 1) ? "selected" : ""; ?>>Active</option> 
+                                    </select>   
+                                    </div>    
                                 </div>
-                            </div>
-                        </div>
+                        </div>  
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="Jabatan">Permanent Delete</label>
-                                    <select name="IsPermanentDelete" id="IsPermanentDelete" class="form-control" required="required">
-                                        <option value="" selected disabled>Pilih</option>
-                                        <option value="0" <?php echo (isset($Category->IsPermanentDelete) && $Category->IsPermanentDelete == 0) ? "selected" : ""; ?>>Non-active</option>
-                                        <option value="1" <?php echo (isset($Category->IsPermanentDelete) && $Category->IsPermanentDelete == 1) ? "selected" : ""; ?>>PermanentDelete</option> 
-                                    </select>
+                            <div class="col-sm-6">
+                            <div class="select-style-1">
+                                <label> Select Parent</label>
+                                <div class="select-position">
+                                    <select name="ParentId" id="ParentId" style="width: 100%;">
+                                    <option value="" selected disabled>Select Parent Category</option>
+                                    <option value="">Root</option>
+                                    @foreach($categories as $categories)
+                                    <option value="<?=$categories->CategoryId?>"><?=$categories->Name?></option>
+                                    @endforeach
+                                </select>
                                 </div>
                             </div>
-                        </div>
+                        </div>  
+                        </div>            
                         <!-- end input -->
                         </div>
                         <!-- end row -->
                         <div class="card-footer">
+                            <br>
                             <button type="submit" class="btn btn-success">Simpan</button>
-                            <a href="/pegawai" class="btn btn-light">
+                            <a href="{{route('category.index')}}" class="btn btn-light">
                                 Batal
                             </a>
                         </div>
@@ -108,5 +113,4 @@
 @endsection
 
 @push('js')
-@include('sweetalert::alert')
 @endpush
