@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\c_category;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\itemController;
 use Illuminate\Support\Facades\Route;
@@ -20,8 +21,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('dashboard', [dashboardController::class, 'index'])->name('dashboard.index');
-
 Route::get('item', [itemController::class, 'index'])->name('item.index');
 Route::get('item/create', [itemController::class, 'create'])->name('item.create');
 Route::post('item/store', [itemController::class, 'store'])->name('item.store');
@@ -30,12 +29,14 @@ Route::put('item/update/{id}', [itemController::class, 'update'])->name('item.up
 Route::get('item/delete/{id}', [itemController::class, 'destroy'])->name('item.delete');
 Route::get('item/activate/{id}', [itemController::class, 'activate'])->name('item.activate');
 
-Route::get('category/index', [c_category::class, 'index'])->name('category.index');
-Route::get('category/create', [c_category::class, 'create'])->name('category.create');
-Route::post('category/store', [c_category::class, 'store'])->name('category.store');
-Route::get('category/edit/{id}', [c_category::class, 'edit'])->name('category.edit');
-Route::put('category/update/{id}', [c_category::class, 'update'])->name('category.update');
-Route::get('category/delete/{id}', [c_category::class, 'destroy'])->name('category.destroy');
+
+Route::get('dashboard', [dashboardController::class, 'index'])->name('dashboard.index');
+Route::get('category', [CategoryController::class, 'index'])->name('category.index');
+Route::get('category/create', [CategoryController::class, 'create'])->name('category.create');
+Route::post('category/store', [CategoryController::class, 'store'])->name('category.store');
+Route::get('category/edit/{id}', [CategoryController::class, 'edit'])->name('category.edit');
+Route::put('category/update/{id}', [CategoryController::class, 'update'])->name('category.update');
+Route::get('category/delete/{id}', [CategoryController::class, 'destroy'])->name('category.destroy');
 
 
 

@@ -14,6 +14,16 @@
 <section class="section">
     <div class="container-fluid">
         <!-- ========== title-wrapper start ========== -->
+        <style>
+            span.nonactive {
+            color: red;
+            }
+
+/* Ganti warna teks menjadi hijau untuk status "Active" */
+            span.active {
+            color: green;
+            }         
+        </style>
         <div class="title-wrapper pt-30">
             <div class="row align-items-center">
                 <div class="col-md-6">
@@ -54,6 +64,7 @@
                                     <th>Created By</th>
                                     <th>Status</th>
                                     <th>Action</th>
+                                    <th>Status Parent</th>
                                 </tr>
                             </thead>
                         </table>
@@ -66,6 +77,7 @@
 </section>
 @endsection
 @push('js')
+@include('sweetalert::alert')
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
@@ -90,7 +102,11 @@
                 {
                     data: 'Active',
                     name: 'Active',
-                    class: "text-center"
+                    render: function (data, type, row) {
+                        var status = data == 1 ? 'Aktif' : 'Nonaktif';
+                        var classColor = data == 1 ? 'text-success' : 'text-danger';
+                        return '<span class="' + classColor + '">' + status + '</span>';
+                    }
                 },
                 {
                     data: 'action',
@@ -98,6 +114,12 @@
                     id:'printCategory',
                     orderable: false,
                     searchable: false
+                },
+                {
+                    data: 'Parent',
+                    name: 'Parent',
+                    orderable: true,
+                    class: "text-center"
                 }
 
             ],
@@ -115,4 +137,5 @@
     
 
 </script>
+ 
 @endpush
