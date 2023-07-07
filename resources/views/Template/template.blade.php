@@ -1,3 +1,5 @@
+@include('sweetalert::alert')
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -75,6 +77,7 @@
     {{-- <script src="{{asset('js/jvectormap.min.js')}}"></script> --}}
     {{-- <script src="{{asset('js/world-maerc.js')}}"></script> --}}
     {{-- <script src="{{asset('js/polyfill.js')}}"></script> --}}
+    {{-- <script src="{{asset('vendor/sweetalert/sweetalert.all.js')}}"></script> --}}
     <script src="{{asset('js/main.js')}}"></script>
     <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
 

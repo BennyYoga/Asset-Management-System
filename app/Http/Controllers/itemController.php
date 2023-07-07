@@ -219,7 +219,7 @@ class itemController extends Controller
                 DB::table('CategoryItem')->insert($data);
             }
         }
-        return redirect()->route('item.index');
+        return redirect()->route('item.index')->withToastSuccess('Berhasil Mememperbaharui Data');
     }
 
     /**
