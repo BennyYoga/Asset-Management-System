@@ -28,6 +28,8 @@ Route::post('location/store', [LocationController::class, 'store'])->name('locat
 Route::get('location/edit/{id}', [LocationController::class, 'edit'])->name('location.edit');
 Route::post('location/update/{id}', [LocationController::class, 'update'])->name('location.update');
 Route::get('location/delete/{id}', [LocationController::class, 'destroy'])->name('location.destroy');
+Route::get('location/activate/{id}', [LocationController::class, 'activate'])->name('location.activate');
+Route::get('location/deactivate/{id}', [LocationController::class, 'deactivate'])->name('location.deactivate');
 
 Route::get('category/index', [c_category::class, 'index'])->name('category.index');
 Route::get('category/create', [c_category::class, 'create'])->name('category.create');

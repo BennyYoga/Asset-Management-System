@@ -105,6 +105,31 @@
                     </div>
                     <!-- end row -->
                 </div>
+
+                <!-- modals -->
+                <div class="warning-modal">
+                    <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content card-style warning-card text-center">
+                          <div class="modal-body">
+                            <div class="icon text-danger mb-20">
+                              <i class="lni lni-warning" style="font-size: 120px"></i>
+                            </div>
+                            <div class="content mb-30">
+                              <h2 class="mb-15">Warning!</h2>
+                              <p class="text-sm text-medium">
+                                Are you sure to delete this data?
+                              </p>
+                            </div>
+                            <div class="action d-flex flex-wrap justify-content-center">
+                              <button type="submit" class="main-btn danger-btn rounded-full btn-hover m-1" id="hapusBtnModal">Yes, delete</button>
+                              <button data-bs-dismiss="modal" class="main-btn light-btn rounded-full btn-hover m-1">Close</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 </section>
 @endsection
 
@@ -120,7 +145,7 @@
 <script>
     $(document).ready(function () {
         // Menggunakan event click untuk button dengan id hapusBtn
-        $('#pegawai').on('click', '#hapusBtn', function (e) {
+        $('#location').on('click', '#hapusBtn', function (e) {
             e.preventDefault();
 
             // Simpan URL hapus pada atribut data-hapus pada tombol hapus

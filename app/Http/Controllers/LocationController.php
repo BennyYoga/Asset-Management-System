@@ -17,13 +17,19 @@ class LocationController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $location = Location::all();
+            $location = Location::where("IsPermanentDelete", 0);
             return DataTables::of($location)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href=' . route('location.edit', $row->LocationId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                    $btn .= '<a href=' . route('location.destroy', $row->LocationId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
-                    return $btn;
+                    $editBtn = '<a href=' . route('location.edit', $row->LocationId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                    if ($row->Active == 1) {
+                        $deactivateBtn = '<a href=' . route('location.deactivate', $row->LocationId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-cross-circle"></i></a>';
+                        return $editBtn . $deactivateBtn;
+                    } else {
+                        $activateBtn = '<a href=' . route('location.activate', $row->LocationId) . ' style="font-size:20px" class="text-success mr-10"><i class="lni lni-checkmark-circle"></i></a>';
+                        $deleteBtn = '<a href=' . route('location.destroy', $row->LocationId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
+                        return $editBtn . $activateBtn . $deleteBtn;
+                    }
                 })
                 ->make(true);
         }
@@ -106,12 +112,10 @@ class LocationController extends Controller
         $request->validate([
             'HaveProcurementProcess' => 'required',
             'Name' => 'required',
-            'Active' => 'required',
         ]);
 
         $data = [
             'ParentId' => $request->ParentId,
-            'LocationId' => (String)Str::uuid(),
             'IsPermanentDelete' => 0,
             'HaveProcurementProcess' => $request->HaveProcurementProcess,
             'Name' => $request->Name,
@@ -142,14 +146,44 @@ class LocationController extends Controller
         if (!$location) {
             return redirect()->back()->with('error', 'Lokasi tidak ditemukan.');
         }
+
         if ($location->ParentId === null) {
             return redirect()->back()->with('error', 'Tidak dapat menghapus Kantor Pusat.');
         }
         $hasChild = Location::where('ParentId', $location->LocationId)->exists();
             if ($hasChild) {
-            return redirect()->back()->with('error', 'Tidak dapat menghapus kantor yang memiliki anak cabang.');
+                $checkDelete = Location::where('ParentId', $location->LocationId)
+                ->where('IsPermanentDelete', 1)
+                ->exists();
+                if ($checkDelete) {
+                    $location['IsPermanentDelete'] = 1;
+                    $location->update();
+                    return redirect()->route('category.index')->withToastSuccess('Berhasil Menghapus Data');
+                }
+                return redirect()->route('category.index')->withToastError('Tidak dapat menghapus');
+            // return redirect()->back()->with('error', 'Tidak dapat menghapus kantor yang memiliki anak cabang.');
         }
-        $location->delete();
+        $location['IsPermanentDelete'] = 1;
+        $location->update();
+        // $location->delete();
         return redirect()->route('location.index')->with('success', 'Lokasi berhasil dihapus.');
+    }
+
+    public function activate($LocationId)
+    {
+        $location = Location::findOrFail($LocationId);
+        $location->Active = 1;
+        $location->save();
+
+        return redirect()->route('location.index')->with('success', 'Location activated successfully.');
+    }
+
+    public function deactivate($LocationId)
+    {
+        $location = Location::findOrFail($LocationId);
+        $location->Active = 0;
+        $location->save();
+
+        return redirect()->route('location.index')->with('success', 'Location deactivated successfully.');
     }
 }   

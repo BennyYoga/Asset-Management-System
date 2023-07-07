@@ -66,7 +66,7 @@
                             <label>Have Procurement Process</label>
                             <div class="select-position">
                                 <select name="HaveProcurementProcess" required>
-                                  <option value="" disabled selected>Choose contidion</option>
+                                  <option value="" disabled selected>Select contidion</option>
                                   <option value="1" >Yes</option>
                                   <option value="0" >No</option>
                                 </select>
@@ -79,7 +79,7 @@
                             <label>Status</label>
                             <div class="select-position">
                                 <select name="Active" required>
-                                  <option value="" disabled selected>Choose status</option>
+                                  <option value="" disabled selected>Select status</option>
                                   <option value="1" >Active</option>
                                   <option value="0" >Non-Active</option>
                                 </select>
@@ -87,11 +87,11 @@
                         </div>
                         <!-- end input -->
                         <div class="select-style-1 col-lg-6">
-                            <label>Choose Headquarter</label>
+                            <label>Select Parent</label>
                             <div class="select-position">
                                 <select name="ParentId" id="ParentId" required>
-                                  <option value="" disabled selected>Choose location</option>
-                                  <option value="">None</option>
+                                  <option value="" disabled selected>Select location</option>
+                                  <option value="">Root</option>
                                   @foreach ($location as $loc)
                                   <option value="{{ $loc->LocationId }}" >{{$loc->Name}}</option>
                                   @endforeach

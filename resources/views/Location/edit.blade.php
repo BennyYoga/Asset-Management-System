@@ -75,6 +75,15 @@
                         <!-- end input -->
                         </div>
                         <div class="row">
+                            {{-- <div class="select-style-1 col-lg-6">
+                                <label>Have Procurement Process</label>
+                                <div class="select-position">
+                                    <select name="HaveProcurementProcess" required>
+                                        <option value="0" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 0) ? "selected" : ""; ?>>Yes</option>  
+                                        <option value="1" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 1) ? "selected" : ""; ?>>No</option>  
+                                    </select>
+                                  </div>
+                           </div> --}}
                         <div class="select-style-1 col-lg-6">
                             <label>Status</label>
                             <div class="select-position">
@@ -86,10 +95,10 @@
                         </div>
                         <!-- end input -->
                         <div class="select-style-1 col-lg-6">
-                            <label>Choose Headquarter</label>
+                            <label>Select Parent</label>
                             <div class="select-position">
                                 <select name="ParentId" required>
-                                  <option value=" ">None</option>
+                                  <option value=" ">Root</option>
                                   @foreach ($locations as $loc)
                                   <option value="<?= $loc->LocationId ?>" >{{$loc->Name}}</option>
                                   @endforeach
