@@ -76,18 +76,6 @@
                                 </div>
                         </div>  
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="select-style-1">
-                                    <label>Permanent Delete</label>
-                                    <div class="select-position">
-                                    <select name="IsPermanentDelete" id="IsPermanentDelete" class="form-control" required="required">
-                                        <option value="" selected disabled>Pilih</option>
-                                        <option value="0" <?php echo (isset($category->IsPermanentDelete) && $category->IsPermanentDelete == 0) ? "selected" : ""; ?>>No Active</option>
-                                        <option value="1" <?php echo (isset($category->IsPermanentDelete) && $category->IsPermanentDelete == 1) ? "selected" : ""; ?>>PermanentDelete</option> 
-                                    </select>   
-                                    </div>    
-                                </div>
-                            </div> 
                             <div class="col-sm-6">
                             <div class="select-style-1">
                                 <label> Select Parent</label>
