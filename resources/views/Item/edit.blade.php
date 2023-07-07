@@ -72,45 +72,7 @@
                             <div class="col-lg-6">
                                 <div class="input-style-1">
                                     <label>Item Name</label>
-                                    <input type="text" placeholder="Item Name" name="Name" value="{{$item->name}}" />
-                                </div>
-
-                                <div class="input-style-1">
-                                    <label>Unit</label>
-                                    <input type="number" placeholder="Unit" name="Unit" value="{{$item->Unit}}" />
-                                </div>
-
-                                <div class="select-sm select-style-1">
-                                    <label>Category Item</label>
-                                    <div class="select-position input-tags">
-                                        <select class="js-example-basic-single form-" id="tags" multiple name="Category[]">
-                                            @for($i =0; $i < count($unselectedCategory); $i++)
-                                            <option value="{{$unselectedCategory[$i]['CategoryId']}}">{{$unselectedCategory[$i]['Name']}}</option>
-                                            @endfor
-                                            @for($i =0; $i < count($selectedCategory); $i++)
-                                            <option selected="selected" value="{{$selectedCategory[$i]['CategoryId']}}">{{$selectedCategory[$i]['Name']}}</option>
-                                            @endfor
-                                        </select>
-                                        @error('Category') <span class="text-danger">{{$message}}</span> @enderror
-                                    </div>
-                                </div>
-                                <!-- end input -->
-                            </div>
-                            <div class="col-lg-6">
-
-                                <div class="select-sm select-style-1">
-                                    <label>Status of Item </label>
-                                    <div class="select-position">
-                                        <select class="light-bg" name="Status" required>
-                                            @if($item->Active == 1)
-                                            <option value="1" Selected>Active</option>
-                                            <option value="0">Nonactive</option>
-                                            @elseif($item->Active == 0)
-                                            <option value="1">Active</option>
-                                            <option value="0" Selected>Nonactive</option>
-                                            @endif
-                                        </select>
-                                    </div>
+                                    <input type="text" placeholder="Item Name" name="Name" value="{{$item->Name}}" />
                                 </div>
 
                                 <div class="select-sm select-style-1">
@@ -143,6 +105,29 @@
                                     <label>Consumable</label>
                                     <input type="number" id="alert-input" placeholder="Consumable (in Unit)" name="AlertConsumable" value="{{$item->AlertConsumable}}" />
                                 </div>
+
+                                <!-- end input -->
+                            </div>
+                            <div class="col-lg-6">
+
+                                <div class="input-style-1">
+                                    <label>Unit</label>
+                                    <input type="number" placeholder="Unit" name="Unit" value="{{$item->Unit}}" />
+                                </div>
+
+                                <div class="select-sm select-style-1">
+                                    <label>Category Item</label>
+                                    <div class="select-position input-tags">
+                                        <select class="js-example-basic-single form-" id="tags" multiple name="Category[]">
+                                            @for($i =0; $i < count($unselectedCategory); $i++) <option value="{{$unselectedCategory[$i]['CategoryId']}}">{{$unselectedCategory[$i]['Name']}}</option>
+                                                @endfor
+                                                @for($i =0; $i < count($selectedCategory); $i++) <option selected="selected" value="{{$selectedCategory[$i]['CategoryId']}}">{{$selectedCategory[$i]['Name']}}</option>
+                                                    @endfor
+                                        </select>
+                                        @error('Category') <span class="text-danger">{{$message}}</span> @enderror
+                                    </div>
+                                </div>
+
                                 <!-- end input -->
                             </div>
                             <!-- end col -->
@@ -150,7 +135,8 @@
                         <!-- End Row -->
                         <div class="row">
                             <div class="col-lg-12">
-                                <button type="submit" class="btn btn-success">Submit</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <a href="{{route('item.index')}}" class="btn btn-outline-danger">Back</a>
                             </div>
                         </div>
                     </div>

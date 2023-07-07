@@ -144,7 +144,8 @@
                         <!-- End Row -->
                         <div class="row">
                             <div class="col-lg-12">
-                                <button type="submit" class="btn btn-success">Submit</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <a href="{{route('item.index')}}" class="btn btn-outline-danger">Back</a>
                             </div>
                         </div>
                     </div>

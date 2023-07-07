@@ -20,7 +20,7 @@ class itemController extends Controller
     {
         //
         if ($request->ajax()) {
-            $item  = Item::all();
+            $item  = Item::where('IsPermanentDelete', 0)->get();
             return DataTables::of($item)
                 ->addColumn('Status', function ($row) {
                     // $btn = '<button type="button" class="btn btn-primary btn-sm">' . $data . '</button>';
@@ -60,8 +60,15 @@ class itemController extends Controller
                 })
                 ->addColumn('Action', function ($row) {
                     $btn = '<a href=' . route('item.edit', $row->ItemId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                    $btn .= '<a href=' . route('item.delete', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
-                    return $btn;
+                    if ($row->Active == 1) {
+                        $btn = '<a href=' . route('item.edit', $row->ItemId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                        $btn .= '<a href=' . route('item.activate', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                        return $btn;
+                    } else if ($row->Active == 0) {
+                        $btn .= '<a href=' . route('item.activate', $row->ItemId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn .= '<a href=' . route('item.delete', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
+                        return $btn;
+                    }
                 })
                 ->rawColumns(['Action', 'Status'])
                 ->make(true);
@@ -107,7 +114,6 @@ class itemController extends Controller
             'ItemBehavior' => (int) request('ItemBehavior'),
             'AlertHourMaintenance' => (int) request('AlertHourMaintenance'),
             'AlertConsumable' => (int) request('AlertConsumable'),
-            'Active' => (int) request('Status'),
             'IsPermanentDelete' => 0,
             'CreatedBy' => 32,
             'CreatedByLocation' => 11,
@@ -190,6 +196,30 @@ class itemController extends Controller
     public function update(Request $request, $id)
     {
         //
+        // dd($id);
+
+        Item::where('ItemId', $id)->update([
+                'Name' => $request->Name,
+                'Unit' => (int) $request->Unit,
+                'ItemBehavior' => (int) $request->ItemBehavior,
+                'AlertHourMaintenance' => (int) $request->AlertHourMaintenance,
+                'AlertConsumable' => (int) $request->AlertConsumable,
+                'Active' => (int) $request->Status,
+            ]);
+
+        // dd($request->Category);
+        DB::table('CategoryItem')->where('ItemId', $id)->delete();
+        if ($request->Category) {
+            foreach ($request->Category as $category) {
+                $data = [
+                    'Uuid' => (string) Str::uuid(),
+                    'ItemId' => $id,
+                    'CategoryId' => $category,
+                ];
+                DB::table('CategoryItem')->insert($data);
+            }
+        }
+        return redirect()->route('item.index');
     }
 
     /**
@@ -202,6 +232,17 @@ class itemController extends Controller
     {
         $data = Item::where('ItemId', $id);
         $data->update(['IsPermanentDelete' => 1]);
+        return redirect()->route('item.index');
+    }
+
+    public function activate($id)
+    {
+        $data = Item::where('ItemId', $id)->first();
+        if ($data->Active == 1) {
+            Item::where('ItemId', $id)->update(['Active' => 0]);
+        } else {
+            Item::where('ItemId', $id)->update(['Active' => 1]);
+        }
         return redirect()->route('item.index');
     }
 }
