@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\itemController;
 use App\Http\Controllers\LocationController;
+use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,6 +39,8 @@ Route::post('category/store', [CategoryController::class, 'store'])->name('categ
 Route::get('category/edit/{id}', [CategoryController::class, 'edit'])->name('category.edit');
 Route::put('category/update/{id}', [CategoryController::class, 'update'])->name('category.update');
 Route::get('category/delete/{id}', [CategoryController::class, 'destroy'])->name('category.destroy');
+Route::get('category/activate/{id}', [CategoryController::class, 'activate'])->name('category.activate');
+
 
 Route::get('location', [LocationController::class, 'index'])->name('location.index');
 Route::get('location/create', [LocationController::class, 'create'])->name('location.create');

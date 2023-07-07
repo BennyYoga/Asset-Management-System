@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\m_category;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\Redis;
-use Psy\CodeCleaner\ReturnTypePass;
 use Illuminate\Support\Str;
-use RealRashid\SweetAlert\Facades\Alert;
-use Illuminate\Validation\ValidationException;
+
 
 class CategoryController extends Controller
 {
@@ -23,15 +20,27 @@ class CategoryController extends Controller
     {
         
         if ($request->ajax()) {
-            $category = m_category::where('IspermanentDelete', 0);
+            $category = Category::where('IspermanentDelete', 0)->get();
             return DataTables::of($category)
+                // ->addColumn('action', function ($row) {
+                //     $btn = '<a href=' . route('category.edit', $row->CategoryId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                //     $btn .= '<a href=' . route('category.destroy', $row->CategoryId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
+                //     return $btn;
+                // })
                 ->addColumn('action', function ($row) {
                     $btn = '<a href=' . route('category.edit', $row->CategoryId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                    $btn .= '<a href=' . route('category.destroy', $row->CategoryId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
-                    return $btn;
+                    if ($row->Active == 1) {
+                        $btn = '<a href=' . route('category.edit', $row->CategoryId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                        $btn .= '<a href=' . route('category.activate', $row->CategoryId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                        return $btn;
+                    } else if ($row->Active == 0) {
+                        $btn .= '<a href=' . route('category.activate', $row->CategoryId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn .= '<a href=' . route('category.destroy', $row->CategoryId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
+                        return $btn;
+                    }
                 })
                 ->addColumn('Parent', function ($row) {
-                    $parent = m_category::where('CategoryId', $row->ParentId)->first();
+                    $parent = Category::where('CategoryId', $row->ParentId)->first();
                     return $parent ? 'Child Of '. $parent->Name : 'Undifined';
                 })
                 ->rawColumns(['action'])
@@ -48,8 +57,8 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        $category = m_category::all();
-        return view('category.create', compact('category'));
+        $categories = Category::where('IsPermanentDelete', 0)->get();
+        return view('category.create', compact('categories'));
     }
 
     /**
@@ -62,28 +71,24 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        
-        $request->validate(
-            [
+        $request->validate([
             'Name' => 'required',
-            'Active' => 'required',
-            ]
-        );
-        $data =[
-            'CategoryId' =>(String)Str::uuid(),
+            'ParentId' => 'nullable',
+        ]);
+    
+        $data = [
+            'CategoryId' => (string) Str::uuid(),
             'Name' => $request->Name,
-            'Active' => $request->Active,
-            'IsPermanentDelete' => 0,
             'ParentId' => $request->ParentId,
+            'Active' => 1,
+            'IsPermanentDelete' => 0,
+            'CreatedBy' => 'lala',
+            'UpdatedBy' => 'lala',
         ];
-        // $user = Auth::user();
-        // $data['CreatedBy'] = $user;
-        // $data['UpdatedBy'] = $user;
-        $data['CreatedBy'] = 'lala';
-        $data['UpdatedBy'] = 'lala';
-        m_category::create($data);
-        return redirect()->route('category.index')->withToastSuccess('Berhasil');
-        
+    
+        Category::create($data);
+    
+        return redirect()->route('category.index')->withToastSuccess('Berhasil Menambah Data');
         
     }
 
@@ -106,9 +111,9 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
-        $category = m_category::find($id);
+        $category = Category::find($id);
         if($category){
-            $categories = m_category::where('CategoryId', '!=', $id)->get();
+            $categories = Category::where('CategoryId', '!=', $id)->get();
             return view('category.edit', compact('category', 'categories'));
         }return redirect()->to('category.index')->withToastError('Data tidak ditemukan');
     }
@@ -132,33 +137,37 @@ class CategoryController extends Controller
             'Name' => $request->Name,
             'Active' => $request->Active,
             // 'IsPermanentDelete' => $request->IsPermanentDelete,
-            // 'ParentId' => $request->ParentId,
+            'ParentId' => $request->ParentId,
         ];
         // $user = Auth::user();
         // $data['CreatedBy'] = $user;
-        // $data['UpdatedBy'] = $user;
+                 // 'ParentId' => $request->ParentId,
+    
+        // $user = Auth::user();
+        // $data['CreatedBy'] = $user;
+        // $data['UpdCategory $user;
         $data['CreatedBy'] = 'lala';
         $data['UpdatedBy'] = 'lala';
         // dd($data);
-        $category = m_category::where('CategoryId', $id);
+        $category = Category::where('CategoryId', $id);
         if ($category) {
             $category->update($data);
             return redirect()->route('category.index')->withToastSuccess('Berhasil');
         } else {
             // Handle the case when the category with the specified CategoryId is not found
-            return redirect()->route('category.index')->withToastError('Kategori tidak ditemukan');
+            return redirect()->route('category.index');
         }
     }
     public function destroy($CategoryId)
     {
-        $category = m_category::find($CategoryId);
+        $category = Category::find($CategoryId);
 
-// Cek apakah ada anak kategori dengan ParentId yang sama dengan categoryId
-        $checkParent = m_category::where('ParentId', $category->CategoryId)->exists();
+        // Cek apakah ada anak kategori dengan ParentId yang sama dengan categoryId
+        $checkParent = Category::where('ParentId', $category->CategoryId)->exists();
 
         if ($checkParent) {
-    // Cek Anak Kategori dengan IsPermanentDelete = 1
-            $checkDelete = m_category::where('ParentId', $category->CategoryId)
+            // Cek Anak Kategori dengan IsPermanentDelete = 1
+            $checkDelete = Category::where('ParentId', $category->CategoryId)
                 ->where('IsPermanentDelete', 1)
                 ->exists();
 
@@ -172,7 +181,16 @@ class CategoryController extends Controller
         $category['IsPermanentDelete'] = 1;
         $category->update();
         return redirect()->route('category.index')->withToastSuccess('Berhasil menghapus');
+    }
 
-
+    public function activate($id)
+    {
+        $data = Category::where('CategoryId', $id)->first();
+        if ($data->Active == 1) {
+            Category::where('CategoryId', $id)->update(['Active' => 0]);
+        } else {
+            Category::where('CategoryId', $id)->update(['Active' => 1]);
+        }
+        return redirect()->route('category.index');
     }
 }

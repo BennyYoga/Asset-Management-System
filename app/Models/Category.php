@@ -7,14 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 
-class m_category extends Model
+class Category extends Model
 {
     use HasFactory;
     protected $keyType ='string';
     protected $primaryKey = 'CategoryId';
     public $timestamps = false;
     protected $table = 'Category';
-    protected $fillable = ['CategoryId', 'ParentId', 'Name', 'Active', 'IsPermanentDelete', 'CreatedBy', 'UpdatedBy'];
+    protected $fillable = [   
+    'CategoryId',
+    'Name',
+    'ParentId',
+    'Active',
+    'IsPermanentDelete',
+    'CreatedBy',
+    'UpdatedBy',
+    ];
 
 
     protected static function boot() {

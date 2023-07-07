@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title', 'Trash Monitoring System | Dashboard')
+@section('title', 'Asset Management System | Category')
 
 
 @push('css')
@@ -60,6 +60,7 @@
                         <table class="table" id="category">
                             <thead>
                                 <tr class="text-center">
+                                    <th>No</th>
                                     <th>Name</th>
                                     <th>Created By</th>
                                     <th>Status</th>
@@ -89,6 +90,13 @@
             serverSide: true,
             ajax: "",
             columns: [{
+                    data: 'id',
+                    name: 'id',
+                    render: function(data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                {
                     data: 'Name',
                     name: 'Name',
                     class: "text-center"
@@ -103,9 +111,9 @@
                     data: 'Active',
                     name: 'Active',
                     render: function (data, type, row) {
-                        var status = data == 1 ? 'Aktif' : 'Nonaktif';
-                        var classColor = data == 1 ? 'text-success' : 'text-danger';
-                        return '<span class="' + classColor + '">' + status + '</span>';
+                        var status = data == 1 ? 'Active' : 'Nonctive';
+                        var classColor = data == 1 ? 'btn-primary' : 'btn-danger';
+                        return '<button type="button" class="btn ' + classColor + '" disabled style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">' + status + '</button>';
                     }
                 },
                 {
@@ -119,7 +127,6 @@
                     data: 'Parent',
                     name: 'Parent',
                     orderable: true,
-                    class: "text-center"
                 }
 
             ],
@@ -129,10 +136,6 @@
                 ]
             ]
         });
-        $("#printTiket").click(function() {
-            alert("anjay")
-                location.windows.reload()
-            });
     });
     
 

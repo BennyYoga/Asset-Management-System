@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Asset Monitoring System | Create Item')
+@section('title','Asset Management System | Edit Category')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
