@@ -8,6 +8,8 @@ use App\Models\m_category;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
+Use Alert;
+
 
 class itemController extends Controller
 {
@@ -125,7 +127,6 @@ class itemController extends Controller
         Item::create($data);
         foreach ($request->Category as $category) {
             $data = [
-                'Uuid' => (string) Str::uuid(),
                 'ItemId' => $data['ItemId'],
                 'CategoryId' => $category,
             ];
@@ -212,7 +213,6 @@ class itemController extends Controller
         if ($request->Category) {
             foreach ($request->Category as $category) {
                 $data = [
-                    'Uuid' => (string) Str::uuid(),
                     'ItemId' => $id,
                     'CategoryId' => $category,
                 ];

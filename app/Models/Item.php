@@ -10,7 +10,9 @@ class Item extends Model
     use HasFactory;
 
     protected $table = 'Item';
-    public $timestamps = false;
+    const CREATED_AT = 'CreatedDate';
+    const UPDATED_AT = 'UpdatedDate';
+    public $timestamps = true;
     // protected $guarded = ['ItemId'];
     protected $fillable = [
         'ItemId' ,
@@ -26,5 +28,10 @@ class Item extends Model
             'UpdatedBy'
     ];
     // protected $primaryKey = 'ItemId';
+
+    public function Category()
+    {
+        return $this->belongsToMany(m_category::class, 'CategoryItem', 'ItemId', 'CategoryId');
+    }
 
 }

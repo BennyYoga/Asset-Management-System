@@ -4,6 +4,7 @@ use App\Http\Controllers\c_category;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\itemController;
+use App\Http\Controllers\itemRequisitionController;
 use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,10 @@ Route::put('item/update/{id}', [itemController::class, 'update'])->name('item.up
 Route::get('item/delete/{id}', [itemController::class, 'destroy'])->name('item.delete');
 Route::get('item/activate/{id}', [itemController::class, 'activate'])->name('item.activate');
 
+
+Route::get('/itemrequisition', [itemRequisitionController::class, 'index'])->name('itemreq.index');
+Route::get('/itemrequisition/create', [itemRequisitionController::class, 'create'])->name('itemreq.create');
+Route::post('/itemrequisition/store', [itemRequisitionController::class, 'store'])->name('itemreq.store');
 
 Route::get('dashboard', [dashboardController::class, 'index'])->name('dashboard.index');
 Route::get('category', [CategoryController::class, 'index'])->name('category.index');
