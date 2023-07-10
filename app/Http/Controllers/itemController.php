@@ -133,7 +133,7 @@ class itemController extends Controller
             DB::table('CategoryItem')->insert($data);
         }
 
-        return view('item.index',);
+        return view('item.index')->with('success', 'Item has been added');
     }
 
     /**
@@ -219,7 +219,7 @@ class itemController extends Controller
                 DB::table('CategoryItem')->insert($data);
             }
         }
-        return redirect()->route('item.index')->withToastSuccess('Berhasil Mememperbaharui Data');
+        return redirect()->route('item.index')->with('success', 'Item has been updated');
     }
 
     /**
@@ -232,7 +232,7 @@ class itemController extends Controller
     {
         $data = Item::where('ItemId', $id);
         $data->update(['IsPermanentDelete' => 1]);
-        return redirect()->route('item.index');
+        return redirect()->route('item.index')->with('success', 'Item has been deleted');
     }
 
     public function activate($id)
@@ -243,6 +243,6 @@ class itemController extends Controller
         } else {
             Item::where('ItemId', $id)->update(['Active' => 1]);
         }
-        return redirect()->route('item.index');
+        return redirect()->route('item.index')->with('success', 'Status has been updated');
     }
 }

@@ -79,10 +79,20 @@
                                 <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
                             </div>
                         </div>
+                        <div class="row mt-5">
+                            <div class="col-lg-12">
+                                <div class="input-style-1">
+                                    <label>Notes</label>
+                                    <textarea class="input-tags" rows="4" name="Notes" placeholder="Notes"></textarea>
+                                    @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
+                                </div>
+                                <!-- end input -->
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-lg-12 text-end">
                                 <button type="submit" class="btn btn-primary">Submit</button>
-                                <a href="{{route('item.index')}}" class="btn btn-outline-danger">Back</a>
+                                <a href="{{route('itemreq.index')}}" class="btn btn-outline-danger">Back</a>
                             </div>
                         </div>
                     </div>
@@ -92,12 +102,13 @@
             </div>
             <!-- end row -->
         </div>
-        <button id="check" type="button">anjay</button>
         <!-- end wrapper -->
 </section>
 @endsection
 
 @push('js')
+@include('sweetalert::alert')
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -105,12 +116,6 @@
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
-        $('#check').click(function() {
-            console.log(JSON.parse(dataObject));
-        });
-
-    });
     $("#add-item").click(function() {
         var dataObject = $('#itemHidden').val();
         dataObject = JSON.parse(dataObject);
@@ -133,7 +138,7 @@
         <div class="col-lg-3">
             <div class="input-style-1">
                 <label>Quantity</label>
-                <input type="number" placeholder="Quantity of Item" name="Qty[]" />
+                <input type="number" placeholder="Quantity of Item" name="Qty[]" required/>
                 @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
             </div>
             <!-- end input -->
