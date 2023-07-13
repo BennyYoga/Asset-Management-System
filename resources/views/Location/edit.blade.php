@@ -66,7 +66,7 @@
                         <div class="select-style-1 col-lg-6">
                             <label>Have Procurement Process</label>
                             <div class="select-position">
-                                <select name="HaveProcurementProcess" required>
+                                <select class="light-bg" name="HaveProcurementProcess" required>
                                     <option value="0" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 0) ? "selected" : ""; ?>>Yes</option>  
                                     <option value="1" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 1) ? "selected" : ""; ?>>No</option>  
                                 </select>
@@ -78,7 +78,7 @@
                             {{-- <div class="select-style-1 col-lg-6">
                                 <label>Have Procurement Process</label>
                                 <div class="select-position">
-                                    <select name="HaveProcurementProcess" required>
+                                    <select class="light-bg" name="HaveProcurementProcess" required>
                                         <option value="0" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 0) ? "selected" : ""; ?>>Yes</option>  
                                         <option value="1" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 1) ? "selected" : ""; ?>>No</option>  
                                     </select>
@@ -87,7 +87,7 @@
                         <div class="select-style-1 col-lg-6">
                             <label>Status</label>
                             <div class="select-position">
-                                <select name="Active" required>
+                                <select class="light-bg" name="Active" required>
                                     <option value="0" <?php echo (isset($location->Active) && $location->Active == 0) ? "selected" : ""; ?>>Non-active</option>  
                                     <option value="1" <?php echo (isset($location->Active) && $location->Active == 1) ? "selected" : ""; ?>>Active</option>  
                                 </select>
@@ -97,7 +97,7 @@
                         <div class="select-style-1 col-lg-6">
                             <label>Select Parent</label>
                             <div class="select-position">
-                                <select name="ParentId" required>
+                                <select class="light-bg" name="ParentId" required>
                                   <option value=" ">Root</option>
                                   @foreach ($locations as $loc)
                                   <option value="<?= $loc->LocationId ?>" >{{$loc->Name}}</option>
@@ -109,7 +109,7 @@
                         </div>
                             <div class="card-footer mb">
                                 <button type="submit" class="btn btn-primary">Submit</button>
-                                <a href="/location" class="btn btn-light">
+                                <a href="/location" class="btn btn-outline-danger">
                                     Back
                                 </a>
                             </div>

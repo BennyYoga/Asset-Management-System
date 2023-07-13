@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Assets Management System | Create Location')
+@section('title','Assets Management System | Add Location')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -65,7 +65,7 @@
                         <div class="select-style-1 col-lg-6">
                             <label>Have Procurement Process</label>
                             <div class="select-position">
-                                <select name="HaveProcurementProcess" required>
+                                <select class="light-bg" name="HaveProcurementProcess" required>
                                   <option value="" disabled selected>Select contidion</option>
                                   <option value="1" >Yes</option>
                                   <option value="0" >No</option>
@@ -78,7 +78,7 @@
                         <div class="select-style-1 col-lg-6">
                             <label>Status</label>
                             <div class="select-position">
-                                <select name="Active" required>
+                                <select class="light-bg" name="Active" required>
                                   <option value="" disabled selected>Select status</option>
                                   <option value="1" >Active</option>
                                   <option value="0" >Non-Active</option>
@@ -89,7 +89,7 @@
                         <div class="select-style-1 col-lg-6">
                             <label>Select Parent</label>
                             <div class="select-position">
-                                <select name="ParentId" id="ParentId" required>
+                                <select class="light-bg" name="ParentId" id="ParentId" required>
                                   <option value="" disabled selected>Select location</option>
                                   <option value="">Root</option>
                                   @foreach ($location as $loc)
@@ -102,7 +102,7 @@
                         </div>
                             <div class="card-footer mb">
                                 <button type="submit" class="btn btn-primary">Submit</button>
-                                <a href="/location" class="btn btn-light">
+                                <a href="/location" class="btn btn-outline-danger">
                                     Back
                                 </a>
                             </div>

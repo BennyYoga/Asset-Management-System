@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\itemController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\ItemProcurementController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,7 +47,14 @@ Route::get('location/edit/{id}', [LocationController::class, 'edit'])->name('loc
 Route::post('location/update/{id}', [LocationController::class, 'update'])->name('location.update');
 Route::get('location/delete/{id}', [LocationController::class, 'destroy'])->name('location.destroy');
 Route::get('location/activate/{id}', [LocationController::class, 'activate'])->name('location.activate');
-Route::get('location/deactivate/{id}', [LocationController::class, 'deactivate'])->name('location.deactivate');
+
+Route::get('procurement', [ItemProcurementController::class, 'index'])->name('procurement.index');
+Route::get('procurement/create', [ItemProcurementController::class, 'create'])->name('procurement.create');
+Route::post('procurement/store', [ItemProcurementController::class, 'store'])->name('procurement.store');
+Route::get('procurement/edit/{id}', [ItemProcurementController::class, 'edit'])->name('procurement.edit');
+Route::post('procurement/update/{id}', [ItemProcurementController::class, 'update'])->name('procurement.update');
+Route::get('procurement/delete/{id}', [ItemProcurementController::class, 'destroy'])->name('procurement.destroy');
+Route::get('procurement/activate/{id}', [ItemProcurementController::class, 'activate'])->name('procurement.activate');
 
 
 
