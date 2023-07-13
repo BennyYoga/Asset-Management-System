@@ -36,4 +36,9 @@ class Location extends Model
         });
     }
 
+    public function ItemRequisition()
+    {
+        return $this->hasMany(ItemRequisition::class);
+    }
+
 }

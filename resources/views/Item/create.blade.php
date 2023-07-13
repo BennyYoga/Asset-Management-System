@@ -79,7 +79,7 @@
 
                                 <div class="input-style-1">
                                     <label>Unit</label>
-                                    <input type="number" placeholder="Unit" name="Unit" required />
+                                    <input type="text" placeholder="Unit" name="Unit" required />
                                     @error('Unit') <span class="text-danger">{{$message}}</span> @enderror
                                 </div>
                                 <!-- end input -->

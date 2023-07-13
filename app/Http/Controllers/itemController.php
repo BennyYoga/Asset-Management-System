@@ -8,6 +8,8 @@ use App\Models\m_category;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
+Use Alert;
+
 
 class itemController extends Controller
 {
@@ -110,7 +112,7 @@ class itemController extends Controller
         $data = [
             'ItemId' => (string) Str::uuid(),
             'Name' => request('Name'),
-            'Unit' => (int) request('Unit'),
+            'Unit' => request('Unit'),
             'ItemBehavior' => (int) request('ItemBehavior'),
             'AlertHourMaintenance' => (int) request('AlertHourMaintenance'),
             'AlertConsumable' => (int) request('AlertConsumable'),
@@ -125,14 +127,13 @@ class itemController extends Controller
         Item::create($data);
         foreach ($request->Category as $category) {
             $data = [
-                'Uuid' => (string) Str::uuid(),
                 'ItemId' => $data['ItemId'],
                 'CategoryId' => $category,
             ];
             DB::table('CategoryItem')->insert($data);
         }
 
-        return view('item.index',);
+        return view('item.index')->with('success', 'Item has been added');
     }
 
     /**
@@ -200,7 +201,7 @@ class itemController extends Controller
 
         Item::where('ItemId', $id)->update([
                 'Name' => $request->Name,
-                'Unit' => (int) $request->Unit,
+                'Unit' => $request->Unit,
                 'ItemBehavior' => (int) $request->ItemBehavior,
                 'AlertHourMaintenance' => (int) $request->AlertHourMaintenance,
                 'AlertConsumable' => (int) $request->AlertConsumable,
@@ -212,14 +213,13 @@ class itemController extends Controller
         if ($request->Category) {
             foreach ($request->Category as $category) {
                 $data = [
-                    'Uuid' => (string) Str::uuid(),
                     'ItemId' => $id,
                     'CategoryId' => $category,
                 ];
                 DB::table('CategoryItem')->insert($data);
             }
         }
-        return redirect()->route('item.index')->withToastSuccess('Berhasil Mememperbaharui Data');
+        return redirect()->route('item.index')->with('success', 'Item has been updated');
     }
 
     /**
@@ -232,7 +232,7 @@ class itemController extends Controller
     {
         $data = Item::where('ItemId', $id);
         $data->update(['IsPermanentDelete' => 1]);
-        return redirect()->route('item.index');
+        return redirect()->route('item.index')->with('success', 'Item has been deleted');
     }
 
     public function activate($id)
@@ -243,6 +243,6 @@ class itemController extends Controller
         } else {
             Item::where('ItemId', $id)->update(['Active' => 1]);
         }
-        return redirect()->route('item.index');
+        return redirect()->route('item.index')->with('success', 'Status has been updated');
     }
 }

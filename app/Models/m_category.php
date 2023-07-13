@@ -23,4 +23,9 @@ class m_category extends Model
                 $model->{$model->getKeyName()} = (string) Str::uuid();
         });
     }
+    
+    public function Cate()
+    {
+        return $this->belongsToMany(Item::class, 'CategoryItem', 'CategoryId', 'ItemId');
+    }
 }
