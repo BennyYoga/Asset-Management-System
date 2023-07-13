@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\c_category;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\itemController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\UserController;
 use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 
@@ -50,4 +53,29 @@ Route::post('location/update/{id}', [LocationController::class, 'update'])->name
 Route::get('location/delete/{id}', [LocationController::class, 'destroy'])->name('location.destroy');
 
 
+Route::get('project', [ProjectController::class, 'index'])->name('project.index');
+Route::get('project/create', [ProjectController::class, 'create'])->name('project.create');
+Route::post('project/store', [ProjectController::class, 'store'])->name('project.store');
+Route::get('project/edit/{id}', [ProjectController::class, 'edit'])->name('project.edit');
+Route::put('project/update/{id}', [ProjectController::class, 'update'])->name('project.update');
+Route::get('project/delete/{id}', [ProjectController::class, 'destroy'])->name('project.destroy');
+Route::get('project/activate/{id}', [ProjectController::class, 'activate'])->name('project.activate');
+
+
+
+Route::get('/login', function () {
+    return view('Login/login');
+});
+
+
+// Route::get('/tiket/edit/{id}', [c_kabkota::class, 'edit'])->name('kabkota.edit');
+Route::get('user/create', [UserController::class, 'create'])->name('user.create');
+Route::post('user/store', [UserController::class, 'store'])->name('user.store');
+
+Route::get('login', [AuthController::class, 'index'])->name('login');
+// Route::get('changePassword', [AuthController::class, 'changePassword'])->name('changePassword.index');
+// Route::put('updatePassword/{id}', [AuthController::class, 'updatePassword'])->name('updatePassword');
+Route::get('logout', [AuthController::class, 'logout']);
+Route::post('post-logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
 

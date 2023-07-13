@@ -22,11 +22,6 @@ class CategoryController extends Controller
         if ($request->ajax()) {
             $category = Category::where('IspermanentDelete', 0)->get();
             return DataTables::of($category)
-                // ->addColumn('action', function ($row) {
-                //     $btn = '<a href=' . route('category.edit', $row->CategoryId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                //     $btn .= '<a href=' . route('category.destroy', $row->CategoryId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
-                //     return $btn;
-                // })
                 ->addColumn('action', function ($row) {
                     $btn = '<a href=' . route('category.edit', $row->CategoryId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                     if ($row->Active == 1) {
@@ -136,12 +131,11 @@ class CategoryController extends Controller
         $data =[
             'Name' => $request->Name,
             'Active' => $request->Active,
-            // 'IsPermanentDelete' => $request->IsPermanentDelete,
             'ParentId' => $request->ParentId,
         ];
         // $user = Auth::user();
         // $data['CreatedBy'] = $user;
-                 // 'ParentId' => $request->ParentId,
+        // 'ParentId' => $request->ParentId,
     
         // $user = Auth::user();
         // $data['CreatedBy'] = $user;
@@ -168,10 +162,10 @@ class CategoryController extends Controller
         if ($checkParent) {
             // Cek Anak Kategori dengan IsPermanentDelete = 1
             $checkDelete = Category::where('ParentId', $category->CategoryId)
-                ->where('IsPermanentDelete', 1)
+                ->where('IsPermanentDelete', 0)
                 ->exists();
 
-            if ($checkDelete) {
+            if (!$checkDelete) {
                 $category['IsPermanentDelete'] = 1;
                 $category->update();
                 return redirect()->route('category.index')->withToastSuccess('Berhasil Menghapus Data');
