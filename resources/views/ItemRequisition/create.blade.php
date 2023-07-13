@@ -7,16 +7,42 @@
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<meta name="csrf-token" content="{{ csrf_token() }}" />
 <style>
-    .input-tags {
+    .preview-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        margin: 5px;
+        border-radius: 5px;
+    }
+
+    #announ {
+        padding: 20px;
+        text-align: center;
+    }
+
+    #title-file {
+        margin: auto 0;
+    }
+
+    #deleted-btn {
+        height: 40px;
+        margin: auto 0;
+    }
+
+    .preview-item {
+        display: flex;
+        justify-content: space-between;
         width: 100%;
-        background: rgba(239, 239, 239, 0.5);
-        border: 1px solid #e5e5e5;
-        border-radius: 4px;
-        padding: 16px;
-        color: #5d657b;
-        resize: none;
-        transition: all 0.3s;
+        padding: 0px 10px;
+        margin-bottom: 5px;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+
+    #preview {
+        width: 100%;
     }
 </style>
 @endpush
@@ -60,7 +86,7 @@
         <!-- end row -->
     </div>
 
-    <form action="{{route('itemreq.store')}}" method="post">
+    <form data-action="{{ route('itemreq.store') }}" enctype="multipart/form-data" method="post">
         @csrf
         <div class="form-elements-wrapper">
             <input type="hidden" id="itemHidden" value="{{$item}}">
@@ -68,25 +94,58 @@
                 <div class="col-sm-12">
                     <!-- input style start -->
                     <div class="card-style mb-30">
+                        <div class="row mt-3">
+                            <div class="col-lg-6">
+                                <div class="select-style-1">
+                                    <label>Select Location</label>
+                                    <div class="select-position">
+                                        <select name="LocationId" id="LocationId" required>
+                                            <option value="" disabled selected>Choose location</option>
+                                            @foreach ($location as $loc)
+                                            <option value="{{ $loc->LocationId }}">{{$loc->Name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- end input -->
+
+                                <div class="input-style-1">
+                                    <label>Notes</label>
+                                    <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes"></textarea>
+                                    @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
+                                </div>
+                                <!-- end input -->
+                            </div>
+
+                            <!-- End Col -->
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-4">
+                                <div class="input-style-1">
+                                    <label>Requisition Letter</label>
+                                    <input type="file" class="form-control-file" value="file" id="input-file" accept="image/*" multiple placeholder="Upload Your File" />
+                                </div>
+                                <div>
+                                    <div class="input-style-1">
+                                        <label>Your File</label>
+                                        <div id="preview">
+                                            <p id="announ">
+                                                No File Attached!!
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div id="item-container">
                             <div class="row item">
-                                
+
                             </div>
                         </div>
                         <!-- End Row -->
                         <div class="row">
                             <div class="col-lg-12">
                                 <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
-                            </div>
-                        </div>
-                        <div class="row mt-5">
-                            <div class="col-lg-12">
-                                <div class="input-style-1">
-                                    <label>Notes</label>
-                                    <textarea class="input-tags" rows="4" name="Notes" placeholder="Notes"></textarea>
-                                    @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
-                                </div>
-                                <!-- end input -->
                             </div>
                         </div>
                         <div class="row">
@@ -102,7 +161,14 @@
             </div>
             <!-- end row -->
         </div>
+        <button id="check" type="button">
+            check
+        </button>
+        <button id="reset" type="button">
+            reset
+        </button>
         <!-- end wrapper -->
+    </form>
 </section>
 @endsection
 
@@ -116,6 +182,80 @@
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 <script type="text/javascript">
+    $(document).ready(function() {
+        var inputImage = [];
+        $('#input-file').on('change', handleFileUpload);
+
+        function handleFileUpload(event) {
+            var files = event.target.files;
+            var output = $('#preview');
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var previewItem = createPreviewItem(e.target.result);
+                    output.append(previewItem);
+                    inputImage.push(e.target.result);
+                };
+                file = reader.readAsDataURL(file);
+            }
+        }
+
+        function createPreviewItem(src) {
+            var previewItem = $('<div class="preview-item"></div>');
+
+            var image = $('<img class="preview-image">');
+            var text = $(`<span id="title-file"> File Data Absen </span>`);
+            image.attr('src', src);
+            previewItem.append(image);
+            previewItem.append(text);
+
+            var deleteButton = $('<button id="deleted-btn" class="btn btn-danger btn-sm">Hapus</button>');
+            deleteButton.click(function() {
+                var previewItem = $(this).closest('.preview-item');
+                var src = image.attr('src');
+                inputImage = inputImage.filter(e => e != src)
+                previewItem.remove();
+            });
+            previewItem.append(deleteButton);
+
+            return previewItem;
+        }
+
+        $("form").on('submit', function(e) {
+            e.preventDefault();
+            var locationId = $('#LocationId').val();
+            var notes = $('#Notes').val();
+            var item = $('#itemId').val();
+            var url = $(this).attr('data-action');
+            var formData = {
+                locationId: locationId,
+                notes: notes,
+                inputImage: inputImage,
+                item: item
+            };
+
+            console.log(formData);
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+
+            });
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "data": formData
+                },
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+            });
+        })
+    });
+
     $("#add-item").click(function() {
         var dataObject = $('#itemHidden').val();
         dataObject = JSON.parse(dataObject);
@@ -123,30 +263,30 @@
         var itemDiv = $("<div>").addClass("item row");
         console.log(itemDiv);
         itemDiv.html(`
-        <div class="col-lg-8">
-            <div class="select-style-1 col-lg-12">
-                <label>Choose Name Item</label>
-                <div class="select-position">
-                    <select name="itemId[]" id="itemId" required>
-                    <option value="" disabled selected>Choose Item</option>
-                        ${dataObject.map(dataObject => `<option value="${dataObject.ItemId}">${dataObject.Name}</option>`).join("")}
-                    </select>
+            <div class="col-lg-8">
+                <div class="select-style-1 col-lg-12">
+                    <label>Choose Name Item</label>
+                    <div class="select-position">
+                        <select name="itemId[]" id="itemId" required>
+                            <option value="" disabled selected>Choose Item</option>
+                            ${dataObject.map(dataObject => `<option value="${dataObject.ItemId}">${dataObject.Name}</option>`).join("")}
+                        </select>
+                    </div>
                 </div>
+                <!-- end input -->
             </div>
-            <!-- end input -->
-        </div>
-        <div class="col-lg-3">
-            <div class="input-style-1">
-                <label>Quantity</label>
-                <input type="number" placeholder="Quantity of Item" name="Qty[]" required/>
-                @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
+            <div class="col-lg-3">
+                <div class="input-style-1">
+                    <label>Quantity</label>
+                    <input type="number" placeholder="Quantity of Item" name="Qty[]" min="1" required/>
+                    @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
+                </div>
+                <!-- end input -->
             </div>
-            <!-- end input -->
-        </div>
-        <div class="col-lg-1 m-auto">
-            <button class="btn btn-danger">Delete</button>
-        </div>
-    `);
+            <div class="col-lg-1 m-auto">
+                <button class="btn btn-danger">Delete</button>
+            </div>
+        `);
 
         $("#item-container").append(itemDiv);
 

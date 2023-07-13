@@ -34,4 +34,9 @@ class Item extends Model
         return $this->belongsToMany(m_category::class, 'CategoryItem', 'ItemId', 'CategoryId');
     }
 
+    public function ItemRequisition()
+    {
+        return $this->belongsToMany(ItemRequisition::class, 'ItemRequisitionDetail', 'ItemId', 'ItemRequisitonId');
+    }
+
 }

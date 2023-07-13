@@ -27,7 +27,7 @@ class itemRequisitionController extends Controller
             return DataTables::of($req)
                 ->addColumn('JumlahBarang', function ($row) {
                     $data = count(DB::table('ItemRequisitionDetail')->where('ItemRequisitionId', $row->ItemRequisitionId)->get());
-                    return $data;
+                    return ($data . ' Item');
                 })
                 ->addColumn('Lokasi', function ($row) {
                     $lokasi = Location::where('LocationId', $row->LocationId)->first();
@@ -76,17 +76,14 @@ class itemRequisitionController extends Controller
                     }
                 })
                 ->addColumn('Action', function ($row) {
-                    $btn = '<a href="" style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                    return $btn;
-                    // if ($row->Active == 1) {
-                    //     $btn = '<a href=' . route('item.edit', $row->ItemId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                    //     $btn .= '<a href=' . route('item.activate', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
-                    //     return $btn;
-                    // } else if ($row->Active == 0) {
-                    //     $btn .= '<a href=' . route('item.activate', $row->ItemId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
-                    //     $btn .= '<a href=' . route('item.delete', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
-                    //     return $btn;
-                    // }
+                    if ($row->Active == 1) {
+                        $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" title="Deactivate Requisition" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                        return $btn;
+                    } else if ($row->Active == 0) {
+                        $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" title="Activate Requisition" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn .= '<a href=' . route('itemreq.delete', $row->ItemRequisitionId) . ' style="font-size:20px" title="Deleted Requisition" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
+                        return $btn;
+                    }
                 })
                 ->rawColumns(['Action', 'Active', 'Status'])
                 ->make(true);
@@ -103,7 +100,8 @@ class itemRequisitionController extends Controller
     public function create()
     {
         $item = Item::all();
-        return view('ItemRequisition.create', compact('item'));
+        $location = Location::all();
+        return view('ItemRequisition.create', compact('item', 'location'));
     }
 
     /**
@@ -114,6 +112,7 @@ class itemRequisitionController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request);
         if (($request->itemId == null) || ($request->Qty[0] == null)) {
             if($request->itemId == null){
                 return response()->redirectToRoute('itemreq.create')->with('error', 'Item Cannot be Empty');
@@ -125,7 +124,7 @@ class itemRequisitionController extends Controller
         $Uuid = (string) Str::uuid();
         $data = [
             'ItemRequisitionId' => $Uuid,
-            'LocationId' => "0d852c0c-32cf-4d0e-bc90-e7e75ac14171",
+            'LocationId' => request('LocationId'),
             'No' => 1,
             'Tanggal' => date('Y-m-d H:i:s', time()),
             'Notes' => request('Notes'),
@@ -142,9 +141,27 @@ class itemRequisitionController extends Controller
                 'ItemId' => $request->itemId[$i],
                 'ItemQty' => $request->Qty[$i],
             ];
-
             DB::table('ItemRequisitionDetail')->insert($data);
+
+
+            //Menambahkan Ke Inventory
+            $dataitem = Item::where('ItemId', $request->itemId[$i])->first();
+            $inventory = [
+                'LocationId' => $request->LocationId,
+                'ItemId' => $request->itemId[$i],
+                'ItemName' => $dataitem->Name,
+                'HourMaintenance' => 11,
+            ];
+            if(DB::table('Inventory')->where([['LocationId', $request->LocationId], ['ItemId', $request->itemId[$i]]])->exists()){
+                DB::table('Inventory')->where([['LocationId', $request->LocationId], ['ItemId', $request->itemId[$i]]])->increment('ItemQty', $request->Qty[$i]);
+            }
+            else{
+                $inventory['ItemQty'] = $request->Qty[$i];
+                DB::table('Inventory')->insert($inventory);
+            }
+
         }
+
         return response()->redirectToRoute('itemreq.index')->with('success', 'Item Requisition has been created');
     }
 
@@ -190,6 +207,19 @@ class itemRequisitionController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = ItemRequisition::where('ItemRequisitionId', $id);
+        $data->update(['IsPermanentDelete' => 1]);
+        return redirect()->route('itemreq.index')->with('success', 'Item has been deleted');
+    }
+
+    public function activate($id)
+    {
+        $data = ItemRequisition::where('ItemRequisitionId', $id)->first();
+        if ($data->Active == 1) {
+            ItemRequisition::where('ItemRequisitionId', $id)->update(['Active' => 0]);
+        } else {
+            ItemRequisition::where('ItemRequisitionId', $id)->update(['Active' => 1]);
+        }
+        return redirect()->route('itemreq.index')->with('success', 'Status has been updated');
     }
 }

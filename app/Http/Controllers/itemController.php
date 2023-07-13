@@ -112,7 +112,7 @@ class itemController extends Controller
         $data = [
             'ItemId' => (string) Str::uuid(),
             'Name' => request('Name'),
-            'Unit' => (int) request('Unit'),
+            'Unit' => request('Unit'),
             'ItemBehavior' => (int) request('ItemBehavior'),
             'AlertHourMaintenance' => (int) request('AlertHourMaintenance'),
             'AlertConsumable' => (int) request('AlertConsumable'),
@@ -201,7 +201,7 @@ class itemController extends Controller
 
         Item::where('ItemId', $id)->update([
                 'Name' => $request->Name,
-                'Unit' => (int) $request->Unit,
+                'Unit' => $request->Unit,
                 'ItemBehavior' => (int) $request->ItemBehavior,
                 'AlertHourMaintenance' => (int) $request->AlertHourMaintenance,
                 'AlertConsumable' => (int) $request->AlertConsumable,
