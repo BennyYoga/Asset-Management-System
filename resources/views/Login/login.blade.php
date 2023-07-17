@@ -59,14 +59,14 @@
                 <div class="row">
                   <div class="col-12">
                     <div class="input-style-1">
-                      <label>Username</label>
+                      <label for="Username">Username</label>
                       <input type="text" placeholder="Username" id="Username" name="Username" required autofocus />
                     </div>
                   </div>
                   <!-- end col -->
                   <div class="col-12">
                     <div class="input-style-1">
-                      <label>Password</label>
+                      <label for="Password">Password</label>
                       <input type="password" placeholder="Password" id="Password" name="Password" required autofocus />
                     </div>
                   </div>

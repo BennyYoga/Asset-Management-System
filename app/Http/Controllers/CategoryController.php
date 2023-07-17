@@ -77,8 +77,8 @@ class CategoryController extends Controller
             'ParentId' => $request->ParentId,
             'Active' => 1,
             'IsPermanentDelete' => 0,
-            'CreatedBy' => 'lala',
-            'UpdatedBy' => 'lala',
+            'CreatedBy' => session('user')->Fullname,
+            'UpdatedBy' => session('user')->Fullname,
         ];
     
         Category::create($data);
@@ -106,9 +106,16 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
-        $category = Category::find($id);
+        // $categories = Category::where('CategoryId', $id)->first();
+        // // dd($location);
+        // if (!$categories) {
+        //     return redirect()->back()->with('error', 'Category not found');
+        // }
+        // $category = Category::where('CategoryId', '!=', $id)->get();
+        // return view('category.edit', compact('category', 'categories'));
+        $category = Category::where('CategoryId', $id)->first();
         if($category){
-            $categories = Category::where('CategoryId', '!=', $id)->get();
+            $categories = Category::where('CategoryId', '!=', $id)->where('IsPermanentDelete', 0)->get();
             return view('category.edit', compact('category', 'categories'));
         }return redirect()->to('category.index')->withToastError('Data tidak ditemukan');
     }
@@ -125,25 +132,18 @@ class CategoryController extends Controller
         $request->validate(
             [
             'Name' => 'required',
-            'Active' => 'required',
+            'ParentId'=> 'Nullable',
             ]
         );
         $data =[
             'Name' => $request->Name,
-            'Active' => $request->Active,
+            // 'Active' => $request->Active,
             'ParentId' => $request->ParentId,
         ];
-        // $user = Auth::user();
-        // $data['CreatedBy'] = $user;
-        // 'ParentId' => $request->ParentId,
-    
-        // $user = Auth::user();
-        // $data['CreatedBy'] = $user;
-        // $data['UpdCategory $user;
-        $data['CreatedBy'] = 'lala';
-        $data['UpdatedBy'] = 'lala';
+
+        $data['UpdatedBy'] = session('user')->Fullname;
         // dd($data);
-        $category = Category::where('CategoryId', $id);
+        $category = Category::where('CategoryId', $id)->first();
         if ($category) {
             $category->update($data);
             return redirect()->route('category.index')->withToastSuccess('Berhasil');

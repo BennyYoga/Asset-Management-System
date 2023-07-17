@@ -36,4 +36,11 @@ class Location extends Model
         });
     }
 
+    public function fk_role()
+    {
+        return $this->belongsTo(Role::class, 'LocationId', 'LocationId');
+    }
+
+    
+
 }

@@ -1,13 +1,14 @@
 <?php
 
 use App\Http\Controllers\c_category;
-use App\Http\Controllers\Auth\AuthController;
+// use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\itemController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
 use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 
@@ -71,11 +72,15 @@ Route::get('/login', function () {
 // Route::get('/tiket/edit/{id}', [c_kabkota::class, 'edit'])->name('kabkota.edit');
 Route::get('user/create', [UserController::class, 'create'])->name('user.create');
 Route::post('user/store', [UserController::class, 'store'])->name('user.store');
+Route::get('user', [UserController::class, 'index'])->name('user.index');
+
 
 Route::get('login', [AuthController::class, 'index'])->name('login');
 // Route::get('changePassword', [AuthController::class, 'changePassword'])->name('changePassword.index');
 // Route::put('updatePassword/{id}', [AuthController::class, 'updatePassword'])->name('updatePassword');
-Route::get('logout', [AuthController::class, 'logout']);
-Route::post('post-logout', [AuthController::class, 'logout'])->name('logout');
+// Route::get('logout', [AuthController::class, 'logout']);
+Route::get('post-logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('tampil', [AuthController::class, 'tampil'])->name('tampil');
+
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
 

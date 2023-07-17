@@ -7,6 +7,7 @@ use App\Models\Project;
 use GuzzleHttp\Handler\Proxy;
 use Illuminate\Cache\Lock;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -21,7 +22,6 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        
         if ($request->ajax()) {
             $project = Project::where('IspermanentDelete', 0)->get();
             return DataTables::of($project)

@@ -49,9 +49,9 @@
             <!-- end row -->
         </div>
     
-    <form action="{{route('category.store')}}" method="post" id="category">
+    <form action="{{route('category.update', $category->CategoryId)}}" method="post" id="category">
         @csrf
-        @method('POST')
+        @method('PUT')
         <div class="form-elements-wrapper">
             <div class="row">
                 <div class="col-lg-12">
