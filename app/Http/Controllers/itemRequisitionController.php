@@ -101,7 +101,7 @@ class itemRequisitionController extends Controller
     {
         $item = Item::all();
         $location = Location::all();
-        return view('ItemRequisition.create', compact('item', 'location'));
+        return view('ItemRequisition.create2', compact('item', 'location'));
     }
 
     /**

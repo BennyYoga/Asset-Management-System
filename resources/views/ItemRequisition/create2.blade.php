@@ -95,7 +95,7 @@
                     <!-- input style start -->
                     <div class="card-style mb-30">
                         <div class="row mt-3">
-                            <div class="col-lg-6">
+                            <div class="col-lg-12">
                                 <div class="select-style-1">
                                     <label>Select Location</label>
                                     <div class="select-position">
@@ -115,25 +115,6 @@
                                     @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
                                 </div>
                                 <!-- end input -->
-                            </div>
-
-                            <!-- End Col -->
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-4">
-                                <div class="input-style-1">
-                                    <label>Requisition Letter</label>
-                                    <input type="file" class="form-control-file" value="file" id="input-file" accept="image/*" multiple placeholder="Upload Your File" />
-                                </div>
-                                <div>
-                                    <div class="input-style-1">
-                                        <label>Your File</label>
-                                        <div id="preview">
-                                            <p id="announ">
-                                                No File Attached!!
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -182,83 +163,6 @@
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
-        var inputImage = [];
-        $('#input-file').on('change', handleFileUpload);
-
-        function handleFileUpload(event) {
-            var files = event.target.files;
-            var output = $('#preview');
-
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    var previewItem = createPreviewItem(e.target.result);
-                    output.append(previewItem);
-                    inputImage.push(e.target.result);
-                };
-                file = reader.readAsDataURL(file);
-            }
-        }
-
-        function createPreviewItem(src) {
-            var previewItem = $('<div class="preview-item"></div>');
-
-            var image = $('<img class="preview-image">');
-            var text = $(`<span id="title-file"> File Data Absen </span>`);
-            image.attr('src', src);
-            previewItem.append(image);
-            previewItem.append(text);
-
-            var deleteButton = $('<button id="deleted-btn" class="btn btn-danger btn-sm">Hapus</button>');
-            deleteButton.click(function() {
-                var previewItem = $(this).closest('.preview-item');
-                var src = image.attr('src');
-                inputImage = inputImage.filter(e => e != src)
-                previewItem.remove();
-            });
-            previewItem.append(deleteButton);
-
-            return previewItem;
-        }
-
-        $("form").on('submit', function(e) {
-            e.preventDefault();
-            var token = $('input[name=_token]').val();
-            var locationId = $('#LocationId').val();
-            var notes = $('#Notes').val();
-            var item = $('#itemId').val();
-            var url = $(this).attr('data-action');
-            var formData = {
-                locationId: locationId,
-                notes: notes,
-                inputImage: inputImage,
-                item: item
-            };
-
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                error: function(xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.status);
-                },
-                success: function(data) {
-                    alert(data);
-                }
-            });
-        })
-    });
-
     $("#add-item").click(function() {
         var dataObject = $('#itemHidden').val();
         dataObject = JSON.parse(dataObject);
