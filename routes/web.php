@@ -59,13 +59,13 @@ Route::post('location/update/{id}', [LocationController::class, 'update'])->name
 Route::get('location/delete/{id}', [LocationController::class, 'destroy'])->name('location.destroy');
 Route::get('location/activate/{id}', [LocationController::class, 'activate'])->name('location.activate');
 
-Route::get('procurement', [ItemProcurementController::class, 'index'])->name('procurement.index');
-Route::get('procurement/create', [ItemProcurementController::class, 'create'])->name('procurement.create');
-Route::post('procurement/store', [ItemProcurementController::class, 'store'])->name('procurement.store');
-Route::get('procurement/edit/{id}', [ItemProcurementController::class, 'edit'])->name('procurement.edit');
-Route::post('procurement/update/{id}', [ItemProcurementController::class, 'update'])->name('procurement.update');
-Route::get('procurement/delete/{id}', [ItemProcurementController::class, 'destroy'])->name('procurement.destroy');
-Route::get('procurement/activate/{id}', [ItemProcurementController::class, 'activate'])->name('procurement.activate');
+Route::get('/itemprocurement', [ItemProcurementController::class, 'index'])->name('itemproc.index');
+Route::get('/itemprocurement/create', [ItemProcurementController::class, 'create'])->name('itemproc.create');
+Route::post('/itemprocurement/store', [ItemProcurementController::class, 'store'])->name('itemproc.store');
+Route::get('/itemprocurement/edit/{id}', [ItemProcurementController::class, 'edit'])->name('itemproc.edit');
+Route::post('/itemprocurement/update/{id}', [ItemProcurementController::class, 'update'])->name('itemproc.update');
+Route::get('/itemprocurement/delete/{id}', [ItemProcurementController::class, 'destroy'])->name('itemproc.destroy');
+Route::get('/itemprocurement/activate/{id}', [ItemProcurementController::class, 'activate'])->name('itemproc.activate');
 
 
 

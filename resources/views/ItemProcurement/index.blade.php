@@ -41,7 +41,7 @@
                         </nav>
                     </div>
                     <div class="d-flex justify-content-end mb-3">
-                        <a href="{{ route('procurement.create') }}" class="btn btn-primary mr-2">Add</a>
+                        <a href="{{ route('itemproc.create') }}" class="btn btn-primary mr-2">Add</a>
                     </div>
                 </div>
                 <!-- end col -->
@@ -56,7 +56,7 @@
                             <div class="table-wrapper table-responsive">
                                 <div class="title d-flex flex-wrap align-items-center justify-content-between">
                                 </div>
-                                <table class="table" id="procurement">
+                                <table class="table" id="itemproc">
                                     <thead>
                                         <tr class="text-left">
                                             <th>No</th>
@@ -114,7 +114,7 @@
 <script>
     $(document).ready(function () {
         // Menggunakan event click untuk button dengan id hapusBtn
-        $('#procurement').on('click', '#hapusBtn', function (e) {
+        $('#itemproc').on('click', '#hapusBtn', function (e) {
             e.preventDefault();
 
             // Simpan URL hapus pada atribut data-hapus pada tombol hapus
@@ -140,10 +140,10 @@
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
-    var table = $('#procurement').DataTable({
+    var table = $('#itemproc').DataTable({
         processing: true,
         serverSide: true,
-        ajax: "{{ route('procurement.index') }}",
+        ajax: "{{ route('itemproc.index') }}",
         columns: [
             {   
             data: 'No',

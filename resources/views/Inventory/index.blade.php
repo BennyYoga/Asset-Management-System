@@ -51,7 +51,7 @@
                                     <th>Location Name</th>
                                     <th>Item Name</th>
                                     <th>Hour Maintenance</th>
-                                    <th>Quantyty</th>
+                                    <th>Quantity</th>
                                 </tr>
                             </thead>
                         </table>

@@ -100,12 +100,12 @@
                         </div>
                         <!-- end input -->
                         </div>
-                            <div class="card-footer mb">
+                        <div class="row">
+                            <div class="col-lg-12 text-end">
                                 <button type="submit" class="btn btn-primary">Submit</button>
-                                <a href="/location" class="btn btn-outline-danger">
-                                    Back
-                                </a>
+                                <a href="{{route('location.index')}}" class="btn btn-outline-danger">Back</a>
                             </div>
+                        </div>
                     </div>
                     <!-- end card -->
                 </div>

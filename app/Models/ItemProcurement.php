@@ -4,15 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class ItemProcurement extends Model
 {
     use HasFactory;
-    public $timestamps = false;
     protected $table = 'ItemProcurement';
-    protected $primaryKey = 'ItemProcurementId';
-    protected $keyType = 'string';
+    const CREATED_AT = 'CreatedDate';
+    const UPDATED_AT = 'UpdatedDate';
+    public $timestamps = true;
     protected $fillable = [
         'ItemProcurementId',
         'LocationId',
@@ -24,15 +23,16 @@ class ItemProcurement extends Model
         'Active',
         'IsPermanentDelete',
         'CreatedBy',
-        'CreatedDate',
         'UpdatedBy',
-        'UpdatedDate',
     ];
 
-    protected static function boot() {
-        parent::boot();
-        static::creating(function ($model) {
-                $model->{$model->getKeyName()} = (string) Str::uuid();
-        });
+    public function Location()
+    {
+        return $this->hasMany(Location::class);
+    }
+
+    public function Item()
+    {
+        return $this->belongsToMany(Item::class, 'ItemProcurementDetail', 'ItemProcurementId', 'ItemId');
     }
 }

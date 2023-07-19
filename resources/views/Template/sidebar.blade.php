@@ -50,6 +50,7 @@
                     <li>
                         <a href="{{route('item.index')}}" class="mb-1 {{ Request::routeIs('item.*') ? 'active' : '' }}"> Item Data </a>
                         <a href="{{route('itemreq.index')}}" class="mb-1 {{ Request::routeIs('itemreq.*') ? 'active' : '' }}"> Item Requisition </a>
+                        <a href="{{route('itemproc.index')}}" class="mb-1 {{ Request::routeIs('itemproc.*') ? 'active' : '' }}"> Item Procurement </a>
                     </li>
                 </ul>
             </li>
