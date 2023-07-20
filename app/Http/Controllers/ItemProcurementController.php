@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class ItemProcurementController extends Controller
 {
@@ -98,6 +99,8 @@ class ItemProcurementController extends Controller
     {
         $item = Item::all();
         $location = Location::all();
+        session()->pull('temp-file', 'default');
+        session(['temp-file' => []]);
         return view('ItemProcurement.create', compact('item', 'location'));
     }
 
@@ -110,7 +113,8 @@ class ItemProcurementController extends Controller
     public function store(Request $request)
     {
         // $request->all();
-        dd($request->all());
+        // dd($request->all());
+        
         if (($request->itemId == null) || ($request->Qty[0] == null)) {
             if($request->itemId == null){
                 return response()->redirectToRoute('itemproc.create')->with('error', 'Item Cannot be Empty');
@@ -120,6 +124,7 @@ class ItemProcurementController extends Controller
             }
         }
         $Uuid = (string) Str::uuid();
+         //insert ke table ItemProcurement
         $data = [
             'ItemProcurementId' => $Uuid,
             'LocationId' => request('LocationId'),
@@ -135,6 +140,7 @@ class ItemProcurementController extends Controller
         ];
         ItemProcurement::create($data);
 
+        //insert ke table ItemProcurementDetail
         for ($i = 0; $i < count($request->itemId); $i++) {
                 $data = [
                     'ItemProcurementId' => $Uuid,
@@ -144,25 +150,62 @@ class ItemProcurementController extends Controller
                 DB::table('ItemProcurementDetail')->insert($data);
 
 
-            //Menambahkan Ke Inventory
-            $dataitem = Item::where('ItemId', $request->itemId[$i])->first();
-            $inventory = [
-                'LocationId' => $request->LocationId,
-                'ItemId' => $request->itemId[$i],
-                'ItemName' => $dataitem->Name,
-                'HourMaintenance' => 11,
-                'ProjectId' => 1,
-            ];
-            if(DB::table('Inventory')->where([['LocationId', $request->LocationId], ['ItemId', $request->itemId[$i]]])->exists()){
-                DB::table('Inventory')->where([['LocationId', $request->LocationId], ['ItemId', $request->itemId[$i]]])->increment('ItemQty', $request->Qty[$i]);
-            }
-            else{
-                $inventory['ItemQty'] = $request->Qty[$i];
-                DB::table('Inventory')->insert($inventory);
-            }
+            //Insert Ke table Inventory
+            // $dataitem = Item::where('ItemId', $request->itemId[$i])->first();
+            // $inventory = [
+            //     'LocationId' => $request->LocationId,
+            //     'ItemId' => $request->itemId[$i],
+            //     'ItemName' => $dataitem->Name,
+            //     'HourMaintenance' => 11,
+            //     'ProjectId' => 1,
+            // ];
+            // if(DB::table('Inventory')->where([['LocationId', $request->LocationId], ['ItemId', $request->itemId[$i]]])->exists()){
+            //     DB::table('Inventory')->where([['LocationId', $request->LocationId], ['ItemId', $request->itemId[$i]]])->increment('ItemQty', $request->Qty[$i]);
+            // }
+            // else{
+            //     $inventory['ItemQty'] = $request->Qty[$i];
+            //     DB::table('Inventory')->insert($inventory);
+            // }
         }
+
+        //insert ke table ItemProcurementUpload
+        $file = session('temp-file');
+        dd($file);
+        $location = Location::where('LocationId', request('LocationId'))->first();
+        foreach ($file as $file) {
+            $filepath = ('images/procurement/' . $location->Name . '/' . $file);
+            $folderPath = public_path('images/procurement/' . $location->Name);
+            if (!File::isDirectory($folderPath)) {
+                File::makeDirectory($folderPath, $mode = 0777, true, true);
+            }
+
+            $dataFile = [
+                'ProcurementUploadId' => (string) Str::uuid(),
+                'ItemProcurementId' => $Uuid,
+                'FilePath' => $filepath,
+                'UploadedBy' => "Rezky",
+            ];
+
+            DB::table('ItemProcurementUpload')->insert($dataFile);
+            File::move((public_path().'images/temp/' . $file), ($folderPath . '/' . $file));
+        }
+
         return redirect()->route('itemproc.index')->with('success', 'Item Procurement has been created');
     }
+
+    public function upload(Request $request)
+    {
+        // Validasi data yang diterima dari Dropzone
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filePath = $file->store('temp');
+    
+            return response()->json(['filePath' => $filePath]);
+        }
+    
+        return response()->json(['error' => 'File not found.'], 422);
+    }
+
 
     /**
      * Display the specified resource.
@@ -220,5 +263,22 @@ class ItemProcurementController extends Controller
             ItemProcurement::where('ItemProcurementId', $ItemProcurementId)->update(['Active' => 1]);
         }
         return redirect()->route('itemproc.index')->with('success', 'Status has been updated');
+    }
+
+    public function dropzoneStore(Request $request){
+        $image = $request->file('file');
+        session()->push('temp-file', $image->getClientOriginalName());
+        $image->move(public_path('images/temp'), $image->getClientOriginalName());
+
+        return response()->json(['success'=>$image->getClientOriginalName()]);
+    }
+
+    public function dropzoneDestroy(Request $request){
+        $filename = $request->get('filename');
+        $path = public_path().'/images/temp/'.$filename;
+        if (file_exists($path)) {
+            unlink($path);
+        }
+        return $filename;
     }
 }

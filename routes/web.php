@@ -62,6 +62,8 @@ Route::get('location/activate/{id}', [LocationController::class, 'activate'])->n
 Route::get('/itemprocurement', [ItemProcurementController::class, 'index'])->name('itemproc.index');
 Route::get('/itemprocurement/create', [ItemProcurementController::class, 'create'])->name('itemproc.create');
 Route::post('/itemprocurement/store', [ItemProcurementController::class, 'store'])->name('itemproc.store');
+Route::post('/itemprocurement/dropzone/store', [ItemProcurementController::class, 'dropzoneStore'])->name('itemproc.dropzoneStore');
+Route::post('/itemprocurement/dropzone/delete', [ItemProcurementController::class, 'dropzoneDestroy'])->name('itemproc.dropzoneDestroy');
 Route::get('/itemprocurement/edit/{id}', [ItemProcurementController::class, 'edit'])->name('itemproc.edit');
 Route::post('/itemprocurement/update/{id}', [ItemProcurementController::class, 'update'])->name('itemproc.update');
 Route::get('/itemprocurement/delete/{id}', [ItemProcurementController::class, 'destroy'])->name('itemproc.destroy');
