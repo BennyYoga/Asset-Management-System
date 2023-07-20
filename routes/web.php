@@ -38,6 +38,13 @@ Route::get('/itemrequisition/create', [itemRequisitionController::class, 'create
 Route::post('/itemrequisition/store', [itemRequisitionController::class, 'store'])->name('itemreq.store');
 Route::get('/itemrequisition/delete/{id}', [itemRequisitionController::class, 'destroy'])->name('itemreq.delete');
 Route::get('/itemrequisition/activate/{id}', [itemRequisitionController::class, 'activate'])->name('itemreq.activate');
+Route::get('/itemrequisition/edit/{id}', [itemRequisitionController::class, 'edit'])->name('itemreq.edit');
+Route::post('/itemrequisition/update/{id}', [itemRequisitionController::class, 'update'])->name('itemreq.update');
+
+Route::get('dropzone/example',[itemRequisitionController::class, 'dropzoneExamaple']);
+Route::post('dropzone/store', [itemRequisitionController::class, 'dropzoneStore'])->name('dropzone.store');
+Route::post('dropzone/delete', [itemRequisitionController::class, 'dropzoneDestroy'])->name('dropzone.delete');
+Route::get('dropzone/get/{id}', [itemRequisitionController::class, 'dropzoneGet'])->name('dropzone.get');
 
 
 Route::get('/inventory', [inventoryController::class, 'index'])->name('inventory.index');
