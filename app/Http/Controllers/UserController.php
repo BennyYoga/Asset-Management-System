@@ -52,7 +52,7 @@ class UserController extends Controller
 
         $data = $request->all();    
         $data['UserId'] = (string) Str::uuid();
-        $data['RoleId'] = 2;
+        $data['RoleId'] = 4;
         $data['Active'] = 1;
         $data['IsPermanentDelete'] = 0;
         // $user = UserModel::where('Username', $credentials['Username'])->first();

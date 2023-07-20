@@ -36,6 +36,8 @@ class AuthController extends Controller
             return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai'. $RoleName);
             }elseif($RoleName =='AdminLocal'){
                 return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName. ' di Lokasi: '. $Location);
+            }else {
+                return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName. ' di Lokasi: '. $Location);
             }
         }
         else{

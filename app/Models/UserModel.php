@@ -45,8 +45,25 @@ class UserModel extends Authenticatable
         ->where('Role.RoleId', $this->RoleId)
         ->value('Location.Name');
     return $locationName;
-    
     }
 
+
+    public function hasMenu($menu)
+    {
+        return $this->fk_role()->whereHas('Role', function($query) use ($menu){
+            $query->where('MenuName', $menu);
+        })->exists();
+    }
+
+
+    public function RoleMenu($roles){
+        $checkrolemenu = Role::join('RoleMenu', 'Role.RoleId', '=', 'RoleMenu.RoleId')
+        ->join('Menu', 'RoleMenu.MenuId', '=', 'Menu.MenuId')
+        ->where('Role.RoleId', $this->RoleId)
+        ->whereIn('Menu.MenuName', $roles)
+        ->first();
+    
+    return $checkrolemenu;
+    }
 
 }
