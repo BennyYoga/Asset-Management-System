@@ -236,21 +236,20 @@
                 inputImage: inputImage,
                 item: item
             };
-
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+
+            console.log(formData);
+
             $.ajax({
-                url: url,
-                type: 'POST',
+                type: "POST",
+                url: $(this).attr('data-action'),
                 data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
+                dataType: "json",
                 error: function(xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.status);
                 },
                 success: function(data) {
                     alert(data);

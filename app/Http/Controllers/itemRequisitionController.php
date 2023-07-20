@@ -9,9 +9,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-
-
-
+use Illuminate\Support\Facades\File;
 
 class itemRequisitionController extends Controller
 {
@@ -76,11 +74,11 @@ class itemRequisitionController extends Controller
                     }
                 })
                 ->addColumn('Action', function ($row) {
+                    $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" title="Deactivate Requisition" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
                     if ($row->Active == 1) {
-                        $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" title="Deactivate Requisition" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn .= '<a href=' . route('itemreq.edit', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                         return $btn;
                     } else if ($row->Active == 0) {
-                        $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" title="Activate Requisition" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
                         $btn .= '<a href=' . route('itemreq.delete', $row->ItemRequisitionId) . ' style="font-size:20px" title="Deleted Requisition" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
                         return $btn;
                     }
@@ -101,7 +99,9 @@ class itemRequisitionController extends Controller
     {
         $item = Item::all();
         $location = Location::all();
-        return view('ItemRequisition.create2', compact('item', 'location'));
+        session()->pull('temp-file', 'default');
+        session(['temp-file' => []]);
+        return view('ItemRequisition.create3', compact('item', 'location'));
     }
 
     /**
@@ -112,19 +112,20 @@ class itemRequisitionController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request);
         if (($request->itemId == null) || ($request->Qty[0] == null)) {
-            if($request->itemId == null){
+            if ($request->itemId == null) {
                 return response()->redirectToRoute('itemreq.create')->with('error', 'Item Cannot be Empty');
-            }
-            else if($request->Qty[0] == null){
+            } else if ($request->Qty[0] == null) {
                 return response()->redirectToRoute('itemreq.create')->with('error', 'Qty Cannot be Empty');
             }
         }
+
+        //Insert to Requisition
         $Uuid = (string) Str::uuid();
         $data = [
             'ItemRequisitionId' => $Uuid,
             'LocationId' => request('LocationId'),
+            'ProjectId' => "asdasdwasd",
             'No' => 1,
             'Tanggal' => date('Y-m-d H:i:s', time()),
             'Notes' => request('Notes'),
@@ -135,6 +136,7 @@ class itemRequisitionController extends Controller
         ];
         ItemRequisition::create($data);
 
+        //Insert to Detail
         for ($i = 0; $i < count($request->itemId); $i++) {
             $data = [
                 'ItemRequisitionId' => $Uuid,
@@ -142,24 +144,28 @@ class itemRequisitionController extends Controller
                 'ItemQty' => $request->Qty[$i],
             ];
             DB::table('ItemRequisitionDetail')->insert($data);
+        }
 
+        //Upload File
+        $file = session('temp-file');
+        $location = Location::where('LocationId', $request->LocationId)->first();
+        foreach ($file as $file) {
+            $filepath = ('images/requisition/'.$location->Name.'/'.$file);
+            $folderPath = public_path('images/requisition/'.$location->Name);
+            if (!File::isDirectory($folderPath)) {
+                File::makeDirectory($folderPath, $mode = 0777, true, true);
+            }
 
-            //Menambahkan Ke Inventory
-            $dataitem = Item::where('ItemId', $request->itemId[$i])->first();
-            $inventory = [
-                'LocationId' => $request->LocationId,
-                'ItemId' => $request->itemId[$i],
-                'ItemName' => $dataitem->Name,
-                'HourMaintenance' => 11,
+            $dataFile = [
+                "RequisitionUploadId" => (string) Str::uuid(),
+                "ItemRequisitionId" => $Uuid,
+                "FilePath" => $filepath,
+                "UploadedBy" => "Benny",
+                "UploadedDate" => date('Y-m-d H:i:s', time()),
             ];
-            if(DB::table('Inventory')->where([['LocationId', $request->LocationId], ['ItemId', $request->itemId[$i]]])->exists()){
-                DB::table('Inventory')->where([['LocationId', $request->LocationId], ['ItemId', $request->itemId[$i]]])->increment('ItemQty', $request->Qty[$i]);
-            }
-            else{
-                $inventory['ItemQty'] = $request->Qty[$i];
-                DB::table('Inventory')->insert($inventory);
-            }
 
+            DB::table('ItemRequisitionUpload')->insert($dataFile);
+            File::move((public_path() . '/images/temp/' . $file), ($folderPath."/".$file));
         }
 
         return response()->redirectToRoute('itemreq.index')->with('success', 'Item Requisition has been created');
@@ -185,6 +191,22 @@ class itemRequisitionController extends Controller
     public function edit($id)
     {
         //
+        $item = Item::all();
+        $location = Location::all();
+        $itemreq = ItemRequisition::where('ItemRequisitionId', $id)->first();
+        $detailreq = DB::table('ItemRequisitionDetail')->where('ItemRequisitionId', $id)->get();
+        $uploaditem = DB::table('ItemRequisitionUpload')->where('ItemRequisitionId', $id)->get();
+        session()->pull('temp-file', 'default');
+        session(['temp-file' => []]);
+        $data = [
+            'item' => $item,
+            'location' => $location,
+            'itemreq' => $itemreq,
+            'detailreq' => $detailreq,
+            'uploaditem' => $uploaditem
+        ];
+
+        return view('ItemRequisition.edit', compact('data'));
     }
 
     /**
@@ -221,5 +243,36 @@ class itemRequisitionController extends Controller
             ItemRequisition::where('ItemRequisitionId', $id)->update(['Active' => 1]);
         }
         return redirect()->route('itemreq.index')->with('success', 'Status has been updated');
+    }
+
+    public function dropzoneExample()
+    {
+        return view('ItemRequisition.create2');
+    }
+
+    public function dropzoneStore(Request $request)
+    {
+        $image = $request->file('file');
+        session()->push('temp-file', $image->getClientOriginalName());
+        // $imageName = time().'.'.$image->extension();
+        $image->move(public_path('images/temp/'), $image->getClientOriginalName());
+
+        return response()->json(['success' => $image->getClientOriginalName()]);
+    }
+
+    public function dropzoneGet($id)
+    {
+        $data = DB::table('ItemRequisitionUpload')->where('ItemRequisitionId', $id)->get();
+        return response()->json(['success' => pathinfo($data[0]->FilePath)]);
+    }
+
+    public function dropzoneDestroy(Request $request)
+    {
+        $filename = $request->filename;
+        $path = public_path() . '/images/temp/' . $filename;
+        if (file_exists($path)) {
+            unlink($path);
+        }
+        return $filename;
     }
 }
