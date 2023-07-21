@@ -137,7 +137,6 @@ class CategoryController extends Controller
         );
         $data =[
             'Name' => $request->Name,
-            // 'Active' => $request->Active,
             'ParentId' => $request->ParentId,
         ];
 

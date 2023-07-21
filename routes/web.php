@@ -9,6 +9,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RoleController;
 use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +64,14 @@ Route::get('project/delete/{id}', [ProjectController::class, 'destroy'])->name('
 Route::get('project/activate/{id}', [ProjectController::class, 'activate'])->name('project.activate');
 
 
+Route::get('role', [RoleController::class, 'index'])->name('role.index');
+Route::get('role/create', [RoleController::class, 'createRoleLocation'])->name('role.create');
+Route::post('role/store', [RoleController::class, 'storeRoleLocation'])->name('roleLocation.store');
+Route::get('role/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
+Route::put('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
+Route::get('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
+
+
 
 Route::get('/login', function () {
     return view('Login/login');
@@ -81,6 +90,6 @@ Route::get('login', [AuthController::class, 'index'])->name('login');
 // Route::get('logout', [AuthController::class, 'logout']);
 Route::get('post-logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('tampil', [AuthController::class, 'tampil'])->name('tampil');
-
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
+Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');
 

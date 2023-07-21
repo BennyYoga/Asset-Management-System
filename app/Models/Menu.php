@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Menu extends Model
 {
     use HasFactory;
-    protected $table = ['Menu'];
+    protected $table = 'Menu';
     public $timestamps = false;
 
     public function role()

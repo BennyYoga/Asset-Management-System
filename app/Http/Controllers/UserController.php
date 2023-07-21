@@ -38,7 +38,9 @@ class UserController extends Controller
     }
     public function create()
     {
-        return view('User.create');
+        $role = Role::where('RoleId', session('user')->RoleId)->first(); 
+        $location = Role::where('LocationId', $role->LocationId)->where('RoleName', '!=', 'Admin Local')->get();       
+        return view('User.create', compact('location'));
     }
 
     public function store(Request $request)
@@ -47,19 +49,19 @@ class UserController extends Controller
             'Username' => 'required',
             'Fullname' => 'required',
             'Password' => 'required',
-            'Confirm' => 'required|same:Password', // Menambahkan validasi untuk konfirmasi password yang sesuai
         ]);
 
         $data = $request->all();    
-        $data['UserId'] = (string) Str::uuid();
-        $data['RoleId'] = 4;
-        $data['Active'] = 1;
-        $data['IsPermanentDelete'] = 0;
-        // $user = UserModel::where('Username', $credentials['Username'])->first();
-        // $user = session('user'); // Mendapatkan informasi pengguna dari sesi
-        // $user = UserModel::where('UserId', $user->UserId)->first();
-        $data['CreatedBy'] = 'p';
-        $data['Password'] = Hash::make($request->Password);
+        $data = [
+            'UserId' => (string) Str::uuid(),
+            'RoleId' => request('RoleId'),
+            'Fullname' => request('Fullname'),
+            'Active' => 1, 
+            'IsPermanentDelete' => 0, 
+            'CreatedBy' => session('user')->Fullname,
+            'Username' => request('Username'),
+            'Password' => Hash::make($request->Password),
+        ];
         $checkusername = UserModel::where('Username', $data['Username'])->first();
         if($checkusername)
         {
@@ -68,7 +70,6 @@ class UserController extends Controller
         }else{
         // dd($data['Password']);
         UserModel::create($data);
-
         return redirect()->route('dashboard.index')->with('success', 'Data berhasil ditambahkan');
         }
     }
