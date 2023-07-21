@@ -44,7 +44,7 @@ Route::post('/itemrequisition/update/{id}', [itemRequisitionController::class, '
 Route::get('dropzone/example',[itemRequisitionController::class, 'dropzoneExamaple']);
 Route::post('dropzone/store', [itemRequisitionController::class, 'dropzoneStore'])->name('dropzone.store');
 Route::post('dropzone/delete', [itemRequisitionController::class, 'dropzoneDestroy'])->name('dropzone.delete');
-Route::get('dropzone/get/{id}', [itemRequisitionController::class, 'dropzoneGet'])->name('dropzone.get');
+Route::get  ('dropzone/get/{id}', [itemRequisitionController::class, 'dropzoneGet'])->name('dropzone.get');
 
 
 Route::get('/inventory', [inventoryController::class, 'index'])->name('inventory.index');
