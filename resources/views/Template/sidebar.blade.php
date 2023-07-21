@@ -29,10 +29,6 @@
             </li>
             <li class="nav-item {{ Request::routeIs('inventory.index') ? 'active' : '' }}">
                 <a href="{{route('inventory.index')}}">
-        </ul>
-        <ul>
-            <li class="nav-item {{ Request::routeIs('item.index') ? 'active' : '' }}">
-                <a href="{{route('item.index')}}">
                     <span class="icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="22" viewBox="0 0 22 22" fill="none">
                             <path d="M12,18.54L19.37,12.8L21,14.07L12,21.07L3,14.07L4.62,12.81L12,18.54M12,16L3,9L12,2L21,9L12,16M12,4.53L6.26,9L12,13.47L17.74,9L12,4.53Z" />
@@ -40,6 +36,10 @@
                     </span>
                     <span class="text">Inventory</span>
                 </a>
+            </li>
+        </ul>
+        <ul>
+            <li class="nav-item {{ Request::routeIs('item.index') ? 'active' : '' }}">
             </li>
             <li class="nav-item nav-item-has-children {{Request::routeIs('item.*') ? 'active' : '' }}">
                 <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_1" aria-controls="ddmenu_1" aria-expanded="false" aria-label="Toggle navigation">
