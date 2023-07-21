@@ -41,4 +41,9 @@ class Location extends Model
         return $this->hasMany(ItemRequisition::class);
     }
 
+    public function ItemProcurement()
+    {
+        return $this->hasMany(ItemProcurement::class);
+    }
+
 }

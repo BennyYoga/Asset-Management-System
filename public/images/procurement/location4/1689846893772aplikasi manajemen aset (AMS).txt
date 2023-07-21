@@ -1,0 +1,7 @@
+aplikasi manajemen aset (AMS)
+
+seperti kabarnikah sudah ada kliennya, nanti setiap klien punya aplikasi berbeda dari hasil duplikasi
+
+gambaran umum
+ada 6 modul utama : 
+procurement (pengadaan), requisition, oprational, maintenance, transfer, disposing 

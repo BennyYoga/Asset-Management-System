@@ -29,7 +29,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-6">
                                 <div class="title mb-30">
-                                    <h2>Dashboard Trash Monitoring System</h2>
+                                    <h2>Dashboard Assets Management System</h2>
                                 </div>
                             </div>
                             <!-- end col -->
@@ -41,7 +41,7 @@
                                                 <a href="https://demo.plainadmin.com/index.html#0">Dashboard</a>
                                             </li>
                                             <li class="breadcrumb-item active" aria-current="page">
-                                                eCommerce
+                                                Page
                                             </li>
                                         </ol>
                                     </nav>

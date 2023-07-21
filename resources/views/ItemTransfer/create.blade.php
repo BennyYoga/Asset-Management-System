@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Asset Monitoring System | Create Item')
+@section('title','Assets Management System | Add Item Transfer')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -8,8 +8,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
 <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css">
-<meta name="csrf-token" content="{{ csrf_token() }}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" type="text/css" />
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
     #image-upload {
         border-radius: 5px;
@@ -32,7 +32,7 @@
                     </div>
                     @endif --}}
                     <div class="title mb-30">
-                        <h2>Add Data Item</h2>
+                        <h2>Add Item Transfer</h2>
                     </div>
                 </div>
                 <!-- end col -->
@@ -41,7 +41,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="item.index">Item</a>
+                                    <a href="procurement.index">Item Transfer</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Create
@@ -54,7 +54,7 @@
             </div>
             <!-- end row -->
         </div>
-        <form action="{{ route('itemreq.store') }}" id="ItemReqForm" method="post">
+        <form action="{{ route('itemtransfer.store') }}" id="ItemTransForm" method="post">
             @csrf
         </form>
         <div class="form-elements-wrapper">
@@ -69,10 +69,10 @@
                                     <div class="select-style-1">
                                         <label>Select Location</label>
                                         <div class="select-position">
-                                            <select name="LocationId" id="LocationId" form="ItemReqForm" required>
+                                            <select name="LocationId" id="LocationId" form="ItemTransForm" required>
                                                 <option value="" disabled selected>Choose location</option>
-                                                @foreach ($location as $loc)
-                                                <option value="{{ $loc->LocationId }}">{{$loc->Name}}</option>
+                                                @foreach ($location as $location)
+                                                <option value="{{ $location->LocationId }}">{{$location->Name}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -81,7 +81,7 @@
                                 <div class="col-lg-6">
                                     <div class="input-style-1">
                                         <label>Date</label>
-                                        <input type="date" id="Tanggal" name="Tanggal" form="ItemReqForm">
+                                        <input type="date" id="Tanggal" name="Tanggal" form="ItemTransForm">
                                     </div>
                                 </div>
                             </div>
@@ -90,44 +90,54 @@
                             <div class="input-style-1">
                                 <label>Notes</label>
                                 <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes"
-                                    form="ItemReqForm"></textarea>
+                                    form="ItemTransForm"></textarea>
                                 @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
                             </div>
                             <!-- end input -->
                             <div class="input-style-1">
                                 <label>Upload Your File</label>
-                                <form action="{{route('dropzone.store')}}" method="post" name="file" files="true"
-                                    enctype="multipart/form-data" class="dropzone" id="image-upload">
+                                <form action="{{ route('itemtransfer.dropzoneStore') }}" method="post" name="file"
+                                    files="true" enctype="multipart/form-data" class="dropzone" id="image-upload">
                                     @csrf
                                 </form>
                             </div>
                         </div>
-                        <!-- End Col -->
-                        <div id="item-container">
-                            <div class="row item">
+                        <!-- end col -->
+                        {{--
+                    </div> --}}
 
-                            </div>
-                        </div>
-                        <!-- End Row -->
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12 text-end">
-                                <input type="submit" class="btn btn-primary" form="ItemReqForm" />
-                                <a href="{{route('itemreq.index')}}" class="btn btn-outline-danger">Back</a>
-                            </div>
+                    <div id="item-container">
+                        <div class="row item">
+
                         </div>
                     </div>
-                    <!-- end card -->
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
+                        </div>
+                    </div>
+                    <!-- end input -->
+                    {{-- <h6 class="mb-25">Procurement Detail</h6>
+                    <div class="row">
+                        <div class="input-style-1 col-lg-12">
+                            <label>Item</label>
+                            <div>
+                                <textarea placeholder="Notes" name="Notes" cols="30" rows="5"></textarea>
+                            </div>
+                        </div>
+                    </div> --}}
+                    <div class="row">
+                        <div class="col-lg-12 text-end">
+                            <input type="submit" class="btn btn-primary" form="ItemTransForm"></input>
+                            <a href="{{route('itemtransfer.index')}}" class="btn btn-outline-danger">Back</a>
+                        </div>
+                    </div>
                 </div>
-                <!-- end col -->
             </div>
-            <!-- end row -->
         </div>
-        <!-- end wrapper -->
+    </div>
+    </div>
 </section>
 @endsection
 
@@ -135,7 +145,7 @@
 @include('sweetalert::alert')
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/min/dropzone.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
@@ -149,33 +159,31 @@
             var time = dt.getTime();
             return time + file.name;
         },
-        acceptedFiles: ".jpeg,.jpg,.png,.gif,.pdf,.zip",
+        acceptedFiles: ".jpeg,.jpg,.png,.gif,.pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.txt,.zip,.rar",
         addRemoveLinks: true,
         timeout: 50000,
         removedfile: function(file) {
             var name = file.name;
             console.log(file.name);
             $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                }),
-                $.ajax({
-                    type: 'POST',
-                    url: '{{url("dropzone/delete")}}',
-                    data: {
-                        filename: name
-                    },
-                    success: function(data) {
-                        console.log("File has been successfully removed!!");
-                    },
-                    error: function(xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
-                    },
-                });
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            }),
+            $.ajax({
+                type: 'POST',
+                url: '{{ url("/itemtransfer/dropzone/delete") }}',
+                data: {filename: name},
+                success: function (data){
+                    console.log("File has been successfully removed!!");
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                },
+            });
             var fileRef;
             return (fileRef = file.previewElement) != null ?
-                fileRef.parentNode.removeChild(file.previewElement) : void 0;
+            fileRef.parentNode.removeChild(file.previewElement) : void 0;
         },
     };
 
@@ -190,7 +198,7 @@
                 <div class="select-style-1 col-lg-12">
                     <label>Choose Name Item</label>
                     <div class="select-position">
-                        <select name="itemId[]" id="itemId" form="ItemReqForm" required>
+                        <select name="itemId[]" id="itemId" form="ItemTransForm" required>
                             <option value="" disabled selected>Choose Item</option>
                             ${dataObject.map(dataObject => `<option value="${dataObject.ItemId}">${dataObject.Name}</option>`).join("")}
                         </select>
@@ -201,7 +209,7 @@
             <div class="col-lg-3">
                 <div class="input-style-1">
                     <label>Quantity</label>
-                    <input type="number" placeholder="Quantity of Item" name="Qty[]" min="1" required form="ItemReqForm"/>
+                    <input type="number" placeholder="Quantity of Item" name="Qty[]" min="1" form="ItemTransForm" required/>
                     @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
                 </div>
                 <!-- end input -->

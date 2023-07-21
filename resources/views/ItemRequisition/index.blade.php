@@ -83,13 +83,32 @@
             processing: true,
             serverSide: true,
             ajax: "",
-            columns: [{
+            columns: [
+                {
                     data: 'No',
-                    name: 'No',
+                    render: function (data, type, row, meta) {
+                    // Menghitung nomor urut berdasarkan halaman dan jumlah baris yang ditampilkan
+                    var startIndex = meta.settings._iDisplayStart;
+                    var index = meta.row + startIndex + 1;
+
+                    return index;
+                },
+                orderable: false,
+                searchable: false
                 },
                 {
                     data: 'Tanggal',
                     name: 'Tanggal',
+                    render: function (data, type, row) {
+                        // Mengubah tampilan tanggal dari 'Y-m-d H:i:s' menjadi 'Y-m-d' (hanya tanggal)
+                        var date = new Date(data);
+                        var formattedDate = date.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                        return formattedDate;
+                    }
                 },
                 {
                     data: 'Lokasi',
@@ -110,13 +129,10 @@
                 {
                     data: 'Action',
                     name: 'Action',
+                    orderable: false,
+                    searchable: false,
                 }
             ],
-            order: [
-                [
-                    1, 'asc'
-                ]
-            ]
         });
     });
 </script>

@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Assets Management System | Create Location')
+@section('title','Assets Management System | Add Location')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -65,8 +65,8 @@
                         <div class="select-style-1 col-lg-6">
                             <label>Have Procurement Process</label>
                             <div class="select-position">
-                                <select name="HaveProcurementProcess" required>
-                                  <option value="" disabled selected>Choose contidion</option>
+                                <select class="light-bg" name="HaveProcurementProcess" required>
+                                  <option value="" disabled selected>Select contidion</option>
                                   <option value="1" >Yes</option>
                                   <option value="0" >No</option>
                                 </select>
@@ -78,8 +78,8 @@
                         <div class="select-style-1 col-lg-6">
                             <label>Status</label>
                             <div class="select-position">
-                                <select name="Active" required>
-                                  <option value="" disabled selected>Choose status</option>
+                                <select class="light-bg" name="Active" required>
+                                  <option value="" disabled selected>Select status</option>
                                   <option value="1" >Active</option>
                                   <option value="0" >Non-Active</option>
                                 </select>
@@ -87,11 +87,11 @@
                         </div>
                         <!-- end input -->
                         <div class="select-style-1 col-lg-6">
-                            <label>Choose Headquarter</label>
+                            <label>Select Parent</label>
                             <div class="select-position">
-                                <select name="ParentId" id="ParentId" required>
-                                  <option value="" disabled selected>Choose location</option>
-                                  <option value="">None</option>
+                                <select class="light-bg" name="ParentId" id="ParentId" required>
+                                  <option value="" disabled selected>Select location</option>
+                                  <option value="">Root</option>
                                   @foreach ($location as $loc)
                                   <option value="{{ $loc->LocationId }}" >{{$loc->Name}}</option>
                                   @endforeach
@@ -100,12 +100,12 @@
                         </div>
                         <!-- end input -->
                         </div>
-                            <div class="card-footer mb">
+                        <div class="row">
+                            <div class="col-lg-12 text-end">
                                 <button type="submit" class="btn btn-primary">Submit</button>
-                                <a href="/location" class="btn btn-light">
-                                    Back
-                                </a>
+                                <a href="{{route('location.index')}}" class="btn btn-outline-danger">Back</a>
                             </div>
+                        </div>
                     </div>
                     <!-- end card -->
                 </div>

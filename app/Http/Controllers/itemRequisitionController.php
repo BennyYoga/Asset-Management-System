@@ -21,7 +21,9 @@ class itemRequisitionController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $req  = ItemRequisition::where('IsPermanentDelete', 0)->get();
+            $req  = ItemRequisition::where('IsPermanentDelete', 0)
+            ->orderBy('No', 'desc')
+            ->get();
             return DataTables::of($req)
                 ->addColumn('JumlahBarang', function ($row) {
                     $data = count(DB::table('ItemRequisitionDetail')->where('ItemRequisitionId', $row->ItemRequisitionId)->get());
@@ -165,7 +167,7 @@ class itemRequisitionController extends Controller
             ];
 
             DB::table('ItemRequisitionUpload')->insert($dataFile);
-            File::move((public_path() . '/images/temp/' . $file), ($folderPath."/".$file));
+            File::move(public_path('/images/temp/'.$file), public_path($filepath));
         }
 
         return response()->redirectToRoute('itemreq.index')->with('success', 'Item Requisition has been created');

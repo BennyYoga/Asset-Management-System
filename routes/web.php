@@ -7,6 +7,10 @@ use App\Http\Controllers\inventoryController;
 use App\Http\Controllers\itemController;
 use App\Http\Controllers\itemRequisitionController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\ItemProcurementController;
+use App\Http\Controllers\ItemTransferController;
+use App\Http\Controllers\ItemUseController;
+use App\Http\Controllers\ItemDisposingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -63,6 +67,41 @@ Route::post('location/store', [LocationController::class, 'store'])->name('locat
 Route::get('location/edit/{id}', [LocationController::class, 'edit'])->name('location.edit');
 Route::post('location/update/{id}', [LocationController::class, 'update'])->name('location.update');
 Route::get('location/delete/{id}', [LocationController::class, 'destroy'])->name('location.destroy');
+Route::get('location/activate/{id}', [LocationController::class, 'activate'])->name('location.activate');
 
+Route::get('/itemprocurement', [ItemProcurementController::class, 'index'])->name('itemproc.index');
+Route::get('/itemprocurement/create', [ItemProcurementController::class, 'create'])->name('itemproc.create');
+Route::post('/itemprocurement/store', [ItemProcurementController::class, 'store'])->name('itemproc.store');
+Route::post('/itemprocurement/dropzone/store', [ItemProcurementController::class, 'dropzoneStore'])->name('itemproc.dropzoneStore');
+Route::post('/itemprocurement/dropzone/delete', [ItemProcurementController::class, 'dropzoneDestroy'])->name('itemproc.dropzoneDestroy');
+Route::get('/itemprocurement/edit/{id}', [ItemProcurementController::class, 'edit'])->name('itemproc.edit');
+Route::post('/itemprocurement/update/{id}', [ItemProcurementController::class, 'update'])->name('itemproc.update');
+Route::get('/itemprocurement/delete/{id}', [ItemProcurementController::class, 'destroy'])->name('itemproc.destroy');
+Route::get('/itemprocurement/activate/{id}', [ItemProcurementController::class, 'activate'])->name('itemproc.activate');
 
+Route::get('/itemtransfer', [ItemTransferController::class, 'index'])->name('itemtransfer.index');
+Route::get('/itemtransfer/create', [ItemTransferController::class, 'create'])->name('itemtransfer.create');
+Route::post('/itemtransfer/store', [ItemTransferController::class, 'store'])->name('itemtransfer.store');
+Route::post('/itemtransfer/dropzone/store', [ItemTransferController::class, 'dropzoneStore'])->name('itemtransfer.dropzoneStore');
+Route::post('/itemtransfer/dropzone/delete', [ItemTransferController::class, 'dropzoneDestroy'])->name('itemtransfer.dropzoneDestroy');
+Route::get('/itemtransfer/edit/{id}', [ItemTransferController::class, 'edit'])->name('itemtransfer.edit');
+Route::post('/itemtransfer/update/{id}', [ItemTransferController::class, 'update'])->name('itemtransfer.update');
+Route::get('/itemtransfer/delete/{id}', [ItemTransferController::class, 'destroy'])->name('itemtransfer.destroy');
+Route::get('/itemtransfer/activate/{id}', [ItemTransferController::class, 'activate'])->name('itemtransfer.activate');
+
+Route::get('/itemuse', [ItemUseController::class, 'index'])->name('itemuse.index');
+Route::get('/itemuse/create', [ItemUseController::class, 'create'])->name('itemuse.create');
+Route::post('/itemuse/store', [ItemUseController::class, 'store'])->name('itemuse.store');
+Route::get('/itemuse/edit/{id}', [ItemUseController::class, 'edit'])->name('itemuse.edit');
+Route::post('/itemuse/update/{id}', [ItemUseController::class, 'update'])->name('itemuse.update');
+Route::get('/itemuse/delete/{id}', [ItemUseController::class, 'destroy'])->name('itemuse.destroy');
+Route::get('/itemuse/activate/{id}', [ItemUseController::class, 'activate'])->name('itemuse.activate');
+
+Route::get('/itemdis', [ItemDisposingController::class, 'index'])->name('itemdis.index');
+Route::get('/itemdis/create', [ItemDisposingController::class, 'create'])->name('itemdis.create');
+Route::post('/itemdis/store', [ItemDisposingController::class, 'store'])->name('itemdis.store');
+Route::get('/itemdis/edit/{id}', [ItemDisposingController::class, 'edit'])->name('itemdis.edit');
+Route::post('/itemdis/update/{id}', [ItemDisposingController::class, 'update'])->name('itemdis.update');
+Route::get('/itemdis/delete/{id}', [ItemDisposingController::class, 'destroy'])->name('itemdis.destroy');
+Route::get('/itemdis/activate/{id}', [ItemDisposingController::class, 'activate'])->name('itemdis.activate');
 
