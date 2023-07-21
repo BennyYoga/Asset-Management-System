@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Assets Management System | Item Procurement')
+@section('title','Assets Management System | Item Disposing')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -23,7 +23,7 @@
                     </div>
                     @endif --}}
                     <div class="title mb-30">
-                        <h2>Item Procurement</h2>
+                        <h2>Item Disposing</h2>
                     </div>
                 </div>
                 <!-- end col -->
@@ -32,7 +32,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="#">Item Procurement</a>
+                                    <a href="#">Item Disposing</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Page
@@ -41,7 +41,7 @@
                         </nav>
                     </div>
                     <div class="d-flex justify-content-end mb-3">
-                        <a href="{{ route('itemproc.create') }}" class="btn btn-primary mr-2">Add</a>
+                        <a href="{{ route('itemdis.create') }}" class="btn btn-primary mr-2">Add</a>
                     </div>
                 </div>
                 <!-- end col -->
@@ -56,7 +56,7 @@
                             <div class="table-wrapper table-responsive">
                                 <div class="title d-flex flex-wrap align-items-center justify-content-between">
                                 </div>
-                                <table class="table" id="itemproc">
+                                <table class="table" id="itemdis">
                                     <thead>
                                         <tr class="text-left">
                                             <th>No</th>
@@ -117,7 +117,7 @@
 <script>
     $(document).ready(function () {
         // Menggunakan event click untuk button dengan id hapusBtn
-        $('#itemproc').on('click', '#hapusBtn', function (e) {
+        $('#itemdis').on('click', '#hapusBtn', function (e) {
             e.preventDefault();
 
             // Simpan URL hapus pada atribut data-hapus pada tombol hapus
@@ -143,7 +143,7 @@
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
-    var table = $('#itemproc').DataTable({
+    var table = $('#itemdis').DataTable({
         processing: true,
         serverSide: true,
         ajax: "",

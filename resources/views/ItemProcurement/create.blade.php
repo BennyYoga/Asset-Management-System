@@ -26,6 +26,11 @@
         <div class="title-wrapper pt-30">
             <div class="row align-items-center">
                 <div class="col-md-6">
+                    {{-- @if (session('success'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('success') }}
+                    </div>
+                    @endif --}}
                     <div class="title mb-30">
                         <h2>Add Item Procurement</h2>
                     </div>
@@ -49,7 +54,6 @@
             </div>
             <!-- end row -->
         </div>
-
         <form action="{{ route('itemproc.store') }}" id="ItemProcForm" method="post">
             @csrf
         </form>
@@ -59,71 +63,80 @@
                 <div class="col-sm-12">
                     <!-- input style start -->
                     <div class="card-style mb-30">
-
-                        {{-- <h6 class="mb-25">Procurement</h6> --}}
-                        <div class="row mt-3">
-                            <div class="col-lg-6">
-                                <div class="select-style-1">
-                                    <label>Select Location</label>
-                                    <div class="select-position">
-                                        <select name="LocationId" id="LocationId" form="ItemProcForm" required>
-                                            <option value="" disabled selected>Choose location</option>
-                                            @foreach ($location as $location)
-                                            <option value="{{ $location->LocationId }}">{{$location->Name}}</option>
-                                            @endforeach
-                                        </select>
+                        <div class="col-lg-12">
+                            <div class="row mt-3">
+                                <div class="col-lg-6">
+                                    <div class="select-style-1">
+                                        <label>Select Location</label>
+                                        <div class="select-position">
+                                            <select name="LocationId" id="LocationId" form="ItemProcForm" required>
+                                                <option value="" disabled selected>Choose location</option>
+                                                @foreach ($location as $location)
+                                                <option value="{{ $location->LocationId }}">{{$location->Name}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="input-style-1">
-                                    <label>Notes</label>
-                                    <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes"
-                                        form="ItemProcForm"></textarea>
-                                    @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
-                                </div>
-                                <!-- end input -->
-                                <div class="input-style-1">
-                                    <label>Upload Your File</label>
-                                    <form action="{{ route('itemproc.dropzoneStore') }}" method="post" name="file"
-                                        files="true" enctype="multipart/form-data" class="dropzone"
-                                        id="image-upload">
-                                        @csrf
-                                    </form>
+                                <div class="col-lg-6">
+                                    <div class="input-style-1">
+                                        <label>Date</label>
+                                        <input type="date" id="Tanggal" name="Tanggal" form="ItemProcForm">
+                                    </div>
                                 </div>
                             </div>
-                            <!-- end col -->
-                        </div>
+                            <!-- end input -->
 
-                        <div id="item-container">
-                            <div class="row item">
-
+                            <div class="input-style-1">
+                                <label>Notes</label>
+                                <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes"
+                                    form="ItemProcForm"></textarea>
+                                @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
+                            </div>
+                            <!-- end input -->
+                            <div class="input-style-1">
+                                <label>Upload Your File</label>
+                                <form action="{{ route('itemproc.dropzoneStore') }}" method="post" name="file"
+                                    files="true" enctype="multipart/form-data" class="dropzone" id="image-upload">
+                                    @csrf
+                                </form>
                             </div>
                         </div>
+                        <!-- end col -->
+                        {{--
+                    </div> --}}
 
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
+                    <div id="item-container">
+                        <div class="row item">
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
+                        </div>
+                    </div>
+                    <!-- end input -->
+                    {{-- <h6 class="mb-25">Procurement Detail</h6>
+                    <div class="row">
+                        <div class="input-style-1 col-lg-12">
+                            <label>Item</label>
+                            <div>
+                                <textarea placeholder="Notes" name="Notes" cols="30" rows="5"></textarea>
                             </div>
                         </div>
-                        <!-- end input -->
-                        {{-- <h6 class="mb-25">Procurement Detail</h6>
-                        <div class="row">
-                            <div class="input-style-1 col-lg-12">
-                                <label>Item</label>
-                                <div>
-                                    <textarea placeholder="Notes" name="Notes" cols="30" rows="5"></textarea>
-                                </div>
-                            </div>
-                        </div> --}}
-                        <div class="row">
-                            <div class="col-lg-12 text-end">
-                                <input type="submit" class="btn btn-primary" form="ItemProcForm"></input>
-                                <a href="{{route('itemproc.index')}}" class="btn btn-outline-danger">Back</a>
-                            </div>
+                    </div> --}}
+                    <div class="row">
+                        <div class="col-lg-12 text-end">
+                            <input type="submit" class="btn btn-primary" form="ItemProcForm"></input>
+                            <a href="{{route('itemproc.index')}}" class="btn btn-outline-danger">Back</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </section>
 @endsection
@@ -132,37 +145,29 @@
 @include('sweetalert::alert')
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
 <script type="text/javascript">
-    Dropzone.options.imageUpload =
-    {
+    Dropzone.options.imageUpload = {
         maxFilesize: 100,
         renameFile: function(file) {
             var dt = new Date();
             var time = dt.getTime();
-            return time+file.name;
+            return time + file.name;
         },
         acceptedFiles: ".jpeg,.jpg,.png,.gif,.pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.txt,.zip,.rar",
         addRemoveLinks: true,
         timeout: 50000,
-        // init: function() {
-        //     var thisDropzone = this;
-        //     var mockFile = { name: 'D:\REZKY\POLBAN\TUGAS\SEMESTER 5\Kerja Praktek\Asset-Management-System\public\images\procurement'};
-        //     thisDropzone.emit("addedfile", mockFile);
-        //     thisDropzone.emit("success", mockFile);
-        // },
-        removedfile: function(file)
-        {
+        removedfile: function(file) {
             var name = file.name;
             console.log(file.name);
             $.ajaxSetup({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             }),
             $.ajax({
@@ -204,7 +209,7 @@
             <div class="col-lg-3">
                 <div class="input-style-1">
                     <label>Quantity</label>
-                    <input type="number" placeholder="Quantity of Item" name="Qty[]" form="ItemProcForm" min="1" required/>
+                    <input type="number" placeholder="Quantity of Item" name="Qty[]" min="1" form="ItemProcForm" required/>
                     @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
                 </div>
                 <!-- end input -->

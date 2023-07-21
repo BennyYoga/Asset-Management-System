@@ -51,6 +51,9 @@
                         <a href="{{route('item.index')}}" class="mb-1 {{ Request::routeIs('item.*') ? 'active' : '' }}"> Item Data </a>
                         <a href="{{route('itemreq.index')}}" class="mb-1 {{ Request::routeIs('itemreq.*') ? 'active' : '' }}"> Item Requisition </a>
                         <a href="{{route('itemproc.index')}}" class="mb-1 {{ Request::routeIs('itemproc.*') ? 'active' : '' }}"> Item Procurement </a>
+                        <a href="{{route('itemtransfer.index')}}" class="mb-1 {{ Request::routeIs('itemtransfer.*') ? 'active' : '' }}"> Item Transfer </a>
+                        <a href="{{route('itemuse.index')}}" class="mb-1 {{ Request::routeIs('itemuse.*') ? 'active' : '' }}"> Item Use </a>
+                        <a href="{{route('itemdis.index')}}" class="mb-1 {{ Request::routeIs('itemdis.*') ? 'active' : '' }}"> Item Disposing </a>
                     </li>
                 </ul>
             </li>

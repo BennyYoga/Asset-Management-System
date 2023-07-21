@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
-use App\Models\ItemProcurement;
+use App\Models\ItemTransfer;
 use App\Models\Location;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -11,7 +11,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
-class ItemProcurementController extends Controller
+
+class ItemTransferController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,13 +22,13 @@ class ItemProcurementController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $itemproc = ItemProcurement::where("IsPermanentDelete", 0)
+            $itemtransfer = ItemTransfer::where("IsPermanentDelete", 0)
             ->orderBy('No', 'desc')
             ->get();
-            return DataTables::of($itemproc)
+            return DataTables::of($itemtransfer)
                 ->addIndexColumn()
                 ->addColumn('JumlahBarang', function ($row) {
-                    $data = count(DB::table('ItemProcurementDetail')->where('ItemProcurementId', $row->ItemProcurementId)->get());
+                    $data = count(DB::table('ItemTransferDetail')->where('ItemTransferId', $row->ItemTransferId)->get());
                     return ($data . ' Item');
                 })
                 ->addColumn('Lokasi', function ($row) {
@@ -75,21 +76,21 @@ class ItemProcurementController extends Controller
                     }
                 })
                 ->addColumn('Action', function ($row) {
-                    $btn = '<a href=' . route('itemproc.edit', $row->ItemProcurementId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                    $btn = '<a href=' . route('itemtransfer.edit', $row->ItemTransferId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                     if ($row->Active == 1) {
-                        $btn = '<a href=' . route('itemproc.edit', $row->ItemProcurementId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                        $btn .= '<a href=' . route('itemproc.activate', $row->ItemProcurementId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn = '<a href=' . route('itemtransfer.edit', $row->ItemTransferId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                        $btn .= '<a href=' . route('itemtransfer.activate', $row->ItemTransferId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
                         return $btn;
                     } else if ($row->Active == 0) {
-                        $btn .= '<a href=' . route('itemproc.activate', $row->ItemProcurementId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
-                        $btn .= '<a href=' . route('itemproc.destroy', $row->ItemProcurementId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
+                        $btn .= '<a href=' . route('itemtransfer.activate', $row->ItemTransferId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn .= '<a href=' . route('itemtransfer.destroy', $row->ItemTransferId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
                         return $btn;
                     }
                 })
                 ->rawColumns(['Action', 'Active', 'Status'])
                 ->make(true);
         }
-        return view('ItemProcurement.index');
+        return view('ItemTransfer.index');
     }
 
     /**
@@ -103,7 +104,7 @@ class ItemProcurementController extends Controller
         $location = Location::all();
         session()->pull('temp-file', 'default');
         session(['temp-file' => []]);
-        return view('ItemProcurement.create', compact('item', 'location'));
+        return view('ItemTransfer.create', compact('item', 'location'));
     }
 
     /**
@@ -116,17 +117,17 @@ class ItemProcurementController extends Controller
     {
         if (($request->itemId == null) || ($request->Qty[0] == null)) {
             if($request->itemId == null){
-                return response()->redirectToRoute('itemproc.create')->with('error', 'Item Cannot be Empty');
+                return response()->redirectToRoute('itemtransfer.create')->with('error', 'Item Cannot be Empty');
             }
             else if($request->Qty[0] == null){
-                return response()->redirectToRoute('itemproc.create')->with('error', 'Qty Cannot be Empty');
+                return response()->redirectToRoute('itemtransfer.create')->with('error', 'Qty Cannot be Empty');
             }
         }
         $Uuid = (string) Str::uuid();
-        $nextNo = DB::table('ItemProcurement')->max('No') + 1;
-         //insert ke table ItemProcurement
+        $nextNo = DB::table('ItemTransfer')->max('No') + 1;
+         //insert ke table ItemTransfer
         $data = [
-            'ItemProcurementId' => $Uuid,
+            'ItemTransferId' => $Uuid,
             'LocationId' => request('LocationId'),
             'ProjectId' => 1,
             'IsPermanentDelete' => 0,
@@ -138,16 +139,16 @@ class ItemProcurementController extends Controller
             'CreatedBy' => 123,
             'UpdatedBy' => 123,
         ];
-        ItemProcurement::create($data);
+        ItemTransfer::create($data);
 
-        //insert ke table ItemProcurementDetail
+        //insert ke table ItemTransferDetail
         for ($i = 0; $i < count($request->itemId); $i++) {
                 $data = [
-                    'ItemProcurementId' => $Uuid,
+                    'ItemTransferId' => $Uuid,
                     'ItemId' => $request->itemId[$i],
                     'ItemQty' => $request->Qty[$i],
                 ];
-                DB::table('ItemProcurementDetail')->insert($data);
+                DB::table('ItemTransferDetail')->insert($data);
 
 
             //Insert Ke table Inventory
@@ -168,36 +169,37 @@ class ItemProcurementController extends Controller
             // }
         }
 
-        //insert ke table ItemProcurementUpload
+        //insert ke table ItemTransferUpload
         $file = session('temp-file');
         $location = Location::where('LocationId', $request->LocationId)->first();
         foreach ($file as $file) {
-            $filepath = ('images/procurement/'.$location->Name.'/'.$file);
-            $folderPath = public_path('images/procurement/'.$location->Name);
+            $filepath = ('images/transfer/'.$location->Name.'/'.$file);
+            $folderPath = public_path('images/transfer/'.$location->Name);
             if (!File::isDirectory($folderPath)) {
                 File::makeDirectory($folderPath, $mode = 0777, true, true);
             }
 
             $dataFile = [
-                'ProcurementUploadId' => (string) Str::uuid(),
-                'ItemProcurementId' => $Uuid,
+                'TransferUploadId' => (string) Str::uuid(),
+                'ItemTransferId' => $Uuid,
                 'FilePath' => $filepath,
                 'UploadedBy' => "Rezky",
             ];
 
-            DB::table('ItemProcurementUpload')->insert($dataFile);
+            DB::table('ItemTransferUpload')->insert($dataFile);
             File::move(public_path('/images/temp/'.$file), public_path($filepath));
         }
 
-        return response()->redirectToRoute('itemproc.index')->with('success', 'Item Procurement has been created');
+        return response()->redirectToRoute('itemtransfer.index')->with('success', 'Item Transfer has been created');
     }
+
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ItemProcurement  $itemProcurement
+     * @param  \App\Models\ItemTransfer  $itemTransfer
      * @return \Illuminate\Http\Response
      */
-    public function show(ItemProcurement $itemProcurement)
+    public function show(ItemTransfer $itemTransfer)
     {
         //
     }
@@ -205,10 +207,10 @@ class ItemProcurementController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\ItemProcurement  $itemProcurement
+     * @param  \App\Models\ItemTransfer  $itemTransfer
      * @return \Illuminate\Http\Response
      */
-    public function edit(ItemProcurement $itemProcurement)
+    public function edit(ItemTransfer $itemTransfer)
     {
         //
     }
@@ -217,10 +219,10 @@ class ItemProcurementController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ItemProcurement  $itemProcurement
+     * @param  \App\Models\ItemTransfer  $itemTransfer
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ItemProcurement $itemProcurement)
+    public function update(Request $request, ItemTransfer $itemTransfer)
     {
         //
     }
@@ -228,25 +230,25 @@ class ItemProcurementController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ItemProcurement  $itemProcurement
+     * @param  \App\Models\ItemTransfer  $itemTransfer
      * @return \Illuminate\Http\Response
      */
-    public function destroy($ItemProcurementId)
+    public function destroy($ItemTransferId)
     {
-        $itemproc = ItemProcurement::find($ItemProcurementId);
-        $itemproc->update(['IsPermanentDelete'=> 1]);
-        return redirect()->route('itemproc.index')->with('success', 'Proses berhasil dihapus.');
+        $itemtransfer = ItemTransfer::find($ItemTransferId);
+        $itemtransfer->update(['IsPermanentDelete'=> 1]);
+        return redirect()->route('itemtransfer.index')->with('success', 'Proses berhasil dihapus.');
     }
 
-    public function activate($ItemProcurementId)
+    public function activate($ItemTransferId)
     {
-        $data = ItemProcurement::where('ItemProcurementId', $ItemProcurementId)->first();
+        $data = ItemTransfer::where('ItemTransferId', $ItemTransferId)->first();
         if ($data->Active == 1) {
-            ItemProcurement::where('ItemProcurementId', $ItemProcurementId)->update(['Active' => 0]);
+            ItemTransfer::where('ItemTransferId', $ItemTransferId)->update(['Active' => 0]);
         } else {
-            ItemProcurement::where('ItemProcurementId', $ItemProcurementId)->update(['Active' => 1]);
+            ItemTransfer::where('ItemTransferId', $ItemTransferId)->update(['Active' => 1]);
         }
-        return redirect()->route('itemproc.index')->with('success', 'Status has been updated');
+        return redirect()->route('itemtransfer.index')->with('success', 'Status has been updated');
     }
 
     public function dropzoneStore(Request $request){
@@ -259,7 +261,7 @@ class ItemProcurementController extends Controller
 
     public function dropzoneGet($id)
     {
-        $data = DB::table('ItemProcurementUpload')->where('ItemProcurementId', $id)->get();
+        $data = DB::table('ItemTransferUpload')->where('ItemTransferId', $id)->get();
         return response()->json(['success' => pathinfo($data[0]->FilePath)]);
     }
 
