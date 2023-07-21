@@ -61,11 +61,9 @@
                             <thead>
                                 <tr class="text-center">
                                     <th>No</th>
-                                    <th>Name</th>
-                                    <th>Created By</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                    <th>Status Parent</th>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
+                                    <th>Role Name</th>
                                 </tr>
                             </thead>
                         </table>
@@ -97,35 +95,19 @@
                     }
                 },
                 {
-                    data: 'Name',
-                    name: 'Name',
+                    data: 'Fullname',
+                    name: 'Fullname',
                     class: "text-center"
                 },
                 {
-                    data: 'CreatedBy',
-                    name: 'CreatedBy',
+                    data: 'Username',
+                    name: 'Username',
                     orderable: true,
                     class: "text-center"
                 },
                 {
-                    data: 'Active',
-                    name: 'Active',
-                    render: function (data, type, row) {
-                        var status = data == 1 ? 'Active' : 'Nonctive';
-                        var classColor = data == 1 ? 'btn-primary' : 'btn-danger';
-                        return '<button type="button" class="btn ' + classColor + '" disabled style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">' + status + '</button>';
-                    }
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    id:'printCategory',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'Parent',
-                    name: 'Parent',
+                    data: 'Role',
+                    name: 'Role',
                     orderable: true,
                 }
 

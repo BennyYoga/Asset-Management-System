@@ -45,5 +45,11 @@ class Location extends Model
     {
         return $this->hasMany(ItemProcurement::class);
     }
+    public function fk_role()
+    {
+        return $this->belongsTo(Role::class, 'LocationId', 'LocationId');
+    }
+
+    
 
 }

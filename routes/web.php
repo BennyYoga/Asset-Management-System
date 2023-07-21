@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\c_category;
+// use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\inventoryController;
@@ -11,6 +12,11 @@ use App\Http\Controllers\ItemProcurementController;
 use App\Http\Controllers\ItemTransferController;
 use App\Http\Controllers\ItemUseController;
 use App\Http\Controllers\ItemDisposingController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RoleController;
+use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,8 +34,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('item', [itemController::class, 'index'])->name('item.index');
-Route::get('item/create', [itemController::class, 'create'])->name('item.create');
+Route::get('item', [itemController::class, 'index'])->name('item.index')->middleware('Role:Admin Local');
+Route::get('item/create', [itemController::class, 'create'])->name('item.create')->middleware('menu.access:Kelola Lokasi');
 Route::post('item/store', [itemController::class, 'store'])->name('item.store');
 Route::get('item/edit/{id}', [itemController::class, 'edit'])->name('item.edit');
 Route::put('item/update/{id}', [itemController::class, 'update'])->name('item.update');
@@ -54,12 +60,14 @@ Route::get  ('dropzone/get/{id}', [itemRequisitionController::class, 'dropzoneGe
 Route::get('/inventory', [inventoryController::class, 'index'])->name('inventory.index');
 
 Route::get('dashboard', [dashboardController::class, 'index'])->name('dashboard.index');
-Route::get('category', [CategoryController::class, 'index'])->name('category.index');
+Route::get('category', [CategoryController::class, 'index'])->name('category.index')->middleware('menu.access:Kelola Menu');;
 Route::get('category/create', [CategoryController::class, 'create'])->name('category.create');
 Route::post('category/store', [CategoryController::class, 'store'])->name('category.store');
 Route::get('category/edit/{id}', [CategoryController::class, 'edit'])->name('category.edit');
 Route::put('category/update/{id}', [CategoryController::class, 'update'])->name('category.update');
 Route::get('category/delete/{id}', [CategoryController::class, 'destroy'])->name('category.destroy');
+Route::get('category/activate/{id}', [CategoryController::class, 'activate'])->name('category.activate');
+
 
 Route::get('location', [LocationController::class, 'index'])->name('location.index');
 Route::get('location/create', [LocationController::class, 'create'])->name('location.create');
@@ -104,4 +112,41 @@ Route::get('/itemdis/edit/{id}', [ItemDisposingController::class, 'edit'])->name
 Route::post('/itemdis/update/{id}', [ItemDisposingController::class, 'update'])->name('itemdis.update');
 Route::get('/itemdis/delete/{id}', [ItemDisposingController::class, 'destroy'])->name('itemdis.destroy');
 Route::get('/itemdis/activate/{id}', [ItemDisposingController::class, 'activate'])->name('itemdis.activate');
+Route::get('project', [ProjectController::class, 'index'])->name('project.index');
+Route::get('project/create', [ProjectController::class, 'create'])->name('project.create');
+Route::post('project/store', [ProjectController::class, 'store'])->name('project.store');
+Route::get('project/edit/{id}', [ProjectController::class, 'edit'])->name('project.edit');
+Route::put('project/update/{id}', [ProjectController::class, 'update'])->name('project.update');
+Route::get('project/delete/{id}', [ProjectController::class, 'destroy'])->name('project.destroy');
+Route::get('project/activate/{id}', [ProjectController::class, 'activate'])->name('project.activate');
+
+
+Route::get('role', [RoleController::class, 'index'])->name('role.index');
+Route::get('role/create', [RoleController::class, 'createRoleLocation'])->name('role.create');
+Route::post('role/store', [RoleController::class, 'storeRoleLocation'])->name('roleLocation.store');
+Route::get('role/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
+Route::put('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
+Route::get('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
+
+
+
+Route::get('/login', function () {
+    return view('Login/login');
+});
+
+
+// Route::get('/tiket/edit/{id}', [c_kabkota::class, 'edit'])->name('kabkota.edit');
+Route::get('user/create', [UserController::class, 'create'])->name('user.create');
+Route::post('user/store', [UserController::class, 'store'])->name('user.store');
+Route::get('user', [UserController::class, 'index'])->name('user.index');
+
+
+Route::get('login', [AuthController::class, 'index'])->name('login');
+// Route::get('changePassword', [AuthController::class, 'changePassword'])->name('changePassword.index');
+// Route::put('updatePassword/{id}', [AuthController::class, 'updatePassword'])->name('updatePassword');
+// Route::get('logout', [AuthController::class, 'logout']);
+Route::get('post-logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('tampil', [AuthController::class, 'tampil'])->name('tampil');
+Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
+Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');
 

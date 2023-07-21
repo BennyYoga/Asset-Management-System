@@ -28,7 +28,7 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <div class="title mb-30">
-                        <h2>Category</h2>
+                        <h2>Project</h2>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -36,7 +36,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="#">Category</a>
+                                    <a href="#">Project</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Page
@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end mb-3">
-                    <a href="{{route('category.create')}}" class="btn btn-primary">Add</a>
+                    <a href="{{route('project.create')}}" class="btn btn-primary">Add</a>
                 </div>
             </div>
         </div>
@@ -63,9 +63,11 @@
                                     <th>No</th>
                                     <th>Name</th>
                                     <th>Created By</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
                                     <th>Status</th>
                                     <th>Action</th>
-                                    <th>Status Parent</th>
+                                    <th>Location Name</th>
                                 </tr>
                             </thead>
                         </table>
@@ -108,10 +110,20 @@
                     class: "text-center"
                 },
                 {
+                    data: 'StartDate',
+                    name: 'StartDate',
+                    class: "text-center"
+                },
+                {
+                    data: 'EndDate',
+                    name: 'EndDate',
+                    class: "text-center"
+                },
+                {
                     data: 'Active',
                     name: 'Active',
                     render: function (data, type, row) {
-                        var status = data == 1 ? 'Active' : 'Nonctive';
+                        var status = data == 1 ? 'Active' : 'Nonactive';
                         var classColor = data == 1 ? 'btn-primary' : 'btn-danger';
                         return '<button type="button" class="btn ' + classColor + '" disabled style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">' + status + '</button>';
                     }
@@ -119,15 +131,15 @@
                 {
                     data: 'action',
                     name: 'action',
-                    id:'printCategory',
+                    id:'printProject',
                     orderable: false,
                     searchable: false
                 },
                 {
-                    data: 'Parent',
-                    name: 'Parent',
-                    orderable: true,
-                }
+                    data: 'Location',
+                    name: 'Location',
+                    class: "text-center"
+                },
 
             ],
             order: [

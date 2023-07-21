@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use Illuminate\Support\Facades\DB;
-use App\Models\m_category;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
@@ -87,7 +87,7 @@ class itemController extends Controller
     public function create()
     {
         //
-        $category = m_category::all();
+        $category = Category::all();
         return view('item.create', compact('category'));
     }
 
@@ -119,7 +119,8 @@ class itemController extends Controller
             'IsPermanentDelete' => 0,
             'CreatedBy' => 32,
             'CreatedByLocation' => 11,
-            'UpdatedBy' => 32
+            'UpdatedBy' => 32,
+            'Active' =>request('Status')
         ];
 
         // dd($data);
@@ -156,7 +157,7 @@ class itemController extends Controller
     public function edit($id)
     {
         $item = Item::where('ItemId', $id)->first();
-        $category = m_category::all();
+        $category = Category::all();
         $CategoryItem = DB::table('CategoryItem')->where('ItemId', $id)->get();
         $selectedCategory = [];
         $unselectedCategory = [];
