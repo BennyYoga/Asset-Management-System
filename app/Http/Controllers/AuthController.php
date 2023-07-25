@@ -19,7 +19,7 @@ class AuthController extends Controller
         {
             return view('Login.login');
         }else{
-            return redirect()->route('dashboard.index')->withToastWarning('Anda Sudah login');
+            return redirect()->route('dashboard.index')->withToastWarning('Tidak Mempunyai Hak Akses');
         }
         
     }

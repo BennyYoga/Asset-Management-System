@@ -22,20 +22,32 @@ class CheckAccessMenu
      */
     public function handle(Request $request, Closure $next, $role)
     {
-            $roles = is_array($role) ? $role : explode('|', $role);
-            $user = session('user');
-            $users = UserModel::where('RoleId', $user->RoleId)->first();
-        
-            $checkrolemenu = $users->RoleMenu($roles);
-        
-            if ($checkrolemenu) {
-                return $next($request);
-            }
-        return redirect()->back()->withToastWarning('Halaman Tidak tersedia untuk anda');
-
-        
-            // abort(403, 'Unauthorized'); // Replace 'unauthorized' with the route name you want to redirect unauthorized users to.
+        $roles = is_array($role) ? $role : explode('|', $role);
+        $user = session('user');
+    
+        if (!$user) {
+            return redirect()->back()->withToastWarning('Anda harus login untuk mengakses halaman ini');
         }
+        $users = UserModel::where('RoleId', $user->RoleId)->first();
+    
+        $checkrolemenu = $users->RoleMenu($roles);
+    
+        if ($checkrolemenu) {
+            return $next($request);
+        } else {
+            $check = Role::where('RoleId', $user->RoleId)->first();
+            foreach ($roles as $a) {
+                if ($check->RoleName == $a) {
+                    return $next($request);
+                }
+            }
+        }
+    
+        return redirect()->back()->withToastWarning('Halaman Tidak tersedia untuk anda');
+    }
+    
+            // abort(403, 'Unauthorized'); // Replace 'unauthorized' with the route name you want to redirect unauthorized users to.
+        
         // $roles = is_array($role) ? $role : explode('|', $role);
         // $user = session('user');
         // $users = UserModel::where('RoleId', $user->RoleId)->first();

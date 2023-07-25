@@ -63,6 +63,30 @@
             </li>
         </ul>
         <ul>
+            <li class="nav-item {{ Request::routeIs('user.index') ? 'active' : '' }}">
+                <a href="{{route('user.index')}}">
+                    <span class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="22" viewBox="0 0 22 22" fill="none">
+                           <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                        </svg>
+                    </span>
+                    <span class="text">User</span>
+                </a>
+            </li>
+        </ul>
+        <ul>
+            <li class="nav-item {{ Request::routeIs('project.index') ? 'active' : '' }}">
+                <a href="{{route('project.index')}}">
+                    <span class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="22" viewBox="0 0 22 22" fill="none">
+                        <path fill-rule="evenodd" d="M10 1.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1Zm-5 0A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5v1A1.5 1.5 0 0 1 9.5 4h-3A1.5 1.5 0 0 1 5 2.5v-1Zm-2 0h1v1A2.5 2.5 0 0 0 6.5 5h3A2.5 2.5 0 0 0 12 2.5v-1h1a2 2 0 0 1 2 2V14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3.5a2 2 0 0 1 2-2Z"/>
+                        </svg>
+                    </span>
+                    <span class="text">Project</span>
+                </a>
+            </li>
+        </ul>
+        <ul>
             <li class="nav-item {{ Request::routeIs('category.index') ? 'active' : '' }}">
                 <a href="{{route('category.index')}}">
                     <span class="icon">
@@ -75,14 +99,14 @@
             </li>
         </ul>
         <ul>
-            <li class="nav-item {{ Request::routeIs('project.index') ? 'active' : '' }}">
-                <a href="{{route('project.index')}}">
+            <li class="nav-item {{ Request::routeIs('role.index') ? 'active' : '' }}">
+                <a href="{{route('role.index')}}">
                     <span class="icon">
-                        <svg width="22" height="22" viewBox="0 0 22 22">
-                            <path d="M17.4167 4.58333V6.41667H13.75V4.58333H17.4167ZM8.25 4.58333V10.0833H4.58333V4.58333H8.25ZM17.4167 11.9167V17.4167H13.75V11.9167H17.4167ZM8.25 15.5833V17.4167H4.58333V15.5833H8.25ZM19.25 2.75H11.9167V8.25H19.25V2.75ZM10.0833 2.75H2.75V11.9167H10.0833V2.75ZM19.25 10.0833H11.9167V19.25H19.25V10.0833ZM10.0833 13.75H2.75V19.25H10.0833V13.75Z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="22" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Zm9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382l.045-.148ZM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z"/>
                         </svg>
                     </span>
-                    <span class="text">Project</span>
+                    <span class="text">Role</span>
                 </a>
             </li>
         </ul>

@@ -142,7 +142,7 @@
                 <button class="dropdown-toggle bg-transparent border-0" type="button" id="profile" data-bs-toggle="dropdown" aria-expanded="false">
                     <div class="profile-info">
                         <div class="info">
-                            <h6>Ini Pegawai</h6>
+                            <h6>{{session('user')->Fullname}}</h6>
                             <div class="image">
                                 <img src="{{asset('images/profile/profile-image.png')}}" alt="" />
                                 <span class="status"></span>
@@ -157,7 +157,7 @@
                             document.getElementById('logout-form').submit();">
                             <i class="lni lni-exit"></i> Sign Out
                         </a>
-                        <form id="logout-form" action="" method="POST" class="d-none">
+                        <form id="logout-form" action="{{route('logout')}}" method="GET" class="d-none">
                             @csrf
                         </form>
                     </li>
