@@ -38,6 +38,11 @@ class RoleController extends Controller
                         $location = Location::where('LocationId', $row->LocationId)->first();
                         return $location->Name;
                     })
+                    ->addColumn('Action', function($row){
+                        $btn = '<a href="' . route('role.edit', $row->RoleId) . '" style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                    return $btn;
+                    })
+                    ->rawColumns(['Action'])
                     ->make(true);
             }
             return view('Role.index');
@@ -64,7 +69,7 @@ class RoleController extends Controller
         $request ->validate([
             'RoleName' => 'required',
         ]);
-    if(session('user')->RoleId ==1){
+    if(session('menu')->RoleName == 'SuperAdmin'){
         $data = [
             'RoleId' => (string) Str::uuid(), 
             'RoleName' => $request->RoleName,
@@ -72,13 +77,6 @@ class RoleController extends Controller
             'IsEditable' => 1, 
         ];
         Role::create($data);
-        foreach ($request->Menu as $menu) {
-            $data = [
-                'RoleId' => $data['RoleId'],
-                'MenuId' => $menu,
-            ];
-            DB::table('RoleMenu')->insert($data);
-        }
         return redirect()->to('dashboard')->withToastSucces('Role Berhasil Ditambahkan');
         }else{
             $data = [
@@ -121,8 +119,8 @@ class RoleController extends Controller
     {
         $role = Role::where('RoleId', $id)->first();
         if($role){
-            return view('category.edit', compact('category', 'categories'));
-        }return redirect()->to('category.index')->withToastError('Data tidak ditemukan');
+            return view('role.edit', compact('role'));
+        }return redirect()->to('role.index')->withToastError('Data tidak ditemukan');
     }
 
     public function update(Request $request, $id)

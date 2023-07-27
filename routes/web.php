@@ -14,7 +14,9 @@ use App\Http\Controllers\ItemDisposingController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\RoleController;
+use App\Models\Menu;
 use App\Models\Role;
 use Illuminate\Routing\RouteGroup;
 use Illuminate\Support\Facades\Route;
@@ -34,7 +36,7 @@ Route::get('dashboard', [dashboardController::class, 'index'])->name('dashboard.
 Route::get('/', function () {
     return view('welcome');
 });
-Route::group(['middleware'=>'Role:SuperAdmin|Admin Local|menu.acces:7.2'], function(){
+Route::group(['middleware'=>'menu.access:SuperAdmin|Admin Local|7.2'], function(){
     Route::get('item', [itemController::class, 'index'])->name('item.index');
     Route::get('item/create', [itemController::class, 'create'])->name('item.create');
     Route::post('item/store', [itemController::class, 'store'])->name('item.store');
@@ -44,7 +46,7 @@ Route::group(['middleware'=>'Role:SuperAdmin|Admin Local|menu.acces:7.2'], funct
     Route::get('item/activate/{id}', [itemController::class, 'activate'])->name('item.activate');
 });
 
-Route::group(['middleware'=> 'Role:SuperAdmin|Admin Local'], function(){
+Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Local'], function(){
     Route::get('/itemrequisition', [itemRequisitionController::class, 'index'])->name('itemreq.index');
     Route::get('/itemrequisition/create', [itemRequisitionController::class, 'create'])->name('itemreq.create');
     Route::post('/itemrequisition/store', [itemRequisitionController::class, 'store'])->name('itemreq.store');
@@ -72,7 +74,7 @@ Route::group(['middleware'=> ['menu.access:SuperAdmin|Admin Local|7.1']], functi
     Route::get('category/activate/{id}', [CategoryController::class, 'activate'])->name('category.activate');
 });
 
-Route::group(['middleware'=> 'Role:SuperAdmin'], function(){
+Route::group(['middleware'=> 'menu.access:SuperAdmin'], function(){
     Route::get('location', [LocationController::class, 'index'])->name('location.index');
     Route::get('location/create', [LocationController::class, 'create'])->name('location.create');
     Route::post('location/store', [LocationController::class, 'store'])->name('location.store');
@@ -82,7 +84,7 @@ Route::group(['middleware'=> 'Role:SuperAdmin'], function(){
     Route::get('location/activate/{id}', [LocationController::class, 'activate'])->name('location.activate');
 });
 
-Route::group(['middleware'=> 'Role:SuperAdmin|Admin Local|8.2'], function(){
+Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Local|8.2'], function(){
     Route::get('/itemprocurement', [ItemProcurementController::class, 'index'])->name('itemproc.index');
     Route::get('/itemprocurement/create', [ItemProcurementController::class, 'create'])->name('itemproc.create');
     Route::post('/itemprocurement/store', [ItemProcurementController::class, 'store'])->name('itemproc.store');
@@ -133,8 +135,8 @@ Route::get('project/delete/{id}', [ProjectController::class, 'destroy'])->name('
 Route::get('project/activate/{id}', [ProjectController::class, 'activate'])->name('project.activate');
 
 
-Route::group(['middleware'=> 'Role:SuperAdmin|Admin Local'], function(){
-    Route::group(['middleware'=> 'Role:SuperAdmin'], function(){
+Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Local'], function(){
+    Route::group(['middleware'=> 'menu.access:SuperAdmin'], function(){
         Route::get('roles/create', [RoleController::class, 'createAdminLocal'])->name('roles.create');
         Route::post('roles/store', [RoleController::class, 'storeAdminLocal'])->name('roleadminlocal.store');
     });
@@ -146,7 +148,7 @@ Route::group(['middleware'=> 'Role:SuperAdmin|Admin Local'], function(){
     Route::get('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
 });
 
-Route::group(['middleware'=> 'Role:SuperAdmin|Admin Local'], function(){
+Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Local'], function(){
     Route::get('user/create', [UserController::class, 'create'])->name('user.create');
     Route::post('user/store', [UserController::class, 'store'])->name('user.store');
     Route::get('user', [UserController::class, 'index'])->name('user.index');
@@ -160,3 +162,5 @@ Route::get('tampil', [AuthController::class, 'tampil'])->name('tampil');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
 Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');
 
+
+Route::get('menu', [MenuController::class, 'index'])->name('menu.index');

@@ -10,13 +10,14 @@
             <li class="nav-item {{ Request::routeIs('dashboard.index') ? 'active' : '' }}">
                 <a href="{{route('dashboard.index')}}">
                     <span class="icon">
-                        <svg width="25" height="22" viewBox="0 0 22 22">
-                            <path d="M17.4167 4.58333V6.41667H13.75V4.58333H17.4167ZM8.25 4.58333V10.0833H4.58333V4.58333H8.25ZM17.4167 11.9167V17.4167H13.75V11.9167H17.4167ZM8.25 15.5833V17.4167H4.58333V15.5833H8.25ZM19.25 2.75H11.9167V8.25H19.25V2.75ZM10.0833 2.75H2.75V11.9167H10.0833V2.75ZM19.25 10.0833H11.9167V19.25H19.25V10.0833ZM10.0833 13.75H2.75V19.25H10.0833V13.75Z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="22" viewBox="0 0 22 22" fill="none">
+                            <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
                         </svg>
                     </span>
                     <span class="text">Dashboard</span>
                 </a>
             </li>
+            @if(session('menu')->contains('RoleName', 'SuperAdmin'))
             <li class="nav-item {{ Request::routeIs('location.index') ? 'active' : '' }}">
                 <a href="{{route('location.index')}}">
                     <span class="icon">
@@ -27,6 +28,7 @@
                     <span class="text">Locations</span>
                 </a>
             </li>
+            @endif
             <li class="nav-item {{ Request::routeIs('inventory.index') ? 'active' : '' }}">
                 <a href="{{route('inventory.index')}}">
                     <span class="icon">
@@ -41,6 +43,7 @@
         <ul>
             <li class="nav-item {{ Request::routeIs('item.index') ? 'active' : '' }}">
             </li>
+            @if(session('menu')->contains('MenuId', 7.2))
             <li class="nav-item nav-item-has-children {{Request::routeIs('item.*') ? 'active' : '' }}">
                 <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_1" aria-controls="ddmenu_1" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="icon">
@@ -52,12 +55,31 @@
                 </a>
                 <ul id="ddmenu_1" class="collapse dropdown-nav {{(Request::routeIs('item.*') or Request::routeIs('itemreq.*')) ? 'show' : '' }}">
                     <li>
-                        <a href="{{route('item.index')}}" class="mb-1 {{ Request::routeIs('item.*') ? 'active' : '' }}"> Item Data </a>
+                        <!-- <a href="{{route('item.index')}}" class="mb-1 {{ Request::routeIs('item.*') ? 'active' : '' }}"> Item Data </a> -->
                         <a href="{{route('itemreq.index')}}" class="mb-1 {{ Request::routeIs('itemreq.*') ? 'active' : '' }}"> Item Requisition </a>
                         <a href="{{route('itemproc.index')}}" class="mb-1 {{ Request::routeIs('itemproc.*') ? 'active' : '' }}"> Item Procurement </a>
                         <a href="{{route('itemtransfer.index')}}" class="mb-1 {{ Request::routeIs('itemtransfer.*') ? 'active' : '' }}"> Item Transfer </a>
                         <a href="{{route('itemuse.index')}}" class="mb-1 {{ Request::routeIs('itemuse.*') ? 'active' : '' }}"> Item Use </a>
                         <a href="{{route('itemdis.index')}}" class="mb-1 {{ Request::routeIs('itemdis.*') ? 'active' : '' }}"> Item Disposing </a>
+                    </li>
+                </ul>
+            </li>
+            @endif
+        </ul>
+        <ul>
+            <li class="nav-item nav-item-has-children {{Request::routeIs('item.*') ? 'active' : '' }}">
+                <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_2" aria-controls="ddmenu_1" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="22" viewBox="0 0 22 22" fill="none">
+                            <path d="M21 3H3V9H21V3M19 7H5V5H19V7M14.5 11C14.78 11 15 11.22 15 11.5V13H9V11.5C9 11.22 9.22 11 9.5 11H14.5M18 13.09V10H20V13.09C19.67 13.04 19.34 13 19 13C18.66 13 18.33 13.04 18 13.09M13 19C13 19.7 13.13 20.37 13.35 21H4V10H6V19H13M22.5 17.25L17.75 22L15 19L16.16 17.84L17.75 19.43L21.34 15.84L22.5 17.25Z" />
+                        </svg>
+                    </span>
+                    <span class="text">Master Data</span>
+                </a>
+                <ul id="ddmenu_2" class="collapse dropdown-nav {{(Request::routeIs('item.*')) ? 'show' : '' }}">
+                    <li>
+                        <a href="{{route('item.index')}}" class="mb-1 {{ Request::routeIs('item.*') ? 'active' : '' }}"> Item Data </a>
+                        <a href="{{route('category.index')}}" class="mb-1 {{ Request::routeIs('itemreq.*') ? 'active' : '' }}"> Category Item Data </a>
                     </li>
                 </ul>
             </li>

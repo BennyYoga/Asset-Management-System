@@ -64,8 +64,9 @@
                             <thead>
                                 <tr class="text-center">
                                     <th>No</th>
-                                    <th>Role Name</th>
-                                    <th>Location Name</th>
+                                    <th>Menu Name</th>
+                                    <th class="text-center">Menu Description</th>
+                                    <th> Role has Acces </th>
                                     <th> Action </th>
                                 </tr>
                             </thead>
@@ -98,22 +99,23 @@
                     }
                 },
                 {
-                    data: 'RoleName',
-                    name: 'RoleName',
+                    data: 'MenuName',
+                    name: 'MenuName',
                     class: "text-center"
                 },
                 {
-                    data: 'Location',
-                    name: 'Location',
-                    class: "text-center"
+                    data: 'MenuDesc',
+                    name: 'MenuDesc',
+                    class: "text-right"
                 },
+                // {
+                //     data: 'Action',
+                //     name: 'Action',
+                //     class: "Action"
+                // },
                 {
-                    data: 'Action',
-                    name: 'Action',
-                    class: "text-center",
-                    id:'printCategory',
-                    orderable: false,
-                    searchable: false
+                    data: 'RoleAccess',
+                    name: 'RoleAccess',
                 },
 
             ],

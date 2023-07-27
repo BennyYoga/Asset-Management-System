@@ -26,7 +26,7 @@ class CheckAccessMenu
         $user = session('user');
     
         if (!$user) {
-            return redirect()->back()->withToastWarning('Anda harus login untuk mengakses halaman ini');
+            return redirect()->back()->with('warning', 'Silahkan Login Terlebih Dahulu');
         }
         $users = UserModel::where('RoleId', $user->RoleId)->first();
     

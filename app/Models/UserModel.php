@@ -65,5 +65,13 @@ class UserModel extends Authenticatable
     
     return $checkrolemenu;
     }
+    public function menuRole()
+    {
+        $roles = Menu::pluck('MenuId')->toArray();
+        $checkrolemenu = Role::join('RoleMenu', 'Role.RoleId', '=', 'RoleMenu.RoleId')
+        ->where('Role.RoleId', $this->RoleId)
+        ->whereIn('RoleMenu.MenuId', $roles)->get();
+        return $checkrolemenu;
+    }
 
 }
