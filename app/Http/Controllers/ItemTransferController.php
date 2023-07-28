@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Models\ItemTransfer;
 use App\Models\Location;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
@@ -38,51 +39,53 @@ class ItemTransferController extends Controller
                 ->addColumn('Status', function ($row) {
                     if ($row->Status === null) {
                         $data = 'Pending';
-                        $btn = '<button type="button" class="btn btn-warning" disabled
+                        $btn = '<span class="status-btn warning-btn" disabled
                             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                             ' . $data . ' 
-                            </button>';
+                            </span>';
                     } else if ($row->Status == 0) {
-                        $data = 'Declined';
-                        $btn = '<button type="button" class="btn btn-danger" disabled
+                        $data = 'Rejected';
+                        $btn = '<span class="status-btn close-btn" disabled
                             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                             ' . $data . ' 
-                            </button>';
+                            </span>';
                     } else {
-                        $data = 'Accepted';
-                        $btn = '<button type="button" class="btn btn-primary" disabled
+                        $data = 'Approved';
+                        $btn = '<span class="status-btn success-btn" disabled
                             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                             ' . $data . ' 
-                            </button>';
+                            </span>';
                     }
                     return $btn;
                 })
                 ->addColumn('Active', function ($row) {
-                    // $btn = '<button type="button" class="btn btn-primary btn-sm">' . $data . '</button>';
                     if ($row->Active == 0) {
                         $data = 'Nonactive';
-                        $btn = '<button type="button" class="btn btn-danger" disabled
+                        $btn = '<span class="status-btn close-btn" disabled
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                         ' . $data . ' 
-                        </button>';
+                        </span>';
                         return $btn;
                     } else if ($row->Active == 1) {
                         $data = 'Active';
-                        $btn = '<button type="button" class="btn btn-primary" disabled
+                        $btn = '<span class="status-btn active-btn" disabled
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                         ' . $data . ' 
-                        </button>';
+                        </span>';
                         return $btn;
                     }
                 })
                 ->addColumn('Action', function ($row) {
-                    $btn = '<a href=' . route('itemtransfer.edit', $row->ItemTransferId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                     if ($row->Active == 1) {
-                        $btn = '<a href=' . route('itemtransfer.edit', $row->ItemTransferId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                        $btn .= '<a href=' . route('itemtransfer.activate', $row->ItemTransferId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn = '<a href=' . route('itemtransfer.activate', $row->ItemTransferId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                    } else if ($row->Active == 0) {
+                        $btn = '<a href=' . route('itemtransfer.activate', $row->ItemTransferId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
+                    }
+                
+                    if ($row->Active == 1) {
+                        $btn .= '<a href=' . route('itemtransfer.edit', $row->ItemTransferId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                         return $btn;
                     } else if ($row->Active == 0) {
-                        $btn .= '<a href=' . route('itemtransfer.activate', $row->ItemTransferId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
                         $btn .= '<a href=' . route('itemtransfer.destroy', $row->ItemTransferId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
                         return $btn;
                     }
@@ -98,7 +101,7 @@ class ItemTransferController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         $item = Item::all();
         $location = Location::all();
@@ -117,14 +120,15 @@ class ItemTransferController extends Controller
     {
         if (($request->itemId == null) || ($request->Qty[0] == null)) {
             if($request->itemId == null){
-                return response()->redirectToRoute('itemtransfer.create')->with('error', 'Item Cannot be Empty');
+                return response()->redirectToRoute('itemtransfer.create')->withToastWarning('Item Cannot be Empty');
             }
             else if($request->Qty[0] == null){
-                return response()->redirectToRoute('itemtransfer.create')->with('error', 'Qty Cannot be Empty');
+                return response()->redirectToRoute('itemtransfer.create')->withToastWarning('Qty Cannot be Empty');
             }
         }
         $Uuid = (string) Str::uuid();
         $nextNo = DB::table('ItemTransfer')->max('No') + 1;
+
          //insert ke table ItemTransfer
         $data = [
             'ItemTransferId' => $Uuid,
@@ -190,7 +194,7 @@ class ItemTransferController extends Controller
             File::move(public_path('/images/temp/'.$file), public_path($filepath));
         }
 
-        return response()->redirectToRoute('itemtransfer.index')->with('success', 'Item Transfer has been created');
+        return response()->redirectToRoute('itemtransfer.index')->withToastSuccess('Item Transfer has been created');
     }
 
     /**
@@ -248,7 +252,7 @@ class ItemTransferController extends Controller
         } else {
             ItemTransfer::where('ItemTransferId', $ItemTransferId)->update(['Active' => 1]);
         }
-        return redirect()->route('itemtransfer.index')->with('success', 'Status has been updated');
+        return redirect()->route('itemtransfer.index')->withToastSuccess('Status has been updated');
     }
 
     public function dropzoneStore(Request $request){

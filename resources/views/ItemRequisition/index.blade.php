@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="breadcrumb-wrapper mb-30">
+                    <div class="breadcrumb-wrapper">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
@@ -34,6 +34,9 @@
                             </ol>
                         </nav>
                     </div>
+                    <div class="d-flex justify-content-end mb-3">
+                        <a href="{{route('itemreq.create')}}" class="btn btn-primary">Add</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -42,11 +45,8 @@
         <!-- Row -->
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
+                <div class="card-style mb-30">
                     <div class="card-body">
-                        <div class="d-flex justify-content-end mb-3">
-                            <a href="{{route('itemreq.create')}}" class="btn btn-primary">Add</a>
-                        </div>
                         <table class="table" id="itemrequisition">
                             <thead>
                                 <tr class="text-center">

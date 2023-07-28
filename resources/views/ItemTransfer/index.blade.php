@@ -61,7 +61,7 @@
                                         <tr class="text-left">
                                             <th>No</th>
                                             <th>Tanggal</th>
-                                            <th>Lokasi</th>
+                                            <th>Tujuan</th>
                                             <th>Jumlah Barang</th>
                                             <th>Status</th>
                                             <th>Active</th>

@@ -39,13 +39,16 @@ class LocationController extends Controller
                     }
                 })
                 ->addColumn('Action', function ($row) {
-                    $btn = '<a href=' . route('location.edit', $row->LocationId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                     if ($row->Active == 1) {
-                        $btn = '<a href=' . route('location.edit', $row->LocationId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                        $btn .= '<a href=' . route('location.activate', $row->LocationId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn = '<a href=' . route('location.activate', $row->LocationId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                    } else if ($row->Active == 0) {
+                        $btn = '<a href=' . route('location.activate', $row->LocationId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
+                    }
+                
+                    if ($row->Active == 1) {
+                        $btn .= '<a href=' . route('location.edit', $row->LocationId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                         return $btn;
                     } else if ($row->Active == 0) {
-                        $btn .= '<a href=' . route('location.activate', $row->LocationId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
                         $btn .= '<a href=' . route('location.destroy', $row->LocationId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
                         return $btn;
                     }
