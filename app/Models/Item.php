@@ -44,4 +44,19 @@ class Item extends Model
         return $this->belongsToMany(ItemProcurement::class, 'ItemProcurementDetail', 'ItemId', 'ItemProcurementId');
     }
 
+    public function ItemTransfer()
+    {
+        return $this->belongsToMany(ItemTransfer::class, 'ItemTransferDetail', 'ItemId', 'ItemTransferId');
+    }
+
+    public function ItemUse()
+    {
+        return $this->belongsToMany(ItemUse::class, 'ItemUseDetail', 'ItemId', 'ItemUseId');
+    }
+
+    public function ItemDisposing()
+    {
+        return $this->belongsToMany(ItemDisposing::class, 'ItemDisposingDetail', 'ItemId', 'ItemDisposingId');
+    }
+
 }

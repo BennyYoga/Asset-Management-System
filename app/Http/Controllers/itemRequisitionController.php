@@ -37,51 +37,56 @@ class itemRequisitionController extends Controller
                     // $btn = '<button type="button" class="btn btn-primary btn-sm">' . $data . '</button>';
                     if ($row->Active == 0) {
                         $data = 'Nonactive';
-                        $btn = '<button type="button" class="btn btn-danger" disabled
+                        $btn = '<span class="status-btn close-btn" disabled
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                         ' . $data . ' 
-                        </button>';
+                        </span>';
                         return $btn;
                     } else if ($row->Active == 1) {
                         $data = 'Active';
-                        $btn = '<button type="button" class="btn btn-primary" disabled
+                        $btn = '<span class="status-btn active-btn" disabled
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                         ' . $data . ' 
-                        </button>';
+                        </span>';
                         return $btn;
                     }
                 })
                 ->addColumn('Status', function ($row) {
                     if ($row->Status === 0) {
                         $data = 'Rejected';
-                        $btn = '<button type="button" class="btn btn-danger" disabled
+                        $btn = '<span class="status-btn close-btn" disabled
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                         ' . $data . ' 
-                        </button>';
+                        </span>';
                         return $btn;
                     } else if ($row->Status == 1) {
                         $data = 'Approved';
-                        $btn = '<button type="button" class="btn btn-success" disabled
+                        $btn = '<span class="status-btn success-btn" disabled
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                         ' . $data . ' 
-                        </button>';
+                        </span>';
                         return $btn;
                     } else {
                         $data = 'Pending';
-                        $btn = '<button type="button" class="btn btn-warning" disabled
+                        $btn = '<span class="status-btn warning-btn" disabled
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                         ' . $data . ' 
-                        </button>';
+                        </span>';
                         return $btn;
                     }
                 })
                 ->addColumn('Action', function ($row) {
-                    $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" title="Deactivate Requisition" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                    if ($row->Active == 1) {
+                        $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                    } else if ($row->Active == 0) {
+                        $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
+                    }
+                
                     if ($row->Active == 1) {
                         $btn .= '<a href=' . route('itemreq.edit', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                         return $btn;
                     } else if ($row->Active == 0) {
-                        $btn .= '<a href=' . route('itemreq.delete', $row->ItemRequisitionId) . ' style="font-size:20px" title="Deleted Requisition" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
+                        $btn .= '<a href=' . route('itemreq.delete', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
                         return $btn;
                     }
                 })
@@ -116,9 +121,9 @@ class itemRequisitionController extends Controller
     {
         if (($request->itemId == null) || ($request->Qty[0] == null)) {
             if ($request->itemId == null) {
-                return response()->redirectToRoute('itemreq.create')->with('error', 'Item Cannot be Empty');
+                return response()->redirectToRoute('itemreq.create')->withToastWarning('Item Cannot be Empty');
             } else if ($request->Qty[0] == null) {
-                return response()->redirectToRoute('itemreq.create')->with('error', 'Qty Cannot be Empty');
+                return response()->redirectToRoute('itemreq.create')->withToastWarning('Qty Cannot be Empty');
             }
         }
 
@@ -170,7 +175,7 @@ class itemRequisitionController extends Controller
             File::move(public_path('/images/temp/'.$file), public_path($filepath));
         }
 
-        return response()->redirectToRoute('itemreq.index')->with('success', 'Item Requisition has been created');
+        return response()->redirectToRoute('itemreq.index')->withToastSuccess('Item Requisition has been created');
     }
 
     /**
@@ -233,7 +238,7 @@ class itemRequisitionController extends Controller
     {
         $data = ItemRequisition::where('ItemRequisitionId', $id);
         $data->update(['IsPermanentDelete' => 1]);
-        return redirect()->route('itemreq.index')->with('success', 'Item has been deleted');
+        return redirect()->route('itemreq.index')->withToastSuccess('Item has been deleted');
     }
 
     public function activate($id)
@@ -244,7 +249,7 @@ class itemRequisitionController extends Controller
         } else {
             ItemRequisition::where('ItemRequisitionId', $id)->update(['Active' => 1]);
         }
-        return redirect()->route('itemreq.index')->with('success', 'Status has been updated');
+        return redirect()->route('itemreq.index')->withToastSuccess('Status has been updated');
     }
 
     public function dropzoneExample()
