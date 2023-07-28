@@ -32,15 +32,10 @@
                     <span class="text">Locations</span>
                 </a>
             </li>
-<<<<<<< HEAD
             @endif
             @if($menu->contains('MenuId', 7.2) || $role === 'SuperAdmin' || $role === 'Admin Local')
-            <li class="nav-item {{ Request::routeIs('inventory.index') ? 'active' : '' }}">
-                <a href="{{route('inventory.index')}}">
-=======
             <li class="nav-item {{ Request::routeIs('project.index') ? 'active' : '' }}">
                 <a href="{{route('project.index')}}">
->>>>>>> 6cab9869d5f2ff09851287bf6f98a9a939f2579d
                     <span class="icon">
                         <svg width="22" height="22" viewBox="0 0 22 22">
                             <path d="M17.4167 4.58333V6.41667H13.75V4.58333H17.4167ZM8.25 4.58333V10.0833H4.58333V4.58333H8.25ZM17.4167 11.9167V17.4167H13.75V11.9167H17.4167ZM8.25 15.5833V17.4167H4.58333V15.5833H8.25ZM19.25 2.75H11.9167V8.25H19.25V2.75ZM10.0833 2.75H2.75V11.9167H10.0833V2.75ZM19.25 10.0833H11.9167V19.25H19.25V10.0833ZM10.0833 13.75H2.75V19.25H10.0833V13.75Z" />
@@ -48,12 +43,8 @@
                     </span>
                     <span class="text">Project</span>
                 </a>
-<<<<<<< HEAD
             </li>
             @endif
-=======
-            </li> 
->>>>>>> 6cab9869d5f2ff09851287bf6f98a9a939f2579d
         </ul>
         <ul>
             <li class="nav-item {{ Request::routeIs('item.index') ? 'active' : '' }}">
@@ -74,33 +65,7 @@
                         <a href="{{route('item.index')}}" class="mb-1 {{ Request::routeIs('item.*') ? 'active' : '' }}"> Item </a>
                     </li>
                 </ul>
-            </li>
-            @endif
-        </ul>
-        <ul>
-        @if($menu->contains('MenuId', 7) || $menu->contains('MenuId', 7.2) || $menu->contains('MenuId', 7.1) ||  $role === 'SuperAdmin' || $role === 'Admin Local')
-            <li class="nav-item nav-item-has-children {{Request::routeIs('item.*') ? 'active' : '' }}">
-                <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_2" aria-controls="ddmenu_1" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="22" viewBox="0 0 22 22" fill="none">
-                            <path d="M21 3H3V9H21V3M19 7H5V5H19V7M14.5 11C14.78 11 15 11.22 15 11.5V13H9V11.5C9 11.22 9.22 11 9.5 11H14.5M18 13.09V10H20V13.09C19.67 13.04 19.34 13 19 13C18.66 13 18.33 13.04 18 13.09M13 19C13 19.7 13.13 20.37 13.35 21H4V10H6V19H13M22.5 17.25L17.75 22L15 19L16.16 17.84L17.75 19.43L21.34 15.84L22.5 17.25Z" />
-                        </svg>
-                    </span>
-                    <span class="text">Master Data</span>
-                </a>
-                <ul id="ddmenu_2" class="collapse dropdown-nav {{(Request::routeIs('item.*')) ? 'show' : '' }}">
-                    <li>
-                        @if($menu->contains('MenuId', 7) || $menu->contains('MenuId', 7.2)|| $role === 'SuperAdmin' || $role === 'Admin Local')
-                        <a href="{{route('item.index')}}" class="mb-1 {{ Request::routeIs('item.*') ? 'active' : '' }}"> Item Data </a>
-                        @endif
-                        @if($menu->contains('MenuId', 7) || $menu->contains('MenuId', 7.1)|| $role === 'SuperAdmin' || $role === 'Admin Local')
-                        <a href="{{route('category.index')}}" class="mb-1 {{ Request::routeIs('itemreq.*') ? 'active' : '' }}"> Category Item Data </a>
-                        @endif
-                    </li>
-                </ul>
-            </li>
-        @endif
-        </ul>
+                @endif
         @if($role === 'SuperAdmin' || $role === 'Admin Local')
         <ul>
             <li class="nav-item {{ Request::routeIs('user.index') ? 'active' : '' }}">
@@ -131,10 +96,6 @@
         </ul>
         <ul>
         @if($role === 'SuperAdmin' || $role === 'Admin Local')
-            <li class="nav-item {{ Request::routeIs('category.index') ? 'active' : '' }}">
-                <a href="{{route('category.index')}}">
-            <li class="nav-item {{ Request::routeIs('item.index') ? 'active' : '' }}">
-            </li>
             <li class="nav-item nav-item-has-children {{Request::routeIs('item.*') ? 'active' : '' }}">
                 <a href="#1" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_2" aria-controls="ddmenu_2" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="icon">
@@ -158,9 +119,6 @@
         @endif
         </ul>
         <ul>
-            <li class="nav-item {{ Request::routeIs('role.index') ? 'active' : '' }}">
-                <a href="{{route('role.index')}}">
-            <li class="nav-item {{ Request::routeIs('item.index') ? 'active' : '' }}">
             </li>
             <li class="nav-item nav-item-has-children {{Request::routeIs('item.*') ? 'active' : '' }}">
                 <a href="#2" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_3" aria-controls="ddmenu_3" aria-expanded="false" aria-label="Toggle navigation">
@@ -194,15 +152,28 @@
                     <span class="text">Inventory</span>
                 </a>
             </li>
-            <li class="nav-item {{ Request::routeIs('dashboard.index') ? 'active' : '' }}">
-                <a href="{{route('dashboard.index')}}">
+        </ul>
+
+        <ul>
+            <li class="nav-item {{ Request::routeIs('role.index') ? 'active' : '' }}">
+                <a href="{{route('role.index')}}">
                     <span class="icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="22" viewBox="0 0 22 22" fill="none">
                         <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Zm9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382l.045-.148ZM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z"/>
                         </svg>
                     </span>
                     <span class="text">Role</span>
-                    <span class="text">Report</span>
+                </a>
+            </li>
+        </ul>
+        <li class="nav-item {{ Request::routeIs('dashboard.index') ? 'active' : '' }}">
+                <a href="{{route('dashboard.index')}}">
+                    <span class="icon">
+                        <svg width="22" height="22" viewBox="0 0 22 22">
+                            <path d="M17.4167 4.58333V6.41667H13.75V4.58333H17.4167ZM8.25 4.58333V10.0833H4.58333V4.58333H8.25ZM17.4167 11.9167V17.4167H13.75V11.9167H17.4167ZM8.25 15.5833V17.4167H4.58333V15.5833H8.25ZM19.25 2.75H11.9167V8.25H19.25V2.75ZM10.0833 2.75H2.75V11.9167H10.0833V2.75ZM19.25 10.0833H11.9167V19.25H19.25V10.0833ZM10.0833 13.75H2.75V19.25H10.0833V13.75Z" />
+                        </svg>
+                    </span>
+                    <span class="text">Settings</span>
                 </a>
             </li>
             <li class="nav-item {{ Request::routeIs('dashboard.index') ? 'active' : '' }}">
@@ -215,7 +186,6 @@
                     <span class="text">Settings</span>
                 </a>
             </li>
-        </ul>
     </nav>
 </aside>
 <div class="overlay"></div>
