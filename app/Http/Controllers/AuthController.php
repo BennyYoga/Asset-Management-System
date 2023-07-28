@@ -30,13 +30,15 @@ class AuthController extends Controller
         $user = UserModel::where('Username', $credentials['Username'])->first();
         if($user && Hash::check($credentials['Password'], $user->Password)){
             $rolemenu = collect($user->menuRole());
-            $request->session()->put('user', $user) ;
-            $request->session()->put('menu', $rolemenu);
-            // dd($request->session()->get('menu'));
-            // dd(session('menu'));s
+            $request->session()->put([
+                'user' => $user,
+                'menu' => $rolemenu,
+                'role' => $user->fk_role,
+            ]);
+            // dd(session('role'));
             $RoleName = $user->fk_role()->first()->RoleName;
             if($RoleName == 'SuperAdmin'){
-            return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai'. $RoleName);
+            return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName);
             }elseif($RoleName =='AdminLocal'){
                 return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName. ' di Lokasi: '. $user->getLocName());
             }else {

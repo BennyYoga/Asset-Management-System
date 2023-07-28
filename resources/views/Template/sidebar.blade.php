@@ -1,4 +1,8 @@
 <!-- ======== sidebar-nav start =========== -->
+@php
+    $menu = session('menu');
+    $role = session('role')->RoleName;
+@endphp
 <aside class="sidebar-nav-wrapper">
     <div class="navbar-logo" style="text-align: left">
         <a href="index.html">
@@ -17,7 +21,7 @@
                     <span class="text">Dashboard</span>
                 </a>
             </li>
-            @if(session('menu')->contains('RoleName', 'SuperAdmin'))
+            @if($role === 'SuperAdmin')
             <li class="nav-item {{ Request::routeIs('location.index') ? 'active' : '' }}">
                 <a href="{{route('location.index')}}">
                     <span class="icon">
@@ -29,6 +33,7 @@
                 </a>
             </li>
             @endif
+            @if($menu->contains('MenuId', 7.2) || $role === 'SuperAdmin' || $role === 'Admin Local')
             <li class="nav-item {{ Request::routeIs('inventory.index') ? 'active' : '' }}">
                 <a href="{{route('inventory.index')}}">
                     <span class="icon">
@@ -39,11 +44,12 @@
                     <span class="text">Inventory</span>
                 </a>
             </li>
+            @endif
         </ul>
         <ul>
             <li class="nav-item {{ Request::routeIs('item.index') ? 'active' : '' }}">
             </li>
-            @if(session('menu')->contains('MenuId', 7.2))
+            @if($menu->contains('MenuId', 9) || $role === 'SuperAdmin' || $role === 'Admin Local')
             <li class="nav-item nav-item-has-children {{Request::routeIs('item.*') ? 'active' : '' }}">
                 <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_1" aria-controls="ddmenu_1" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="icon">
@@ -67,6 +73,7 @@
             @endif
         </ul>
         <ul>
+        @if($menu->contains('MenuId', 7) || $menu->contains('MenuId', 7.2) || $menu->contains('MenuId', 7.1) ||  $role === 'SuperAdmin' || $role === 'Admin Local')
             <li class="nav-item nav-item-has-children {{Request::routeIs('item.*') ? 'active' : '' }}">
                 <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_2" aria-controls="ddmenu_1" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="icon">
@@ -78,12 +85,18 @@
                 </a>
                 <ul id="ddmenu_2" class="collapse dropdown-nav {{(Request::routeIs('item.*')) ? 'show' : '' }}">
                     <li>
+                        @if($menu->contains('MenuId', 7) || $menu->contains('MenuId', 7.2)|| $role === 'SuperAdmin' || $role === 'Admin Local')
                         <a href="{{route('item.index')}}" class="mb-1 {{ Request::routeIs('item.*') ? 'active' : '' }}"> Item Data </a>
+                        @endif
+                        @if($menu->contains('MenuId', 7) || $menu->contains('MenuId', 7.1)|| $role === 'SuperAdmin' || $role === 'Admin Local')
                         <a href="{{route('category.index')}}" class="mb-1 {{ Request::routeIs('itemreq.*') ? 'active' : '' }}"> Category Item Data </a>
+                        @endif
                     </li>
                 </ul>
             </li>
+        @endif
         </ul>
+        @if($role === 'SuperAdmin' || $role === 'Admin Local')
         <ul>
             <li class="nav-item {{ Request::routeIs('user.index') ? 'active' : '' }}">
                 <a href="{{route('user.index')}}">
@@ -96,7 +109,9 @@
                 </a>
             </li>
         </ul>
+        @endif
         <ul>
+        @if($role === 'SuperAdmin' || $role === 'Admin Local')
             <li class="nav-item {{ Request::routeIs('project.index') ? 'active' : '' }}">
                 <a href="{{route('project.index')}}">
                     <span class="icon">
@@ -107,8 +122,10 @@
                     <span class="text">Project</span>
                 </a>
             </li>
+        @endif
         </ul>
         <ul>
+        @if($role === 'SuperAdmin' || $role === 'Admin Local')
             <li class="nav-item {{ Request::routeIs('category.index') ? 'active' : '' }}">
                 <a href="{{route('category.index')}}">
                     <span class="icon">
@@ -119,6 +136,7 @@
                     <span class="text">Category</span>
                 </a>
             </li>
+        @endif
         </ul>
         <ul>
             <li class="nav-item {{ Request::routeIs('role.index') ? 'active' : '' }}">
