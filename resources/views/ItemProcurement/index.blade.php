@@ -17,11 +17,6 @@
         <div class="title-wrapper pt-30">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    {{-- @if (session('success'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('success') }}
-                    </div>
-                    @endif --}}
                     <div class="title mb-30">
                         <h2>Item Procurement</h2>
                     </div>
@@ -61,7 +56,7 @@
                                         <tr class="text-left">
                                             <th>No</th>
                                             <th>Tanggal</th>
-                                            <th>Lokasi</th>
+                                            <th>Requisition Ref</th>
                                             <th>Jumlah Barang</th>
                                             <th>Status</th>
                                             <th>Active</th>

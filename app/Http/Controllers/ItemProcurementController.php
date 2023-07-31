@@ -37,51 +37,53 @@ class ItemProcurementController extends Controller
                 ->addColumn('Status', function ($row) {
                     if ($row->Status === null) {
                         $data = 'Pending';
-                        $btn = '<button type="button" class="btn btn-warning" disabled
+                        $btn = '<span class="status-btn warning-btn" disabled
                             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                             ' . $data . ' 
-                            </button>';
+                            </span>';
                     } else if ($row->Status == 0) {
-                        $data = 'Declined';
-                        $btn = '<button type="button" class="btn btn-danger" disabled
+                        $data = 'Rejected';
+                        $btn = '<span class="status-btn close-btn" disabled
                             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                             ' . $data . ' 
-                            </button>';
+                            </span>';
                     } else {
-                        $data = 'Accepted';
-                        $btn = '<button type="button" class="btn btn-primary" disabled
+                        $data = 'Approved';
+                        $btn = '<span class="status-btn active-btn" disabled
                             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                             ' . $data . ' 
-                            </button>';
+                            </span>';
                     }
                     return $btn;
                 })
                 ->addColumn('Active', function ($row) {
-                    // $btn = '<button type="button" class="btn btn-primary btn-sm">' . $data . '</button>';
                     if ($row->Active == 0) {
                         $data = 'Nonactive';
-                        $btn = '<button type="button" class="btn btn-danger" disabled
+                        $btn = '<span class="status-btn close-btn" disabled
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                         ' . $data . ' 
-                        </button>';
+                        </span>';
                         return $btn;
                     } else if ($row->Active == 1) {
                         $data = 'Active';
-                        $btn = '<button type="button" class="btn btn-primary" disabled
+                        $btn = '<span class="status-btn active-btn" disabled
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                         ' . $data . ' 
-                        </button>';
+                        </span>';
                         return $btn;
                     }
                 })
                 ->addColumn('Action', function ($row) {
-                    $btn = '<a href=' . route('itemproc.edit', $row->ItemProcurementId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                     if ($row->Active == 1) {
-                        $btn = '<a href=' . route('itemproc.edit', $row->ItemProcurementId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                        $btn .= '<a href=' . route('itemproc.activate', $row->ItemProcurementId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn = '<a href=' . route('itemproc.activate', $row->ItemProcurementId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                    } else if ($row->Active == 0) {
+                        $btn = '<a href=' . route('itemproc.activate', $row->ItemProcurementId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
+                    }
+                
+                    if ($row->Active == 1) {
+                        $btn .= '<a href=' . route('itemproc.edit', $row->ItemProcurementId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                         return $btn;
                     } else if ($row->Active == 0) {
-                        $btn .= '<a href=' . route('itemproc.activate', $row->ItemProcurementId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
                         $btn .= '<a href=' . route('itemproc.destroy', $row->ItemProcurementId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
                         return $btn;
                     }
@@ -116,10 +118,10 @@ class ItemProcurementController extends Controller
     {
         if (($request->itemId == null) || ($request->Qty[0] == null)) {
             if($request->itemId == null){
-                return response()->redirectToRoute('itemproc.create')->with('error', 'Item Cannot be Empty');
+                return response()->redirectToRoute('itemproc.create')->withToastWarning('Item Cannot be Empty');
             }
             else if($request->Qty[0] == null){
-                return response()->redirectToRoute('itemproc.create')->with('error', 'Qty Cannot be Empty');
+                return response()->redirectToRoute('itemproc.create')->withToastWarning('Qty Cannot be Empty');
             }
         }
         $Uuid = (string) Str::uuid();
@@ -189,7 +191,7 @@ class ItemProcurementController extends Controller
             File::move(public_path('/images/temp/'.$file), public_path($filepath));
         }
 
-        return response()->redirectToRoute('itemproc.index')->with('success', 'Item Procurement has been created');
+        return response()->redirectToRoute('itemproc.index')->withToastSuccess('Item Procurement has been created');
     }
     /**
      * Display the specified resource.
@@ -208,9 +210,24 @@ class ItemProcurementController extends Controller
      * @param  \App\Models\ItemProcurement  $itemProcurement
      * @return \Illuminate\Http\Response
      */
-    public function edit(ItemProcurement $itemProcurement)
+    public function edit($id)
     {
-        //
+        $item = Item::all();
+        $location = Location::all();
+        $itemproc = ItemProcurement::where('ItemProcurementId', $id)->first();
+        $detailproc = DB::table('ItemProcurementDetail')->where('ItemProcurementId', $id)->get();
+        $uploaditem = DB::table('ItemProcurementUpload')->where('ItemProcurementId', $id)->get();
+        session()->pull('temp-file', 'default');
+        session(['temp-file' => []]);
+        $data = [
+            'item' => $item,
+            'location' => $location,
+            'itemproc' => $itemproc,
+            'detailproc' => $detailproc,
+            'uploaditem' => $uploaditem
+        ];
+
+        return view('ItemProcurement.edit', compact('data'));
     }
 
     /**
@@ -235,7 +252,7 @@ class ItemProcurementController extends Controller
     {
         $itemproc = ItemProcurement::find($ItemProcurementId);
         $itemproc->update(['IsPermanentDelete'=> 1]);
-        return redirect()->route('itemproc.index')->with('success', 'Proses berhasil dihapus.');
+        return redirect()->route('itemproc.index')->withToastSuccess('Proses berhasil dihapus.');
     }
 
     public function activate($ItemProcurementId)
@@ -246,7 +263,7 @@ class ItemProcurementController extends Controller
         } else {
             ItemProcurement::where('ItemProcurementId', $ItemProcurementId)->update(['Active' => 1]);
         }
-        return redirect()->route('itemproc.index')->with('success', 'Status has been updated');
+        return redirect()->route('itemproc.index')->withToastSuccess('Status has been updated');
     }
 
     public function dropzoneStore(Request $request){

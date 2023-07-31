@@ -67,10 +67,10 @@
                             <div class="row mt-3">
                                 <div class="col-lg-6">
                                     <div class="select-style-1">
-                                        <label>Select Location</label>
+                                        <label>Select Destination</label>
                                         <div class="select-position">
                                             <select name="LocationId" id="LocationId" form="ItemTransForm" required>
-                                                <option value="" disabled selected>Choose location</option>
+                                                <option value="" disabled selected>Choose destination</option>
                                                 @foreach ($location as $location)
                                                 <option value="{{ $location->LocationId }}">{{$location->Name}}</option>
                                                 @endforeach
