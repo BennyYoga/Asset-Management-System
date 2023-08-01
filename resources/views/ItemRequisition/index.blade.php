@@ -52,7 +52,7 @@
                                 <tr class="text-center">
                                     <th>No</th>
                                     <th>Tanggal</th>
-                                    <th>Lokasi</th>
+                                    <th>Lokasi Tujuan</th>
                                     <th>Jumlah Barang</th>
                                     <th>Status</th>
                                     <th>Active</th>

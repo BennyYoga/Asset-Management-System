@@ -65,9 +65,12 @@
                 <!-- input style start -->
                 <div class="card-style mb-30">
                     <div class="row mt-3">
-                        <div class="col-lg-12">
+                        <div class="col-lg-6">
 
                             <input type="hidden" id="ReqId" form="ItemReqForm" value="{{$data['itemreq']->ItemRequisitionId}}">
+                            <input type="hidden" id="itemHidden" value="{{$data['item']}}">
+                            <input type="hidden" id="detailHidden" value="{{$data['detailreq']}}">
+
 
                             <div class="select-style-1">
                                 <label>Select Location</label>
@@ -91,6 +94,10 @@
                                 @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
                             </div>
                             <!-- end input -->
+
+                            @foreach ($data['uploaditem'] as $item)
+                            <a href="{{ asset($item->FilePath) }}" target="_blank">ini filenya</a><br>
+                            @endforeach
                             <div class="input-style-1">
                                 <label>Upload Your File</label>
                                 <form action="{{route('dropzone.store')}}" method="post" name="file" files="true" enctype="multipart/form-data" class="dropzone" id="image-upload">
@@ -99,25 +106,24 @@
                             </div>
                         </div>
 
+
+                        <div class="col-lg-6">
+                            <div id="item-container">
+                                <div class="row item">
+
+                                </div>
+                            </div>
+                            <!-- End Row -->
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
+                                </div>
+                            </div>
+                        </div>
                         <!-- End Col -->
                     </div>
 
-                    @foreach ($data['uploaditem'] as $item)
-                    <a href="{{ asset($item->FilePath) }}" target="_blank">ini filenya</a><br>
-                    @endforeach
 
-
-                    <div id="item-container">
-                        <div class="row item">
-
-                        </div>
-                    </div>
-                    <!-- End Row -->
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="col-lg-12 text-end">
                             <input type="submit" class="btn btn-primary" form="ItemReqForm" />
@@ -156,7 +162,7 @@
         acceptedFiles: ".jpeg,.jpg,.png,.gif,.pdf,.zip",
         addRemoveLinks: true,
         timeout: 50000,
-        init : function(){
+        init: function() {
             var reqId = $('#ReqId').val();
             $.ajax({
                 url: `/dropzone/get/${reqId}`,
@@ -198,13 +204,13 @@
     };
 
     $("#add-item").click(function() {
+
         var dataObject = $('#itemHidden').val();
         dataObject = JSON.parse(dataObject);
 
         var itemDiv = $("<div>").addClass("item row");
-        console.log(itemDiv);
         itemDiv.html(`
-            <div class="col-lg-8">
+            <div class="col-lg-7">
                 <div class="select-style-1 col-lg-12">
                     <label>Choose Name Item</label>
                     <div class="select-position">
@@ -219,12 +225,12 @@
             <div class="col-lg-3">
                 <div class="input-style-1">
                     <label>Quantity</label>
-                    <input type="number" placeholder="Quantity of Item" name="Qty[]" min="1" required form="ItemReqForm"/>
+                    <input type="number" placeholder="Quantity  " name="Qty[]" min="1" required form="ItemReqForm"/>
                     @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
                 </div>
                 <!-- end input -->
             </div>
-            <div class="col-lg-1 m-auto">
+            <div class="col-lg-1 mt-auto mb-auto">
                 <button class="btn btn-danger">Delete</button>
             </div>
         `);
@@ -235,5 +241,52 @@
             $(this).closest(".item").remove();
         });
     });
+
+  $(document).ready(function() {
+    var itemObject = $('#detailHidden').val();
+    itemObject = JSON.parse(itemObject);
+    var dataObject = $('#itemHidden').val();
+    dataObject = JSON.parse(dataObject);
+
+    var itemDiv = $("<div>").addClass("item row");
+
+    if (itemObject != null) {
+      itemObject.forEach(element => {
+        var itemDiv = $("<div>").addClass("item row");
+        var options = dataObject.map(dataItem => `<option value="${dataItem.ItemId}" ${dataItem.ItemId === element.ItemId ? 'selected' : ''}>${dataItem.Name}</option>`).join("");
+
+        itemDiv.html(`
+          <div class="col-lg-7">
+            <div class="select-style-1 col-lg-12">
+              <label>Choose Name Item</label>
+              <div class="select-position">
+                <select name="itemId[]" id="itemId" form="ItemReqForm" required>
+                  ${options}
+                </select>
+              </div>
+            </div>
+            <!-- end input -->
+          </div>
+          <div class="col-lg-3">
+            <div class="input-style-1">
+              <label>Quantity</label>
+              <input type="number" value="${element.ItemQty}" placeholder="Quantity" name="Qty[]" min="1" required form="ItemReqForm"/>
+              @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
+            </div>
+            <!-- end input -->
+          </div>
+          <div class="col-lg-1 mt-auto mb-auto">
+            <button class="btn btn-danger">Delete</button>
+          </div>
+        `);
+
+        $("#item-container").append(itemDiv);
+        itemDiv.find(".btn-danger").click(function() {
+            $(this).closest(".item").remove();
+        });
+      });
+    }
+  });
+
 </script>
 @endpush

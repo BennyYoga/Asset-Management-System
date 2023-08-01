@@ -30,7 +30,7 @@ class itemRequisitionController extends Controller
                     return ($data . ' Item');
                 })
                 ->addColumn('Lokasi', function ($row) {
-                    $lokasi = Location::where('LocationId', $row->LocationId)->first();
+                    $lokasi = Location::where('LocationId', $row->LocationFrom)->first();
                     return $lokasi->Name;
                 })
                 ->addColumn('Active', function ($row) {
@@ -213,6 +213,14 @@ class itemRequisitionController extends Controller
             'uploaditem' => $uploaditem
         ];
 
+        for ($i=0; $i <count($data['detailreq']) ; $i++) { 
+            $data['detailreq'][$i] = [
+                'ItemRequisitionId' => $data['detailreq'][$i]->ItemRequisitionId,
+                'ItemId' => $data['detailreq'][$i]->ItemId,
+                'ItemQty' => $data['detailreq'][$i]->ItemQty,
+                'NameItem' => Item::where('ItemId', $data['detailreq'][$i]->ItemId)->first()->Name,
+            ];
+        }
         return view('ItemRequisition.edit', compact('data'));
     }
 
