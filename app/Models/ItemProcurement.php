@@ -16,6 +16,7 @@ class ItemProcurement extends Model
         'ItemProcurementId',
         'LocationId',
         'ProjectId',
+        'ItemRequisitionId',
         'No',
         'Tanggal',
         'Notes',

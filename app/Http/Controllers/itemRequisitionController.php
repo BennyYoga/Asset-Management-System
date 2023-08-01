@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Models\ItemRequisition;
 use App\Models\Location;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
@@ -131,7 +132,8 @@ class itemRequisitionController extends Controller
         $Uuid = (string) Str::uuid();
         $data = [
             'ItemRequisitionId' => $Uuid,
-            'LocationId' => request('LocationId'),
+            'LocationFrom' => request('LocationFrom'),
+            'LocationTo' => 'asdasdwasd',
             'ProjectId' => "asdasdwasd",
             'No' => 1,
             'Tanggal' => date('Y-m-d H:i:s', time()),
@@ -139,7 +141,7 @@ class itemRequisitionController extends Controller
             'Active' => 1,
             'IsPermanentDelete' => 0,
             'CreatedBy' => 32,
-            'UpdatedBy' => 32
+            'UpdatedBy' => 32,
         ];
         ItemRequisition::create($data);
 

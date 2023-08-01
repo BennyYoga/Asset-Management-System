@@ -131,6 +131,7 @@ class ItemProcurementController extends Controller
             'ItemProcurementId' => $Uuid,
             'LocationId' => request('LocationId'),
             'ProjectId' => 1,
+            'ItemRequisitionId' => 123123,
             'IsPermanentDelete' => 0,
             'Status' => null,
             'Active' => 1,

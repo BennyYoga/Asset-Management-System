@@ -16,7 +16,8 @@ class ItemRequisition extends Model
 
     protected $fillable = [
         'ItemRequisitionId',
-        'LocationId',
+        'LocationFrom',
+        'LocationTo',
         'ProjectId',
         'No',
         'Tanggal',
