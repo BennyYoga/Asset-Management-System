@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Menu extends Model
@@ -14,5 +15,15 @@ class Menu extends Model
     public function role()
     {
         return $this->belongsToMany(Role::class, 'MenuId');
+    }
+
+    public function menurole()
+    {
+        $roles = DB::table('RoleMenu')
+        ->leftJoin('Role', 'RoleMenu.RoleId', '=', 'Role.RoleId')
+        ->where('RoleMenu.MenuId', $this->MenuId)
+        ->pluck('Role.RoleName')
+        ->toArray();
+        return $roles;
     }
 }

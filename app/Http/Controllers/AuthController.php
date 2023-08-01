@@ -19,7 +19,8 @@ class AuthController extends Controller
         {
             return view('Login.login');
         }else{
-            return redirect()->route('dashboard.index')->withToastWarning('Anda Sudah login');
+            Session::flush();
+            return redirect()->route('login')->with('error', 'Tidak Mempunyai Hak Akses');
         }
         
     }
@@ -28,16 +29,20 @@ class AuthController extends Controller
         $credentials = $request->only('Username', 'Password');
         $user = UserModel::where('Username', $credentials['Username'])->first();
         if($user && Hash::check($credentials['Password'], $user->Password)){
-            $request->session()->put('user', $user);
+            $rolemenu = collect($user->menuRole());
+            $request->session()->put([
+                'user' => $user,
+                'menu' => $rolemenu,
+                'role' => $user->fk_role,
+            ]);
+            // dd(session('role'));
             $RoleName = $user->fk_role()->first()->RoleName;
-            $Location = $user->getLocName();
             if($RoleName == 'SuperAdmin'){
-            // dd(session(['user' => $user]));
-            return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai'. $RoleName);
+            return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName);
             }elseif($RoleName =='AdminLocal'){
-                return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName. ' di Lokasi: '. $Location);
+                return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName. ' di Lokasi: '. $user->getLocName());
             }else {
-                return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName. ' di Lokasi: '. $Location);
+                return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName. ' di Lokasi: '. $user->getLocName());
             }
         }
         else{

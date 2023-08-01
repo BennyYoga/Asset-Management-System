@@ -60,10 +60,18 @@ class UserModel extends Authenticatable
         $checkrolemenu = Role::join('RoleMenu', 'Role.RoleId', '=', 'RoleMenu.RoleId')
         ->join('Menu', 'RoleMenu.MenuId', '=', 'Menu.MenuId')
         ->where('Role.RoleId', $this->RoleId)
-        ->whereIn('Menu.MenuName', $roles)
+        ->whereIn('Menu.MenuId', $roles)
         ->first();
     
     return $checkrolemenu;
+    }
+    public function menuRole()
+    {
+        $roles = Menu::pluck('MenuId')->toArray();
+        $checkrolemenu = Role::join('RoleMenu', 'Role.RoleId', '=', 'RoleMenu.RoleId')
+        ->where('Role.RoleId', $this->RoleId)
+        ->whereIn('RoleMenu.MenuId', $roles)->get();
+        return $checkrolemenu;
     }
 
 }

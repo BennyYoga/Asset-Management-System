@@ -33,8 +33,7 @@ class CheckRole
                 }
             }
         }
-    
-        // Jika sesi tidak tersedia atau peran tidak sesuai, arahkan pengguna ke halaman tertentu
+
         return redirect()->route('login')->withToastError('Anda Harus Login Terlebih Dahulu'); // Gantilah 'login' dengan nama route halaman login Anda
     }
             

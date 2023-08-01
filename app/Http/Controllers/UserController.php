@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Role;
-use App\Models\User;
+use App\Models\Location;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -27,21 +27,31 @@ class UserController extends Controller
                     $Role = Role::where('RoleId', $row->RoleId)->first();
                     return $Role->RoleName;
                 })
-                // ->addColumn('action', function ($row) {
-                //     $btn = '<a href=' . route('location.edit', $row->LocationId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                //     $btn .= '<a href=' . route('location.destroy', $row->LocationId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
-                //     return $btn;
-                // })
                 ->make(true);
         }
         return view('User.index');
     }
     public function create()
     {
-        $role = Role::where('RoleId', session('user')->RoleId)->first(); 
-        $location = Role::where('LocationId', $role->LocationId)->where('RoleName', '!=', 'Admin Local')->get();       
-        return view('User.create', compact('location'));
+        $role = Role::where('RoleId', session('user')->RoleId)->first();
+        $locations = Location::where('LocationId', $role->LocationId)->first();
+    
+        if ($role) {
+            if ($role->RoleName == 'SuperAdmin') {
+                $location = Role::WhereNotIn('RoleName', ['SuperAdmin'])->get();
+                return view('User.create', compact('location', 'locations'));
+            } else {
+                $location = Role::where('LocationId', $role->LocationId)
+                                ->whereNotIn('RoleName', ['Admin Local', 'SuperAdmin'])
+                                ->get();       
+                return view('User.create', compact('location'));
+            }
+        } else {
+            // Handle case when $role is null, e.g., show an error message or redirect.
+            return redirect()->route('dashboard')->with('error', 'Role not found.');
+        }
     }
+    
 
     public function store(Request $request)
     {

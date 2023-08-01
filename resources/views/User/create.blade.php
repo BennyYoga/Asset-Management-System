@@ -95,7 +95,7 @@
                             <!-- end row -->
                             <div class="card-footer mb">
                                 <button type="submit" class="btn btn-success">Simpan</button>
-                                <a href="/dashboard" class="btn btn-deactive">
+                                <a href="/user" class="btn btn-deactive">
                                     Batal
                                 </a>
                             </div>

@@ -143,6 +143,7 @@ class itemRequisitionController extends Controller
             'CreatedBy' => 32,
             'UpdatedBy' => 32,
         ];
+        dd($data);
         ItemRequisition::create($data);
 
         //Insert to Detail

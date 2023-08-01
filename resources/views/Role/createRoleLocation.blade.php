@@ -88,6 +88,20 @@
                                         @error('Category') <span class="text-danger">{{$message}}</span> @enderror
                                     </div>
                                 </div>
+                                @if(session('user')->RoleId == 1)
+                                <div class="select-sm select-style-1">
+                                <div class="select-position">
+                                <select name="ParentId" id="ParentId" style="width:100%">
+                                  <option value="" selected disabled> Select Location</option>
+                                  @foreach($location as $lc)
+                                  <option value="<?= $lc->LocatioinId?>">
+                                  <?= $lc->Name?>
+                                  </option>
+                                  @endforeach
+                                </select>
+                              </div>
+                                </div>
+                              @endif
                                 <!-- end input -->
                             </div>
                         </div>
@@ -95,7 +109,7 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <button type="submit" class="btn btn-primary">Submit</button>
-                                <a href="{{route('item.index')}}" class="btn btn-outline-danger">Back</a>
+                                <a href="{{route('role.index')}}" class="btn btn-outline-danger">Back</a>
                             </div>
                         </div>
                     </div>
