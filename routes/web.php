@@ -62,7 +62,7 @@ Route::post('dropzone/delete', [itemRequisitionController::class, 'dropzoneDestr
 Route::get  ('dropzone/get/{id}', [itemRequisitionController::class, 'dropzoneGet'])->name('dropzone.get');
 
 
-Route::get('/inventory', [inventoryController::class, 'index'])->name('inventory.index')->middleware('menu.access:2');
+Route::get('/inventory', [inventoryController::class, 'index'])->name('inventory.index')->middleware('menu.access:SuperAdmin');
 
 Route::group(['middleware'=> ['menu.access:SuperAdmin|Admin Local|7.1']], function(){
     Route::get('category', [CategoryController::class, 'index'])->name('category.index');

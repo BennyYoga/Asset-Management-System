@@ -26,6 +26,11 @@ class RoleController extends Controller
                         $location = Location::where('LocationId', $row->LocationId)->first();
                         return $location->Name;
                     })
+                    ->addColumn('Action', function($row){
+                        $btn = '<a href="' . route('role.edit', $row->RoleId) . '" style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                    return $btn;
+                    })  
+                    ->rawColumns(['Action'])
                     ->make(true);
             }
             return view('Role.index');
@@ -41,7 +46,7 @@ class RoleController extends Controller
                     ->addColumn('Action', function($row){
                         $btn = '<a href="' . route('role.edit', $row->RoleId) . '" style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                     return $btn;
-                    })
+                    })  
                     ->rawColumns(['Action'])
                     ->make(true);
             }
@@ -115,18 +120,46 @@ class RoleController extends Controller
 
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
         $role = Role::where('RoleId', $id)->first();
-        if($role){
-            return view('role.edit', compact('role'));
-        }return redirect()->to('role.index')->withToastError('Data tidak ditemukan');
+
+        $menu = Menu::leftJoin('RoleMenu', function ($join) use ($id) {
+            $join->on('Menu.MenuId', '=', 'RoleMenu.MenuId')
+                ->where('RoleMenu.RoleId', '=', $id);
+        })
+        ->select('Menu.*', 'RoleMenu.RoleId AS RoleId')
+        ->get();
+    
+        $roleMenus = $menu->pluck('RoleId');
+
+    
+        return view('role.edit', compact('role', 'menu', 'roleMenus'));
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'RoleName' => 'required',
-        ]);
+        $roleId = $id;
+        $menuId = $request->input('MenuId');
+
+        // Check if the rolemenu row exists
+        $rolemenu = DB::table('RoleMenu')
+            ->where('RoleId', $roleId)
+            ->where('MenuId', $menuId)
+            ->first();
+
+        if ($rolemenu) {
+            // Remove menu from the role menu
+            DB::table('RoleMenu')
+                ->where('RoleId', $roleId)
+                ->where('MenuId', $menuId)
+                ->delete();
+        } else {
+            // Add menu to the role menu
+            DB::table('RoleMenu')
+                ->insert(['RoleId' => $roleId, 'MenuId' => $menuId]);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

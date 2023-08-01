@@ -139,8 +139,10 @@ class itemRequisitionController extends Controller
             'Active' => 1,
             'IsPermanentDelete' => 0,
             'CreatedBy' => 32,
-            'UpdatedBy' => 32
+            'UpdatedBy' => 32,
+            'LocationFrom' => session('role')->LocationId,
         ];
+        dd($data);
         ItemRequisition::create($data);
 
         //Insert to Detail
