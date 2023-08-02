@@ -69,7 +69,7 @@
                                     <div class="select-style-1">
                                         <label>Select Location</label>
                                         <div class="select-position">
-                                            <select name="LocationFrom" id="LocationFrom" form="ItemReqForm" required>
+                                            <select name="LocationTo" id="LocationTo" form="ItemReqForm" required>
                                                 <option value="" disabled selected>Choose location</option>
                                                 @foreach ($location as $loc)
                                                 <option value="{{ $loc->LocationId }}">{{$loc->Name}}</option>

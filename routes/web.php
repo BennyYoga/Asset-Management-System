@@ -53,7 +53,8 @@ Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Local'], function(){
     Route::get('/itemrequisition/delete/{id}', [itemRequisitionController::class, 'destroy'])->name('itemreq.delete');
     Route::get('/itemrequisition/activate/{id}', [itemRequisitionController::class, 'activate'])->name('itemreq.activate');
     Route::get('/itemrequisition/edit/{id}', [itemRequisitionController::class, 'edit'])->name('itemreq.edit');
-    Route::post('/itemrequisition/update/{id}', [itemRequisitionController::class, 'update'])->name('itemreq.update');
+    Route::put('/itemrequisition/update/{id}', [itemRequisitionController::class, 'update'])->name('itemreq.update');
+    Route::delete('/itemrequisition/file/delete/{id}', [itemRequisitionController::class, 'deleteFile'])->name('itemreq.delete.file');
 });
 
 Route::get('dropzone/example',[itemRequisitionController::class, 'dropzoneExamaple']);

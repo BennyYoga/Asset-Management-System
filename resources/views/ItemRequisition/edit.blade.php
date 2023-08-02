@@ -56,8 +56,9 @@
         </div>
         <!-- end row -->
     </div>
-    <form action="{{ route('itemreq.store') }}" id="ItemReqForm" method="post">
+    <form action="{{ route('itemreq.update', $data['itemreq']->ItemRequisitionId) }}" id="ItemReqForm" method="post">
         @csrf
+        @method('PUT')
     </form>
     <div class="form-elements-wrapper">
         <div class="row">
@@ -75,9 +76,9 @@
                             <div class="select-style-1">
                                 <label>Select Location</label>
                                 <div class="select-position">
-                                    <select name="LocationId" id="LocationId" form="ItemReqForm" required>
+                                    <select name="LocationTo" id="LocationId" form="ItemReqForm" required>
                                         @foreach ($data['location'] as $loc)
-                                        @if($data['itemreq']->LocationId == $loc->LocationId)
+                                        @if($data['itemreq']->LocationTo == $loc->LocationId)
                                         <option value="{{ $loc->LocationId }}" selected>{{$loc->Name}}</option>
                                         @else if
                                         <option value="{{ $loc->LocationId }}">{{$loc->Name}}</option>
@@ -89,15 +90,44 @@
                             <!-- end input -->
 
                             <div class="input-style-1">
+                                <label>Transaction Date</label>
+                                <input type="date" id="Tanggal" name="Tanggal" form="ItemReqForm" value="{{ date('Y-m-d', strtotime($data['itemreq']->Tanggal)) }}">
+                                @error('Tanggal') <span class="text-danger">{{$message}}</span> @enderror
+                            </div>
+                            <!-- end input -->
+
+                            <div class="input-style-1">
                                 <label>Notes</label>
                                 <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes" form="ItemReqForm">{{$data['itemreq']->Notes}}</textarea>
                                 @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
                             </div>
                             <!-- end input -->
+                            <div class="input-style-1">
+                                <label>Your File</label>
+                                @foreach ($data['uploaditem'] as $key => $item)
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-1">
+                                                <i class="lni lni-empty-file fs-2 text-body-secondary"></i>
+                                            </div>
+                                            <div class="col-lg-9">
+                                                <a href="{{ asset($item->FilePath) }}" target="_blank">
+                                                    <p class="fs-6 text-body-secondary">{{basename($item->FilePath)}}</p>
+                                                </a>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <a href="#" class="deleteFile" data-item-id="{{$item->RequisitionUploadId}}">
+                                                    <i class="lni lni-trash-can fs-3 m-auto text-danger"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
 
-                            @foreach ($data['uploaditem'] as $item)
-                            <a href="{{ asset($item->FilePath) }}" target="_blank">ini filenya</a><br>
-                            @endforeach
+
                             <div class="input-style-1">
                                 <label>Upload Your File</label>
                                 <form action="{{route('dropzone.store')}}" method="post" name="file" files="true" enctype="multipart/form-data" class="dropzone" id="image-upload">
@@ -242,20 +272,20 @@
         });
     });
 
-  $(document).ready(function() {
-    var itemObject = $('#detailHidden').val();
-    itemObject = JSON.parse(itemObject);
-    var dataObject = $('#itemHidden').val();
-    dataObject = JSON.parse(dataObject);
+    $(document).ready(function() {
+        var itemObject = $('#detailHidden').val();
+        itemObject = JSON.parse(itemObject);
+        var dataObject = $('#itemHidden').val();
+        dataObject = JSON.parse(dataObject);
 
-    var itemDiv = $("<div>").addClass("item row");
-
-    if (itemObject != null) {
-      itemObject.forEach(element => {
         var itemDiv = $("<div>").addClass("item row");
-        var options = dataObject.map(dataItem => `<option value="${dataItem.ItemId}" ${dataItem.ItemId === element.ItemId ? 'selected' : ''}>${dataItem.Name}</option>`).join("");
 
-        itemDiv.html(`
+        if (itemObject != null) {
+            itemObject.forEach(element => {
+                var itemDiv = $("<div>").addClass("item row");
+                var options = dataObject.map(dataItem => `<option value="${dataItem.ItemId}" ${dataItem.ItemId === element.ItemId ? 'selected' : ''}>${dataItem.Name}</option>`).join("");
+
+                itemDiv.html(`
           <div class="col-lg-7">
             <div class="select-style-1 col-lg-12">
               <label>Choose Name Item</label>
@@ -280,13 +310,36 @@
           </div>
         `);
 
-        $("#item-container").append(itemDiv);
-        itemDiv.find(".btn-danger").click(function() {
-            $(this).closest(".item").remove();
-        });
-      });
-    }
-  });
+                $("#item-container").append(itemDiv);
+                itemDiv.find(".btn-danger").click(function() {
+                    $(this).closest(".item").remove();
+                });
+            });
+        }
+    });
 
+    $(".deleteFile").click(function(e) {
+        e.preventDefault();
+        var id = $(this).data("item-id");
+        var card = $(e.target).closest('.card');
+        $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            }),
+            $.ajax({
+                url: `/itemrequisition/file/delete/${id}`,
+                type: 'DELETE',
+                success: function(response) {
+                    var card = $(e.target).closest('.card');
+                    card.remove();
+                    alert(response.message);
+                },
+                error: function(xhr, status, error) {
+                    var errorMessage = xhr.responseJSON.message || 'An error occurred while deleting the item.';
+                    alert(errorMessage);
+                }
+            })
+    });
 </script>
 @endpush

@@ -23,16 +23,33 @@ class itemRequisitionController extends Controller
     {
         if ($request->ajax()) {
             $req  = ItemRequisition::where('IsPermanentDelete', 0)
-            ->orderBy('No', 'desc')
-            ->get();
+                ->orderBy('No', 'desc')
+                ->get();
             return DataTables::of($req)
                 ->addColumn('JumlahBarang', function ($row) {
                     $data = count(DB::table('ItemRequisitionDetail')->where('ItemRequisitionId', $row->ItemRequisitionId)->get());
                     return ($data . ' Item');
                 })
                 ->addColumn('Lokasi', function ($row) {
-                    $lokasi = Location::where('LocationId', $row->LocationFrom)->first();
+                    $lokasi = Location::where('LocationId', $row->LocationTo)->first();
                     return $lokasi->Name;
+                })
+                ->addColumn('dibuat', function ($row) {
+                    $tanggal = date('d', strtotime($row->CreatedDate));
+                    $namaBulan = date('F', strtotime($row->CreatedDate));
+                    $tahun = date('Y', strtotime($row->CreatedDate));
+                    $bulan = $tanggal . ' ' . $namaBulan . ' ' . $tahun;
+                    return [
+                        'display' => $bulan,
+                        'timestamp' => strtotime($row->CreatedDate)
+                    ];
+                })
+                ->addColumn('Tanggal', function ($row) {
+                    $tanggal = date('d', strtotime($row->Tanggal));
+                    $namaBulan = date('F', strtotime($row->Tanggal));
+                    $tahun = date('Y', strtotime($row->Tanggal));
+                    $bulan = $tanggal . ' ' . $namaBulan . ' ' . $tahun;
+                    return $bulan;
                 })
                 ->addColumn('Active', function ($row) {
                     // $btn = '<button type="button" class="btn btn-primary btn-sm">' . $data . '</button>';
@@ -82,7 +99,7 @@ class itemRequisitionController extends Controller
                     } else if ($row->Active == 0) {
                         $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
                     }
-                
+
                     if ($row->Active == 1) {
                         $btn .= '<a href=' . route('itemreq.edit', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                         return $btn;
@@ -132,21 +149,20 @@ class itemRequisitionController extends Controller
         $Uuid = (string) Str::uuid();
         $data = [
             'ItemRequisitionId' => $Uuid,
-            'LocationFrom' => request('LocationFrom'),
-            'LocationTo' => 'asdasdwasd',
+            'LocationFrom' => 'dari session',
+            'LocationTo' => request('LocationTo'),
             'ProjectId' => "asdasdwasd",
             'No' => 1,
-            'Tanggal' => date('Y-m-d H:i:s', time()),
+            'Tanggal' => request('Tanggal'),
             'Notes' => request('Notes'),
             'Active' => 1,
             'IsPermanentDelete' => 0,
             'CreatedBy' => 32,
             'UpdatedBy' => 32,
         ];
-        dd($data);
         ItemRequisition::create($data);
 
-        //Insert to Detail
+        // Insert to Detail
         for ($i = 0; $i < count($request->itemId); $i++) {
             $data = [
                 'ItemRequisitionId' => $Uuid,
@@ -158,10 +174,10 @@ class itemRequisitionController extends Controller
 
         //Upload File
         $file = session('temp-file');
-        $location = Location::where('LocationId', $request->LocationId)->first();
+        $location = Location::where('LocationId', $request->LocationTo)->first();
         foreach ($file as $file) {
-            $filepath = ('images/requisition/'.$location->Name.'/'.$file);
-            $folderPath = public_path('images/requisition/'.$location->Name);
+            $filepath = ('images/requisition/' . $location->Name . '/' . $file);
+            $folderPath = public_path('images/requisition/' . $location->Name);
             if (!File::isDirectory($folderPath)) {
                 File::makeDirectory($folderPath, $mode = 0777, true, true);
             }
@@ -175,7 +191,7 @@ class itemRequisitionController extends Controller
             ];
 
             DB::table('ItemRequisitionUpload')->insert($dataFile);
-            File::move(public_path('/images/temp/'.$file), public_path($filepath));
+            File::move(public_path('/images/temp/' . $file), public_path($filepath));
         }
 
         return response()->redirectToRoute('itemreq.index')->withToastSuccess('Item Requisition has been created');
@@ -216,7 +232,7 @@ class itemRequisitionController extends Controller
             'uploaditem' => $uploaditem
         ];
 
-        for ($i=0; $i <count($data['detailreq']) ; $i++) { 
+        for ($i = 0; $i < count($data['detailreq']); $i++) {
             $data['detailreq'][$i] = [
                 'ItemRequisitionId' => $data['detailreq'][$i]->ItemRequisitionId,
                 'ItemId' => $data['detailreq'][$i]->ItemId,
@@ -237,6 +253,63 @@ class itemRequisitionController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $data = [
+            "LocationTo" => $request->LocationTo,
+            "Tanggal" => $request->Tanggal,
+            "Notes" => $request->Notes,
+            "UpdatedBy" => 32,
+        ];
+
+
+        $checkedItem = DB::table('ItemRequisitionDetail')->where('ItemRequisitionId', $id)->get();
+
+        $item = [];
+        for ($i = 0; $i < count($request->itemId); $i++) {
+            $item[$i] = [
+                'ItemRequisitionId' => $id,
+                'ItemId' => $request->itemId[$i],
+                'ItemQty' => $request->Qty[$i],
+            ];
+        }
+        if (count($checkedItem) != 0) {
+            DB::table('ItemRequisitionDetail')->whereNotIn('ItemId', $request->itemId)->delete();
+            foreach ($item as $IdItem) {
+                DB::table('ItemRequisitionDetail')->updateOrInsert(
+                    ['ItemId' => $IdItem['ItemId']],
+                    ['ItemRequisitionId' => $id, 'ItemQty' => $IdItem['ItemQty']]
+                );
+            }
+        } else {
+            foreach ($item as $item) {
+                DB::table('ItemRequisitionDetail')->insert($item);
+            }
+        }
+
+        ItemRequisition::where('ItemRequisitionId', $id)->update($data);
+
+        //Upload File
+        $file = session('temp-file');
+        $location = Location::where('LocationId', $request->LocationTo)->first();
+        foreach ($file as $file) {
+            $filepath = ('images/requisition/' . $location->Name . '/' . $file);
+            $folderPath = public_path('images/requisition/' . $location->Name);
+            if (!File::isDirectory($folderPath)) {
+                File::makeDirectory($folderPath, $mode = 0777, true, true);
+            }
+
+            $dataFile = [
+                "RequisitionUploadId" => (string) Str::uuid(),
+                "ItemRequisitionId" => $id,
+                "FilePath" => $filepath,
+                "UploadedBy" => "Benny",
+                "UploadedDate" => date('Y-m-d H:i:s', time()),
+            ];
+
+            DB::table('ItemRequisitionUpload')->insert($dataFile);
+            File::move(public_path('/images/temp/' . $file), public_path($filepath));
+        }
+
+        return redirect()->route('itemreq.index')->withToastSuccess('Item Requisition has been updated');
     }
 
     /**
@@ -292,5 +365,13 @@ class itemRequisitionController extends Controller
             unlink($path);
         }
         return $filename;
+    }
+
+    public function deleteFile($id)
+    {
+        $file = DB::table('ItemRequisitionUpload')->where('RequisitionUploadId', $id)->first();
+        unlink(public_path($file->FilePath));
+        DB::table('ItemRequisitionUpload')->where('RequisitionUploadId', $id)->delete();
+        return response()->json(['message' => 'File deleted successfully'], 200);
     }
 }
