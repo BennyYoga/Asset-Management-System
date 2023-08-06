@@ -7,65 +7,79 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 <link href="{{ asset('vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" ></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"  />
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 @endpush
 
 @section('content')
-<h1>Edit Role: {{ $role->RoleName }}</h1>
-<ul>
-<table>
-  <tr>
-    <th>Company</th>
-    <th>Contact</th>
-    <th>Country</th>
-  </tr>
-  @foreach ($roleMenus as $item)
-  <tr>
-    <td>{{$item->Name}}</td>
-    <td>{{$item->Contact}}</td>
-    <td>{{$item->Country}}</td>
-  </tr>
-  @endforeach
-</table>
+<body>
+        <h1>Menu Access</h1>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-striped" id="table">
+                            <thead>
+                              <tr>
+                                  <th>Menu Name</th>
+                                  <th>ParentMenu</th>
+                                  <th>Description</th>
+                                  <th>Allow Access</th>
+                              </tr> 
+                            </thead>
+                            <tbody>
+                              @foreach($menu as $item)
+                                  <tr>
+                                    <td>{{ $item->MenuName }}</td>
+                                    <td>{{$item->ParentId}}</td>
+                                    <td>{{ $item->MenuDesc }}</td>
+                                    <td>
+                                        <input data-menuid="{{ $item->MenuId }}" class="toggle-class" type="checkbox" data-onstyle="success" data-offstyle="danger" data-toggle="toggle" data-on="YES" data-off="NO" {{ $roleMenus->contains('RoleId', $item->RoleId) ? '' : 'checked' }}>
+                                  </tr>
+                              @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
-    <!-- @foreach ($menu as $item)
-        <li>
-            {{ $item->MenuId }} 
-            <button class="toggle-menu" data-rolemenu-id="{{ $item->RoleId }}" data-menu-id="{{ $item->MenuId }}">
-                {{ $roleMenus->contains('RoleId', $item->RoleId) ? 'OFF' : 'ON' }}
-            </button>
-        </li>
-    @endforeach
-</ul>
-@endsection -->
+<?php
+echo "<script>";
+echo "var roleId = " . json_encode($role->RoleId) . ";"; // Pass only the Role ID
+echo "</script>";
+?>
+<script>
+    $(document).ready(function () {
+          $('#table').DataTable();
+     });
+  $(function() {
+    $('.toggle-class').change(function() {
+        var MenuId = $(this).data('menuid');
+        var postData = {
+            '_token': '{{ csrf_token() }}', // Include Laravel CSRF token for security
+            'MenuId': MenuId,
+            'RoleId': roleId
+        };
 
-@section('scripts')
-    <script>
-        $(document).ready(function() {
-            $('.toggle-menu').click(function() {
-                var rolemenus = $(this).data('rolemenu-id');
-                var menuId = $(this).data('menu-id');
-
-                $.ajax({
-                    url: '/roles/{{ $role->RoleId }}/toggle-menu',
-                    type: 'POST',
-                    data: {
-                        MenuId: menuId,
-                        RoleId: rolemenus,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        rolemenus = response.roleMenus;
-                        if (in_array(menuId, rolemenus)) {
-                            $(this).text('OFF');
-                        } else {
-                            $(this).text('ON');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(error);
-                    }
-                });
-            });
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: '{{ route("role.update") }}', // Use named route for URL
+            data: postData, // Send the data object
+            success: function(data){
+              console.log(data.success)
+            }
         });
-    </script>
+    })
+  })
+</script>
+</html>
 @endsection

@@ -144,7 +144,8 @@ Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Local'], function(){
     Route::get('role/create', [RoleController::class, 'createRoleLocation'])->name('role.create');
     Route::post('role/store', [RoleController::class, 'storeRoleLocation'])->name('roleLocation.store');
     Route::get('role/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
-    Route::put('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
+    Route::post('role/update/', [RoleController::class, 'update'])->name('role.update');
+    // Route::post('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::get('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
 });
 
@@ -157,7 +158,7 @@ Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Local'], function(){
 Route::get('login', [AuthController::class, 'index'])->name('login');
 // Route::get('changePassword', [AuthController::class, 'changePassword'])->name('changePassword.index');
 // Route::put('updatePassword/{id}', [AuthController::class, 'updatePassword'])->name('updatePassword');
-Route::get('post-logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('post-logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('tampil', [AuthController::class, 'tampil'])->name('tampil');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
 Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');

@@ -127,19 +127,18 @@ class RoleController extends Controller
         $menu = Menu::leftJoin('RoleMenu', function ($join) use ($id) {
             $join->on('Menu.MenuId', '=', 'RoleMenu.MenuId')
                 ->where('RoleMenu.RoleId', '=', $id);
-        })
+        })->whereNotIn('Menu.MenuId', [2, 3, 4])
         ->select('Menu.*', 'RoleMenu.RoleId AS RoleId')
         ->get();
-    
+        // dd($menu);
         $roleMenus = $menu->pluck('RoleId');
-
     
         return view('role.edit', compact('role', 'menu', 'roleMenus'));
     }
 
     public function update(Request $request, $id)
     {
-        $roleId = $id;
+        $roleId = $id; // Assign the ID value to $roleId directly
         $menuId = $request->input('MenuId');
 
         // Check if the rolemenu row exists
