@@ -144,7 +144,7 @@ Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Local'], function(){
     Route::get('role/create', [RoleController::class, 'createRoleLocation'])->name('role.create');
     Route::post('role/store', [RoleController::class, 'storeRoleLocation'])->name('roleLocation.store');
     Route::get('role/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
-    Route::post('role/update/', [RoleController::class, 'update'])->name('role.update');
+    Route::post('/role/update/{menuId}/{roleId}',[RoleController::class, 'update'])->name('role.update');
     // Route::post('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::get('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
 });

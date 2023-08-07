@@ -136,29 +136,26 @@ class RoleController extends Controller
         return view('role.edit', compact('role', 'menu', 'roleMenus'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $roleId = $id; // Assign the ID value to $roleId directly
-        $menuId = $request->input('MenuId');
+    public function update(Request $request, $menuId, $roleId)
+{
+    $rolemenu = DB::table('RoleMenu')
+        ->where('RoleId', $roleId)
+        ->where('MenuId', $menuId)
+        ->first();
 
-        // Check if the rolemenu row exists
-        $rolemenu = DB::table('RoleMenu')
+    if ($rolemenu) {
+        // Remove menu from the role menu
+        DB::table('RoleMenu')
             ->where('RoleId', $roleId)
             ->where('MenuId', $menuId)
-            ->first();
-
-        if ($rolemenu) {
-            // Remove menu from the role menu
-            DB::table('RoleMenu')
-                ->where('RoleId', $roleId)
-                ->where('MenuId', $menuId)
-                ->delete();
-        } else {
-            // Add menu to the role menu
-            DB::table('RoleMenu')
-                ->insert(['RoleId' => $roleId, 'MenuId' => $menuId]);
-        }
-
-        return response()->json(['success' => true]);
+            ->delete();
+    } else {
+        // Add menu to the role menu
+        DB::table('RoleMenu')
+            ->insert(['RoleId' => $roleId, 'MenuId' => $menuId]);
     }
+
+    return response()->json(['success' => true]);
+}
+
 }
