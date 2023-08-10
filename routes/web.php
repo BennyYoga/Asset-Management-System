@@ -166,8 +166,5 @@ Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.pos
 Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');
 
 
-<<<<<<< HEAD
 Route::get('/master-requisition', [MasterController::class, 'masterApprovalReq'])->name('master.req');
-=======
 Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
->>>>>>> ad4b0d137a41247a5f4f923a113c33ff5e0b36fb
