@@ -16,7 +16,9 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\MasterController;
 use App\Models\Category;
+use App\Models\Role;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -152,3 +154,5 @@ Route::get('tampil', [AuthController::class, 'tampil'])->name('tampil');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
 Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');
 
+
+Route::get('/master-requisition', [MasterController::class, 'masterApprovalReq'])->name('master.req');
