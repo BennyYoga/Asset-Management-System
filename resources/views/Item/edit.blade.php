@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Asset Management System | Edit Category')
+@section('title','Assets Management System | Edit Item')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -34,7 +34,7 @@
                 </div>
                 @endif --}}
                 <div class="title mb-30">
-                    <h2>Add Data Item</h2>
+                    <h2>Edit Data Item</h2>
                 </div>
             </div>
             <!-- end col -->
@@ -43,7 +43,13 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="item.index">Item</a>
+                                <a href="{{ route('dashboard.index')}}">Dashboard</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="#">Item</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('item.index')}}">List Item</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">
                                 Edit

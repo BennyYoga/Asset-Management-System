@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Asset Management System | Create Category')
+@section('title','Asset Management System | Create Role')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -43,10 +43,13 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="item.index">Item</a>
+                                <a href="{{ route('dashboard.index') }}">Dashboard</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('role.index') }}">Role</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">
-                                Create
+                                Create Role
                             </li>
                         </ol>
                     </nav>

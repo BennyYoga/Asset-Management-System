@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Assets Management System | Create Category')
+@section('title','Assets Management System | Create Local Admin')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -23,7 +23,7 @@
                     </div>
                     @endif --}}
                     <div class="title mb-30">
-                        <h2>Add Admin Local</h2>
+                        <h2>Add Local Admin</h2>
                     </div>
                 </div>
                 <!-- end col -->
@@ -32,10 +32,13 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="/dashboard">Location</a>
+                                    <a href="{{ route('dashboard.index') }}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('role.index') }}">Role</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
-                                    Create
+                                    Create Local Admin
                                 </li>
                             </ol>
                         </nav>

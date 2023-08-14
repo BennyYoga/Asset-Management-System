@@ -17,8 +17,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\RoleController;
-use App\Models\Menu;
+use App\Http\Controllers\MasterController;
+use App\Models\Category;
 use App\Models\Role;
+use App\Models\Menu;
 use Illuminate\Routing\RouteGroup;
 use Illuminate\Support\Facades\Route;
 
@@ -96,6 +98,7 @@ Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi|8.2'], functio
     Route::post('/itemprocurement/update/{id}', [ItemProcurementController::class, 'update'])->name('itemproc.update');
     Route::get('/itemprocurement/delete/{id}', [ItemProcurementController::class, 'destroy'])->name('itemproc.destroy');
     Route::get('/itemprocurement/activate/{id}', [ItemProcurementController::class, 'activate'])->name('itemproc.activate');
+    Route::delete('/itemprocurement/file/delete/{id}', [ItemProcurementController::class, 'deleteFile'])->name('itemproc.delete.file');
 });
 Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi'], function() {
     Route::get('/itemtransfer', [ItemTransferController::class, 'index'])->name('itemtransfer.index');
@@ -171,7 +174,8 @@ Route::get('tampil', [AuthController::class, 'tampil'])->name('tampil');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
 Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');
 
-
 Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
 
 Route::get('job', [JobController::class, 'index'])->name('job.index');
+Route::get('/master/requisition', [MasterController::class, 'masterApprovalReq'])->name('master.req');
+Route::get('/master/requisition/setting/{id}', [MasterController::class, 'masterApprovalReqSetting'])->name('master.req.setting');

@@ -23,7 +23,7 @@
                     </div>
                     @endif --}}
                     <div class="title mb-30">
-                        <h2>Add Location</h2>
+                        <h2>Add Category</h2>
                     </div>
                 </div>
                 <!-- end col -->
@@ -32,7 +32,13 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="location.index">Category</a>
+                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="#">Item</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('category.index')}}">Category</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Create

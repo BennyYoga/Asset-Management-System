@@ -208,7 +208,7 @@ class ItemProcurementController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\ItemProcurement  $itemProcurement
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -228,6 +228,14 @@ class ItemProcurementController extends Controller
             'uploaditem' => $uploaditem
         ];
 
+        for ($i = 0; $i < count($data['detailproc']); $i++) {
+            $data['detailproc'][$i] = [
+                'ItemProcurementId' => $data['detailproc'][$i]->ItemProcurementId,
+                'ItemId' => $data['detailproc'][$i]->ItemId,
+                'ItemQty' => $data['detailproc'][$i]->ItemQty,
+                'NameItem' => Item::where('ItemId', $data['detailproc'][$i]->ItemId)->first()->Name,
+            ];
+        }
         return view('ItemProcurement.edit', compact('data'));
     }
 
@@ -235,12 +243,68 @@ class ItemProcurementController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ItemProcurement  $itemProcurement
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ItemProcurement $itemProcurement)
+    public function update(Request $request, $id)
     {
-        //
+        $data = [
+            "LocationId" => $request->LocationId,
+            "Tanggal" => $request->Tanggal,
+            "Notes" => $request->Notes,
+            "UpdatedBy" => 32,
+        ];
+
+
+        $checkedItem = DB::table('ItemProcurementDetail')->where('ItemProcurementId', $id)->get();
+
+        $item = [];
+        for ($i = 0; $i < count($request->itemId); $i++) {
+            $item[$i] = [
+                'ItemProcurementId' => $id,
+                'ItemId' => $request->itemId[$i],
+                'ItemQty' => $request->Qty[$i],
+            ];
+        }
+        if (count($checkedItem) != 0) {
+            DB::table('ItemProcurementDetail')->whereNotIn('ItemId', $request->itemId)->delete();
+            foreach ($item as $IdItem) {
+                DB::table('ItemProcurementDetail')->updateOrInsert(
+                    ['ItemId' => $IdItem['ItemId']],
+                    ['ItemProcurementId' => $id, 'ItemQty' => $IdItem['ItemQty']]
+                );
+            }
+        } else {
+            foreach ($item as $item) {
+                DB::table('ItemProcurementDetail')->insert($item);
+            }
+        }
+
+        ItemProcurement::where('ItemProcurementId', $id)->update($data);
+
+        //Upload File
+        $file = session('temp-file');
+        $location = Location::where('LocationId', $request->LocationId)->first();
+        foreach ($file as $file) {
+            $filepath = ('images/procurement/' . $location->Name . '/' . $file);
+            $folderPath = public_path('images/procurement/' . $location->Name);
+            if (!File::isDirectory($folderPath)) {
+                File::makeDirectory($folderPath, $mode = 0777, true, true);
+            }
+
+            $dataFile = [
+                "ProcurementUploadId" => (string) Str::uuid(),
+                "ItemProcurementId" => $id,
+                "FilePath" => $filepath,
+                "UploadedBy" => "Rezky",
+                "UploadedDate" => date('Y-m-d H:i:s', time()),
+            ];
+
+            DB::table('ItemProcurementUpload')->insert($dataFile);
+            File::move(public_path('/images/temp/' . $file), public_path($filepath));
+        }
+
+        return redirect()->route('itemproc.index')->withToastSuccess('Item Procurement has been updated');
     }
 
     /**
@@ -289,5 +353,12 @@ class ItemProcurementController extends Controller
             unlink($path);
         }
         return $filename;
+    }
+    public function deleteFile($id)
+    {
+        $file = DB::table('ItemProcurementUpload')->where('ProcurementUploadId', $id)->first();
+        unlink(public_path($file->FilePath));
+        DB::table('ItemProcurementUpload')->where('ProcurementUploadId', $id)->delete();
+        return response()->json(['message' => 'File deleted successfully'], 200);
     }
 }
