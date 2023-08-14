@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Asset Management System | Dashboard')
+@section('title','Assets Management System | List Item')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -18,7 +18,7 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <div class="title mb-30">
-                        <h2>Item</h2>
+                        <h2>List Item</h2>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -26,10 +26,13 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
+                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
                                     <a href="#">Item</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
-                                    Page
+                                    List Item
                                 </li>
                             </ol>
                         </nav>

@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Assets Management System | Master Approval | Requisition')
+@section('title','Assets Management System | Master Approval: Requisition')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -155,8 +155,8 @@
             {data: 'RoleName', name: 'RoleName'},
             {data: 'RoleName', name: 'RoleName'},
             {data: 'RoleName', name: 'RoleName'},
-            {data: 'RoleName', name: 'RoleName'},
-            {data: 'RoleName', name: 'RoleName'},
+            {data: 'UpdatedBy', name: 'UpdatedBy'},
+            {data: 'UpdatedDate', name: 'UpdatedDate'},
             {data: 'Action', name: 'Action', orderable: false, searchable: false},
         ],
     });    

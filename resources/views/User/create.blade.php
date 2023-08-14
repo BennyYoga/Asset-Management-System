@@ -32,7 +32,10 @@
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item">
-                                        <a href="Pegawai.index">Pegawai</a>
+                                        <a href="{{ route('dashboard.index')}}">Dashboard</a>
+                                    </li>
+                                    <li class="breadcrumb-item">
+                                        <a href="{{ route('user.index')}}">User</a>
                                     </li>
                                     <li class="breadcrumb-item active" aria-current="page">
                                         Create

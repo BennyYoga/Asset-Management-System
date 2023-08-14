@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title', 'Asset Management System | Category')
+@section('title', 'Asset Management System | Edit Role')
 
 @push('css')
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">

@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Asset Monitoring System | Create Item')
+@section('title','Assets Monitoring System | Add Item Requisition')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -41,7 +41,13 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="requisition.index">Item Requisition</a>
+                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="#">Request</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('itemreq.index')}}">Item Requisition</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Create
@@ -237,7 +243,7 @@
         var itemDiv = $("<div>").addClass("item row");
         console.log(itemDiv);
         itemDiv.html(`
-            <div class="col-lg-6">
+            <div class="col-lg-7">
                 <div class="select-style-1 col-lg-12">
                     <label>Choose Name Item</label>
                     <div class="select-position">
@@ -257,7 +263,7 @@
                 </div>
                 <!-- end input -->
             </div>
-            <div class="col-lg-1 m-auto">
+            <div class="col-lg-1 mb-auto mt-auto">
                 <button class="btn btn-danger">Delete</button>
             </div>
         `);

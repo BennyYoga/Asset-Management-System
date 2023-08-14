@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Asset Monitoring System | Dashboard')
+@section('title','Assets Monitoring System | Inventory')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -26,10 +26,10 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="#">Inventory</a>
+                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
-                                    Page
+                                    Inventory
                                 </li>
                             </ol>
                         </nav>

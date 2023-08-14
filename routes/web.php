@@ -97,6 +97,7 @@ Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Local|8.2'], function
     Route::post('/itemprocurement/update/{id}', [ItemProcurementController::class, 'update'])->name('itemproc.update');
     Route::get('/itemprocurement/delete/{id}', [ItemProcurementController::class, 'destroy'])->name('itemproc.destroy');
     Route::get('/itemprocurement/activate/{id}', [ItemProcurementController::class, 'activate'])->name('itemproc.activate');
+    Route::delete('/itemprocurement/file/delete/{id}', [ItemProcurementController::class, 'deleteFile'])->name('itemproc.delete.file');
 });
 Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Local'], function() {
     Route::get('/itemtransfer', [ItemTransferController::class, 'index'])->name('itemtransfer.index');
@@ -165,6 +166,7 @@ Route::get('tampil', [AuthController::class, 'tampil'])->name('tampil');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
 Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');
 
-
-Route::get('/master-requisition', [MasterController::class, 'masterApprovalReq'])->name('master.req');
 Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
+
+Route::get('/master/requisition', [MasterController::class, 'masterApprovalReq'])->name('master.req');
+Route::get('/master/requisition/setting/{id}', [MasterController::class, 'masterApprovalReqSetting'])->name('master.req.setting');

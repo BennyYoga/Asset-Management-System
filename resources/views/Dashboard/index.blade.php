@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Asset Monitoring System | Dashboard')
+@section('title','Assets Monitoring System | Dashboard')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -30,21 +30,6 @@
                             <div class="col-md-6">
                                 <div class="title mb-30">
                                     <h2>Dashboard Assets Management System</h2>
-                                </div>
-                            </div>
-                            <!-- end col -->
-                            <div class="col-md-6">
-                                <div class="breadcrumb-wrapper mb-30">
-                                    <nav aria-label="breadcrumb">
-                                        <ol class="breadcrumb">
-                                            <li class="breadcrumb-item">
-                                                <a href="https://demo.plainadmin.com/index.html#0">Dashboard</a>
-                                            </li>
-                                            <li class="breadcrumb-item active" aria-current="page">
-                                                Page
-                                            </li>
-                                        </ol>
-                                    </nav>
                                 </div>
                             </div>
                             <!-- end col -->

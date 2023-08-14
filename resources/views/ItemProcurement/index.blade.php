@@ -27,10 +27,13 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="#">Item Procurement</a>
+                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="#">Request</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
-                                    Page
+                                    Item Procurement
                                 </li>
                             </ol>
                         </nav>
@@ -161,7 +164,7 @@
                 render: function (data, type, row) {
                     // Mengubah tampilan tanggal dari 'Y-m-d H:i:s' menjadi 'Y-m-d' (hanya tanggal)
                     var date = new Date(data);
-                    var formattedDate = date.toLocaleDateString('en-US', {
+                    var formattedDate = date.toLocaleDateString('ID', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
