@@ -28,7 +28,7 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <div class="title mb-30">
-                        <h2>Role</h2>
+                        <h2>Pegawai</h2>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -36,7 +36,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="#">Role</a>
+                                    <a href="#">Pegawai</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Page
@@ -46,10 +46,7 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end mb-3">
-                    @if(session('user')->RoleId == 1)
-                    <a href="{{route('roles.create')}}" class="btn btn-primary" style="margin-right: 10px;">Add Role Location</a>
-                    @endif
-                    <a href="{{route('role.create')}}" class="btn btn-primary">Add Role</a>
+                    <a href="#" class="btn btn-primary">Add</a>
                 </div>
             </div>
         </div>
@@ -60,13 +57,14 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <table class="table" id="category">
+                        <table class="table" id="user">
                             <thead>
                                 <tr class="text-center">
                                     <th>No</th>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
                                     <th>Role Name</th>
-                                    <th>Location Name</th>
-                                    <th> Action </th>
+                                    <th> Location </th>
                                 </tr>
                             </thead>
                         </table>
@@ -86,7 +84,7 @@
 <script type="text/javascript">
     
     $(document).ready(function() {
-        var table = $('#category').DataTable({
+        var table = $('#user').DataTable({
             processing: true,
             serverSide: true,
             ajax: "",
@@ -98,28 +96,31 @@
                     }
                 },
                 {
-                    data: 'RoleName',
-                    name: 'RoleName',
+                    data: 'Fullname',
+                    name: 'Fullname',
                     class: "text-center"
+                },
+                {
+                    data: 'Username',
+                    name: 'Username',
+                    orderable: true,
+                    class: "text-center"
+                },
+                {   
+                    data: 'Role',
+                    name: 'Role',
+                    orderable: true,
                 },
                 {
                     data: 'Location',
                     name: 'Location',
-                    class: "text-center"
-                },
-                {
-                    data: 'Action',
-                    name: 'Action',
-                    class: "text-center",
-                    id:'printCategory',
-                    orderable: false,
-                    searchable: false
-                },
+                    orderable: true,
+                }
 
             ],
             order: [
                 [
-                    1, 'desc'
+                    1, 'asc'
                 ]
             ]
         });

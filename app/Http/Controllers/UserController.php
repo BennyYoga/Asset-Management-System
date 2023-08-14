@@ -12,24 +12,67 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
 
 
-
-
-
 class UserController extends Controller
 {
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $location = UserModel::all();
-            return DataTables::of($location)
+            if (session('role')->RoleName == 'SuperAdmin') {
+                $users = UserModel::whereHas('fk_role', function ($query) {
+                    $query->whereHas('fk_location', function ($query) {
+                        $query->whereNotNull('LocationId');
+                    });
+                })
+                ->get();
+            } elseif (Str::contains(session('role')->RoleName, 'Admin Lokasi')) {
+                $users = UserModel::whereHas('fk_role', function ($query) {
+                    $query->whereHas('fk_location', function ($query) {
+                        $query->where('LocationId', session('role')->LocationId);
+                    });
+                })
+                ->whereHas('fk_role', function ($query) {
+                    $query->where('IsEditable', 1);
+                })
+                ->get();
+            }
+            return DataTables::of($users)
                 ->addIndexColumn()
                 ->addColumn('Role', function ($row) {
-                    $Role = Role::where('RoleId', $row->RoleId)->first();
-                    return $Role->RoleName;
+                    return $row->fk_role->RoleName;
+                })
+                ->addColumn('Lokasi', function ($row) {
+                    return $row->fk_role->fk_location->Name;
                 })
                 ->make(true);
         }
+        
         return view('User.index');
+    }
+    
+
+    public function admin_location(Request $request)
+    {
+        if ($request->ajax()) {
+            $admins = UserModel::whereHas('fk_role', function ($query) {
+                $query->where('RoleName', 'Admin Lokasi');
+            })->get();
+        
+            return DataTables::of($admins)
+                ->addIndexColumn()
+                ->addColumn('Role', function ($row) {
+                    return $row->fk_role->RoleName;
+                })
+                ->addColumn('Location', function ($row) {
+                    // $role = Role::whereHas('fk_location');
+                    // $name = Location::where('RoleId', $role->RoleId);
+                    return $row->fk_role->fk_location->Name;
+                })
+                ->make(true);
+        }
+        
+        return view('User.adminlocal');
+         // Use 'get()' to retrieve the results
+
     }
     public function create()
     {
@@ -38,11 +81,11 @@ class UserController extends Controller
     
         if ($role) {
             if ($role->RoleName == 'SuperAdmin') {
-                $location = Role::WhereNotIn('RoleName', ['SuperAdmin'])->get();
+                $location = Role::all();
                 return view('User.create', compact('location', 'locations'));
             } else {
                 $location = Role::where('LocationId', $role->LocationId)
-                                ->whereNotIn('RoleName', ['Admin Local', 'SuperAdmin'])
+                                ->whereNotIn('RoleName', ['Admin Lokasi', 'SuperAdmin'])
                                 ->get();       
                 return view('User.create', compact('location'));
             }
@@ -83,6 +126,38 @@ class UserController extends Controller
         return redirect()->route('dashboard.index')->with('success', 'Data berhasil ditambahkan');
         }
     }
+
+    public function store_admin(Request $request)
+    {
+        $request->validate([
+            'Username' => 'required',
+            'Fullname' => 'required',
+            'Password' => 'required',
+        ]);
+
+        $data = $request->all();    
+        $data = [
+            'UserId' => (string) Str::uuid(),
+            'RoleId' => request('RoleId'),
+            'Fullname' => request('Fullname'),
+            'Active' => 1, 
+            'IsPermanentDelete' => 0, 
+            'CreatedBy' => session('user')->Fullname,
+            'Username' => request('Username'),
+            'Password' => Hash::make($request->Password),
+        ];
+        $checkusername = UserModel::where('Username', $data['Username'])->first();
+        if($checkusername)
+        {
+            return redirect()->route('user.create')->with('error', 'Username sudah terdaftar');
+
+        }else{
+        // dd($data['Password']);
+        UserModel::create($data);
+        return redirect()->route('dashboard.index')->with('success', 'Data berhasil ditambahkan');
+        }
+    }
+    
 
     public function show($id)
     {

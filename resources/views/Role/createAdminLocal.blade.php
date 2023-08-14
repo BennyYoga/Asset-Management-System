@@ -49,7 +49,7 @@
             <!-- end row -->
         </div>
     
-    <form action="{{route('category.store')}}" method="post" id="category">
+    <form action="{{route('roleadminlocal.store')}}" method="post" id="category">
         @csrf
         @method('POST')
         <div class="form-elements-wrapper">
@@ -61,10 +61,10 @@
                         <div class="select-style-1 col-lg-6">
                             <label>Choose Location</label>
                             <div class="select-position">
-                                <select name="ParentId" id="ParentId" style="width:100%">
+                                <select name="LocationId" id="LocationId" style="width:100%">
                                   <option value="" selected disabled> Select Location</option>
                                   @foreach($location as $lc)
-                                  <option value="<?= $lc->LocatioinId?>">
+                                  <option value="<?= $lc->LocationId?>">
                                   <?= $lc->Name?>
                                   </option>
                                   @endforeach

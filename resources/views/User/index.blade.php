@@ -57,13 +57,14 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <table class="table" id="category">
+                        <table class="table" id="user">
                             <thead>
                                 <tr class="text-center">
                                     <th>No</th>
                                     <th>Full Name</th>
                                     <th>Username</th>
                                     <th>Role Name</th>
+                                    <th>Location</th>
                                 </tr>
                             </thead>
                         </table>
@@ -83,7 +84,7 @@
 <script type="text/javascript">
     
     $(document).ready(function() {
-        var table = $('#category').DataTable({
+        var table = $('#user').DataTable({
             processing: true,
             serverSide: true,
             ajax: "",
@@ -109,8 +110,13 @@
                     data: 'Role',
                     name: 'Role',
                     orderable: true,
-                }
-
+                },
+                {
+                    data: 'Lokasi',
+                    name: 'Lokasi',
+                    orderable: true,
+                },
+            
             ],
             order: [
                 [
