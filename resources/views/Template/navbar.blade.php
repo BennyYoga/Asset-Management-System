@@ -157,7 +157,7 @@
                             document.getElementById('logout-form').submit();">
                             <i class="lni lni-exit"></i> Sign Out
                         </a>
-                        <form id="logout-form" action="{{route('logout')}}" method="GET" class="d-none">
+                    <form id="logout-form" action="{{route('logout')}}" method="POST" class="d-none">
                             @csrf
                         </form>
                     </li>

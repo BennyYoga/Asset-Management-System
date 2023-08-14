@@ -26,4 +26,7 @@ class Menu extends Model
         ->toArray();
         return $roles;
     }
+    public function parentMenu() {
+        return $this->belongsTo(Menu::class, 'ParentId');
+    }
 }
