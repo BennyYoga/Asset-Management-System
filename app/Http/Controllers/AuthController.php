@@ -14,7 +14,6 @@ class AuthController extends Controller
 {
     public function index()
     {
-        // dd(session());
         if(!session()->has('user'))
         {
             return view('Login.login');

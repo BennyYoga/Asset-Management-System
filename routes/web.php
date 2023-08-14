@@ -14,6 +14,7 @@ use App\Http\Controllers\ItemDisposingController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\RoleController;
 use App\Models\Menu;
@@ -165,3 +166,5 @@ Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');
 
 
 Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
+
+Route::get('job', [JobController::class, 'index'])->name('job.index');

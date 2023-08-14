@@ -11,6 +11,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class itemRequisitionController extends Controller
 {
@@ -54,15 +55,15 @@ class itemRequisitionController extends Controller
                 ->addColumn('Active', function ($row) {
                     // $btn = '<button type="button" class="btn btn-primary btn-sm">' . $data . '</button>';
                     if ($row->Active == 0) {
-                        $data = 'Nonactive';
-                        $btn = '<span class="status-btn close-btn" disabled
+                        $data = 'Submitted';
+                        $btn = '<span class="status-btn success-btn" disabled
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                         ' . $data . ' 
                         </span>';
                         return $btn;
                     } else if ($row->Active == 1) {
-                        $data = 'Active';
-                        $btn = '<span class="status-btn active-btn" disabled
+                        $data = 'UnSubmitted';
+                        $btn = '<span class="status-btn warning-btn" disabled
                         style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
                         ' . $data . ' 
                         </span>';
@@ -85,12 +86,16 @@ class itemRequisitionController extends Controller
                         </span>';
                         return $btn;
                     } else {
-                        $data = 'Pending';
-                        $btn = '<span class="status-btn warning-btn" disabled
-                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                        ' . $data . ' 
-                        </span>';
-                        return $btn;
+                        if ($row->Active == 0) {
+                            $data = 'Pending';
+                            $btn = '<span class="status-btn warning-btn" disabled
+                            style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
+                            ' . $data . ' 
+                            </span>';
+                            return $btn;
+                        } else {
+                            return null;
+                        }
                     }
                 })
                 ->addColumn('Action', function ($row) {
@@ -102,9 +107,9 @@ class itemRequisitionController extends Controller
 
                     if ($row->Active == 1) {
                         $btn .= '<a href=' . route('itemreq.edit', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                        $btn .= '<a href=' . route('itemreq.delete', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
                         return $btn;
                     } else if ($row->Active == 0) {
-                        $btn .= '<a href=' . route('itemreq.delete', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
                         return $btn;
                     }
                 })
@@ -231,7 +236,6 @@ class itemRequisitionController extends Controller
             'detailreq' => $detailreq,
             'uploaditem' => $uploaditem
         ];
-
         for ($i = 0; $i < count($data['detailreq']); $i++) {
             $data['detailreq'][$i] = [
                 'ItemRequisitionId' => $data['detailreq'][$i]->ItemRequisitionId,
@@ -240,6 +244,7 @@ class itemRequisitionController extends Controller
                 'NameItem' => Item::where('ItemId', $data['detailreq'][$i]->ItemId)->first()->Name,
             ];
         }
+        session(['upload-file' => $data['uploaditem']]);
         return view('ItemRequisition.edit', compact('data'));
     }
 
@@ -252,15 +257,12 @@ class itemRequisitionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
         $data = [
             "LocationTo" => $request->LocationTo,
             "Tanggal" => $request->Tanggal,
             "Notes" => $request->Notes,
             "UpdatedBy" => 32,
         ];
-
-
         $checkedItem = DB::table('ItemRequisitionDetail')->where('ItemRequisitionId', $id)->get();
 
         $item = [];
@@ -297,8 +299,9 @@ class itemRequisitionController extends Controller
                 File::makeDirectory($folderPath, $mode = 0777, true, true);
             }
 
+            $UuidFile = (string) Str::uuid();
             $dataFile = [
-                "RequisitionUploadId" => (string) Str::uuid(),
+                "RequisitionUploadId" => $UuidFile,
                 "ItemRequisitionId" => $id,
                 "FilePath" => $filepath,
                 "UploadedBy" => "Benny",
@@ -307,7 +310,31 @@ class itemRequisitionController extends Controller
 
             DB::table('ItemRequisitionUpload')->insert($dataFile);
             File::move(public_path('/images/temp/' . $file), public_path($filepath));
+
+            $getFile = DB::table('ItemRequisitionUpload')->where('RequisitionUploadId', $UuidFile)->first();
+            session()->push('upload-file', $getFile);
         }
+
+        //Delete and Update File
+        $fileUpload = session('upload-file')->pluck('RequisitionUploadId');
+        $dataFile = DB::table('ItemRequisitionUpload')->where('ItemRequisitionId', $id)->pluck('RequisitionUploadId');
+        foreach ($dataFile as $data) {
+            $found = false;
+            foreach ($fileUpload as $file) {
+                if ($file == $data) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $Unlink = DB::table('ItemRequisitionUpload')->where('RequisitionUploadId', $data)->first();
+                if ($Unlink) {
+                    DB::table('ItemRequisitionUpload')->where('RequisitionUploadId', $data)->delete();
+                    unlink(public_path($Unlink->FilePath));
+                }
+            }
+        }
+
 
         return redirect()->route('itemreq.index')->withToastSuccess('Item Requisition has been updated');
     }
@@ -369,9 +396,12 @@ class itemRequisitionController extends Controller
 
     public function deleteFile($id)
     {
-        $file = DB::table('ItemRequisitionUpload')->where('RequisitionUploadId', $id)->first();
-        unlink(public_path($file->FilePath));
-        DB::table('ItemRequisitionUpload')->where('RequisitionUploadId', $id)->delete();
+        foreach (session('upload-file') as $key => $element) {
+            if ($element->RequisitionUploadId == $id) {
+                unset(session('upload-file')[$key]);
+            }
+        }
+
         return response()->json(['message' => 'File deleted successfully'], 200);
     }
 }
