@@ -25,6 +25,6 @@ class ApproverMaster extends Model
         ];
 
         public function role() {
-            return $this->belongsTo(Role::class, 'RoleId');         
+            return $this->belongsTo(Role::class, 'RequesterId', 'RoleId');         
         }
 }

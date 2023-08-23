@@ -29,7 +29,7 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <div class="title mb-30">
-                        <h2>Setting Approval Requisition: {{$data['role']->RoleName}}</h2>
+                        <h2>Setting Approval Requisition: {{ $appreq->role->RoleName }}</h2>
                     </div>
                 </div>
                 <!-- end col -->
@@ -63,24 +63,27 @@
                                 <div class="select-style-1">
                                     <label>Employee Level</label>
                                     <div class="select-position">
-                                        <select name="RoleId" id="RoleId" required>
-                                            <option value="" selected>{{$appreq->RoleName}}</option>
+                                        <select name="RequesterId" id="RequesterId" required>
+                                            <option value="{{ $appreq->RequesterId }}" selected>{{ $appreq->role->RoleName }}</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="select-style-1">
                                     <label>Approval Order</label>
                                     <div class="select-position">
-                                        <select name="RoleId" id="RoleId" required>
-                                            <option value="" selected>{{$appreq->RoleName}}</option>
+                                        <select name="ApprovalOrder" id="ApprovalOrder" required>
+                                            <option value="{{ $appreq->ApprovalOrder }}">{{ 'Approval #' . $appreq->ApprovalOrder }}</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="select-sm select-style-1">
-                                    <label>Approval Level</label>
+                                    <label>Approver Level</label>
                                     <div class="select-position input-tags">
-                                        <select class="js-example-basic-single form-" id="tags" multiple name="Role[]">
-                                            <option value="">{{$appreq->RoleName}}</option>                                            
+                                        <select class="js-example-basic-single form-" id="tags" multiple name="Approver[]">
+                                            @for($i =0; $i < count($unselectedApprover); $i++) <option value="{{$unselectedApprover[$i]['RoleId']}}">{{$unselectedApprover[$i]['RoleName']}}</option>
+                                                @endfor
+                                                @for($i =0; $i < count($selectedApprover); $i++) <option selected="selected" value="{{$selectedApprover[$i]['RoleId']}}">{{$selectedApprover[$i]['RoleName']}}</option>
+                                                    @endfor
                                         </select>
                                     </div>
                                 </div>
@@ -102,7 +105,7 @@
                                     <table class="table" id="applist">
                                         <thead>
                                             <tr class="text-left">
-                                                <th>#</th>
+                                                <th>No</th>
                                                 <th>Approval Order</th>
                                                 <th>Approval Level</th>
                                                 <th>Action</th>
@@ -128,10 +131,16 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-    var table = $('#appreq').DataTable({
+    var table = $('#applist').DataTable({
         processing: true,
         serverSide: true,
-        ajax: "{{ route('master.req') }}",
+        ajax: {
+            url: "{{ route('master.req.setting', ['id' => $id]) }}",
+            data: function (d) {
+                // Anda bisa menambahkan data tambahan jika diperlukan
+                // Misalnya: d.additionalParam = value;
+            }
+        },
         columns: [
             {   
             data: 'No',
@@ -145,7 +154,14 @@
             orderable: false,
             searchable: false
             },
-            {data: 'RoleName', name: 'RoleName'},
+            {
+                data: 'ApprovalOrder', 
+                name: 'ApprovalOrder',
+                render: function(data, type, row) {
+                    return "Approval #" + data;
+                }
+            },
+                
             {data: 'RoleName', name: 'RoleName'},
             {data: 'Action', name: 'Action', orderable: false, searchable: false},
         ],
@@ -157,8 +173,8 @@
     });
 
   $('#tags').on('change', function() {
-        var roleSelect = document.querySelector('.select-sm.select-style-1 .js-example-basic-single');
-        var selectedOptions = Array.from(roleSelect.selectedOptions).map(option => option.value);
+        var approverSelect = document.querySelector('.select-sm.select-style-1 .js-example-basic-single');
+        var selectedOptions = Array.from(approverSelect.selectedOptions).map(option => option.value);
         console.log(selectedOptions);
     });
 </script>

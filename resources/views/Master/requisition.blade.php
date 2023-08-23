@@ -153,9 +153,9 @@
             searchable: false
             },
             {data: 'RoleName', name: 'RoleName'},
-            {data: 'RoleName', name: 'RoleName'},
-            {data: 'RoleName', name: 'RoleName'},
-            {data: 'UpdatedBy', name: 'UpdatedBy'},
+            {data: 'Approver1', name: 'Approver1'},
+            {data: 'Approver2', name: 'Approver2'},
+            {data: 'combined_info', name: 'combined_info'},
             {data: 'UpdatedDate', name: 'UpdatedDate'},
             {data: 'Action', name: 'Action', orderable: false, searchable: false},
         ],
