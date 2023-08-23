@@ -14,12 +14,11 @@ class AuthController extends Controller
 {
     public function index()
     {
-        // dd(session());
         if(!session()->has('user'))
         {
             return view('Login.login');
         }else{
-            Session::flush();
+            // Session::flush();
             return redirect()->route('login')->with('error', 'Tidak Mempunyai Hak Akses');
         }
         
@@ -30,16 +29,20 @@ class AuthController extends Controller
         $user = UserModel::where('Username', $credentials['Username'])->first();
         if($user && Hash::check($credentials['Password'], $user->Password)){
             $rolemenu = collect($user->menuRole());
+            // $request->session()->put('user', [$user, $rolemenu, $user->fk_role]);
             $request->session()->put([
+                // 'user',[$user, $rolemenu, $user->fk_role]);
                 'user' => $user,
                 'menu' => $rolemenu,
                 'role' => $user->fk_role,
             ]);
+            
+            // dd(session('user'));
             // dd(session('role'));
             $RoleName = $user->fk_role()->first()->RoleName;
             if($RoleName == 'SuperAdmin'){
             return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName);
-            }elseif($RoleName =='AdminLocal'){
+            }elseif($RoleName =='Admin Lokasi'){
                 return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName. ' di Lokasi: '. $user->getLocName());
             }else {
                 return redirect()->route('dashboard.index')->withToastSuccess('Berhasil Login Sebagai '. $RoleName. ' di Lokasi: '. $user->getLocName());
@@ -52,9 +55,9 @@ class AuthController extends Controller
 
     public function logout()
     {
-        Session::flush();
-        Auth::logout();
 
+        Auth::logout();
+        Session::flush();    
         return redirect()->route('login')->withToastSuccess('Anda berhasil Logout');
     }
 //     $request->validate([

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Location;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class LocationController extends Controller
 {
@@ -94,14 +96,18 @@ class LocationController extends Controller
         ];
         
         if ($request->input('ParentId') === '') {
-            $data['ParentId'] = null; // Set nilai ParentId menjadi NULL
+            $data['ParentId'] = null;
         }
-        $data['CreatedBy'] = 'lala';
-        $data['UpdatedBy'] = 'lala';
-        // dd($request->ParentId);
-        Location::create($data);
-
-
+        $data['CreatedBy'] = session('user')->Fullname;
+        $data['UpdatedBy'] = session('user')->Fullname;
+        $save = Location::create($data);
+        $role =
+        [
+            'LocationId' => $save['LocationId'] ,
+            'RoleName' => 'Admin Lokasi ('. $data['Name']. ')',
+            'IsEditable' => 0,
+        ];
+        Role::create($role);
         return redirect()->route('location.index')->with('success', 'Lokasi berhasil ditambahkan.');
     }
 
@@ -148,10 +154,8 @@ class LocationController extends Controller
         if ($request->input('ParentId') === '') {
             $data['ParentId'] = null; // Set nilai ParentId menjadi NULL
         }
-        $data['CreatedBy'] = 123;
-        $data['UpdatedBy'] = 123;
-        // dd($request->ParentId);
-        // Location::find($LocationId)->update($data);
+        $data['CreatedBy'] = session('user')->Fullname;
+        $data['UpdatedBy'] = session('user')->Fullname;
         Location::find($LocationId)->update($data);
         
         return redirect()->route('location.index')->with('success', 'Lokasi berhasil diubah.');

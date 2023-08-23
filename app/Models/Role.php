@@ -11,6 +11,7 @@ class Role extends Model
     public $timestamps = false;
     protected $table = 'Role';
     protected $guarded = [];
+    
     public function fk_User()
     {
         return $this->belongsToMany(UserModel::class, 'RoleId', 'RoleId');

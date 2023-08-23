@@ -40,13 +40,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="{{ route('dashboard.index')}}">Dashboard</a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="#">Request</a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('itemreq.index')}}">Item Requisition</a>
+                                <a href="item.index">Requisition</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">
                                 Edit
@@ -71,13 +65,18 @@
             <div class="col-sm-12">
                 <!-- input style start -->
                 <div class="card-style mb-30">
+
+                    <div class="invoice-header mb-4">
+                        <h3>Main Data Requisition</h3>
+                        <hr class="border-2">
+                    </div>
+
                     <div class="row mt-3">
                         <div class="col-lg-6">
 
                             <input type="hidden" id="ReqId" form="ItemReqForm" value="{{$data['itemreq']->ItemRequisitionId}}">
                             <input type="hidden" id="itemHidden" value="{{$data['item']}}">
                             <input type="hidden" id="detailHidden" value="{{$data['detailreq']}}">
-
 
                             <div class="select-style-1">
                                 <label>Select Location</label>
@@ -108,9 +107,13 @@
                                 @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
                             </div>
                             <!-- end input -->
+                        </div>
+
+
+                        <div class="col-lg-6">
                             <div class="input-style-1">
                                 <label>Your File</label>
-                                @foreach ($data['uploaditem'] as $key => $item)
+                                @foreach (session('upload-file') as $key => $item)
                                 <div class="card mb-3">
                                     <div class="card-body">
                                         <div class="row align-items-center">
@@ -141,23 +144,39 @@
                                 </form>
                             </div>
                         </div>
-
-
-                        <div class="col-lg-6">
-                            <div id="item-container">
-                                <div class="row item">
-
-                                </div>
-                            </div>
-                            <!-- End Row -->
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
-                                </div>
-                            </div>
-                        </div>
                         <!-- End Col -->
                     </div>
+
+                    <!-- Section Add Item -->
+                    <div class="invoice-header mb-4">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h3>Data Of Item</h3>
+                            </div>
+                            <div class="col-lg-6 text-end">
+                                <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
+                            </div>
+                        </div>
+                        <hr class="border-2">
+                    </div>
+
+
+                    <div class="row">
+                        <div id="item-container">
+                            <div class="row item">
+
+                            </div>
+                        </div>
+                        <!-- End Row -->
+                    </div>
+                    <!-- End Section Add Item -->
+
+                    <!-- Section Approval -->
+                    <div class="invoice-header mb-4">
+                        <h3>Approver</h3>
+                        <hr class="border-2">
+                    </div>
+                    <!-- End Section Approval -->
 
 
                     <div class="row">
@@ -166,12 +185,14 @@
                             <a href="{{route('itemreq.index')}}" class="btn btn-outline-danger">Back</a>
                         </div>
                     </div>
+
                 </div>
                 <!-- end card -->
             </div>
-            <!-- end col -->
         </div>
-        <!-- end row -->
+        <!-- end col -->
+    </div>
+    <!-- end row -->
     </div>
     <!-- end wrapper -->
 </section>
@@ -187,7 +208,13 @@
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+
 <script type="text/javascript">
+    $(document).ready(function() {
+        $('.select2').select2();
+    });
+
     Dropzone.options.imageUpload = {
         maxFilesize: 100,
         renameFile: function(file) {
@@ -246,9 +273,8 @@
 
         var itemDiv = $("<div>").addClass("item row");
         itemDiv.html(`
-            <div class="col-lg-7">
+            <div class="col-lg-8">
                 <div class="select-style-1 col-lg-12">
-                    <label>Choose Name Item</label>
                     <div class="select-position">
                         <select name="itemId[]" id="itemId" form="ItemReqForm" required>
                             <option value="" disabled selected>Choose Item</option>
@@ -260,13 +286,12 @@
             </div>
             <div class="col-lg-3">
                 <div class="input-style-1">
-                    <label>Quantity</label>
                     <input type="number" placeholder="Quantity  " name="Qty[]" min="1" required form="ItemReqForm"/>
                     @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
                 </div>
                 <!-- end input -->
             </div>
-            <div class="col-lg-1 mt-auto mb-auto">
+            <div class="col-lg-1 mt-2">
                 <button class="btn btn-danger">Delete</button>
             </div>
         `);
@@ -292,9 +317,9 @@
                 var options = dataObject.map(dataItem => `<option value="${dataItem.ItemId}" ${dataItem.ItemId === element.ItemId ? 'selected' : ''}>${dataItem.Name}</option>`).join("");
 
                 itemDiv.html(`
-          <div class="col-lg-7">
+          <div class="col-lg-8">
             <div class="select-style-1 col-lg-12">
-              <label>Choose Name Item</label>
+              
               <div class="select-position">
                 <select name="itemId[]" id="itemId" form="ItemReqForm" required>
                   ${options}
@@ -305,13 +330,13 @@
           </div>
           <div class="col-lg-3">
             <div class="input-style-1">
-              <label>Quantity</label>
+              
               <input type="number" value="${element.ItemQty}" placeholder="Quantity" name="Qty[]" min="1" required form="ItemReqForm"/>
               @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
             </div>
             <!-- end input -->
           </div>
-          <div class="col-lg-1 mt-auto mb-auto">
+          <div class="col-lg-1 mt-2">
             <button class="btn btn-danger">Delete</button>
           </div>
         `);
@@ -326,26 +351,33 @@
 
     $(".deleteFile").click(function(e) {
         e.preventDefault();
+
         var id = $(this).data("item-id");
         var card = $(e.target).closest('.card');
+
+        var confirmDelete = confirm("Apakah Anda yakin ingin menghapus file ini?");
+        if (!confirmDelete) {
+            return;
+        }
+
         $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            }),
-            $.ajax({
-                url: `/itemrequisition/file/delete/${id}`,
-                type: 'DELETE',
-                success: function(response) {
-                    var card = $(e.target).closest('.card');
-                    card.remove();
-                    alert(response.message);
-                },
-                error: function(xhr, status, error) {
-                    var errorMessage = xhr.responseJSON.message || 'An error occurred while deleting the item.';
-                    alert(errorMessage);
-                }
-            })
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: `/itemrequisition/file/delete/${id}`,
+            type: 'DELETE',
+            success: function(response) {
+                card.remove();
+                alert(response.message);
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = xhr.responseJSON.message || 'An error occurred while deleting the item.';
+                alert(errorMessage);
+            }
+        });
     });
 </script>
 @endpush

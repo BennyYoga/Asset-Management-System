@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Asset Management System | Create Role')
+@section('title','Asset Management System | Create Category')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -43,13 +43,10 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="{{ route('dashboard.index') }}">Dashboard</a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('role.index') }}">Role</a>
+                                <a href="item.index">Item</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">
-                                Create Role
+                                Create
                             </li>
                         </ol>
                     </nav>
@@ -75,15 +72,15 @@
                             <div class="col-lg-6">
                                 <div class="input-style-1">
                                     <label>Role Name</label>
-                                    <input type="text" placeholder="Role Name" name="RoleName" required />
+                                    <input type="text" placeholder="Role Name" name="RoleName" required  value="{{$role->RoleName}}"/>
                                     @error('Name') <span class="text-danger">{{$message}}</span> @enderror
                                 </div>
                                 @if(session('user')->RoleId == 1)
                                 <div class="select-sm select-style-1">
                                 <div class="select-position">
                                 <select name="ParentId" id="ParentId" style="width:100%">
-                                  <option value="" selected disabled> Select Location</option>
-                                  @foreach($location as $lc)
+                                  <option value="{{$location->Name}}">{{$location->Name}}</option>
+                                  @foreach($locations as $lc)
                                   <option value="<?= $lc->LocationId?>">
                                   <?= $lc->Name?>
                                   </option>
