@@ -1,4 +1,3 @@
-@include('sweetalert::alert')
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,10 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
+
     <title>@yield('title')</title>
+    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('css/main.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/lineicons.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/materialdesignicons.min.css') }}" />
     {{-- <link rel="stylesheet" href="{{ asset('css/fullcalendar.css') }}" /> --}}
@@ -69,6 +68,7 @@
     </main>
     <!-- ======== main-wrapper end =========== -->
     <!-- ========= All Javascript files linkup ======== -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="{{asset('js/bootstrap.bundle.min.js')}}"></script>
     {{-- <script src="{{asset('js/Chart.min.js')}}"></script> --}}
     {{-- <script src="{{asset('js/dynamic-pie-chart.js')}}"></script> --}}
@@ -79,8 +79,9 @@
     {{-- <script src="{{asset('js/polyfill.js')}}"></script> --}}
     {{-- <script src="{{asset('vendor/sweetalert/sweetalert.all.js')}}"></script> --}}
     <script src="{{asset('js/main.js')}}"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    {{-- <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script> --}}
 
+    @include('sweetalert::alert')
 
     @stack('js')
   </body>

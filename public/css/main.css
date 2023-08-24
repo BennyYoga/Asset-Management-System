@@ -359,9 +359,13 @@ h6,
   color: inherit;
 }
 
-.btn-sm {
+/* .btn-sm {
   padding: 10px 20px;
   font-weight: 400;
+} */
+
+.btn-action {
+    padding: 4px 8px;
 }
 
 /* buttons hover effect */
@@ -1912,7 +1916,7 @@ h6,
 
 /* ========== header css ========== */
 .header {
-  padding: 30px 0;
+  padding: 10px 0;
   background: #fff;
 }
 .header .header-left .menu-toggle-btn .main-btn {
@@ -4887,4 +4891,17 @@ h6,
 
 .fw-900 {
   font-weight: 900;
+}
+
+aside::-webkit-scrollbar {
+    width: 5px;
+}
+aside::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+aside::-webkit-scrollbar-thumb {
+    background: #e4e4e4;
+}
+aside::-webkit-scrollbar-thumb:hover {
+    background: #4a6cf7;
 }
