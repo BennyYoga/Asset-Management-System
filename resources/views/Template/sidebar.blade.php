@@ -21,7 +21,7 @@
         <li class="nav-item {{ Request($menuItem->MenuUrl) ? 'active' : '' }}">
             <a href="{{ $menuItem->MenuUrl}}">
                 <span class="icon"> 
-                    <i class="fa fa-home" aria-hidden="true"></i>
+                    <i class="{{$menuItem->MenuIcon}}" aria-hidden="true"></i>
                 </span>
                 <span class="text">{{$menuItem->MenuName}}</span>
             </a>

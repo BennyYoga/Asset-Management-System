@@ -183,16 +183,13 @@ Route::get('tampil', [AuthController::class, 'tampil'])->name('tampil');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
 Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');
 
-<<<<<<< HEAD
 Route::group(['middleware'=> 'menu.access:SuperAdmin'], function() {
 Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
 Route::get('menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
 Route::post('menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
 });
-=======
 Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
 
 Route::get('job', [JobController::class, 'index'])->name('job.index');
 Route::get('/master/requisition', [MasterController::class, 'masterApprovalReq'])->name('master.req');
 Route::get('/master/requisition/setting/{id}', [MasterController::class, 'masterApprovalReqSetting'])->name('master.req.setting');
->>>>>>> ec3ad9d6052413f6ee06eb02e9fdbaab9a099c2f
