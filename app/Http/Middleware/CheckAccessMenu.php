@@ -42,8 +42,9 @@ class CheckAccessMenu
                 }
             }
         }
+        return $next($request);
     
-        return redirect()->back()->withToastWarning('Halaman Tidak tersedia untuk anda');
+        // return redirect()->back()->withToastWarning('Halaman Tidak tersedia untuk anda');
     }
     
             // abort(403, 'Unauthorized'); // Replace 'unauthorized' with the route name you want to redirect unauthorized users to.

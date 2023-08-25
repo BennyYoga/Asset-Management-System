@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ApproverMaster;
 use App\Models\Item;
 use App\Models\ItemRequisition;
+use App\Models\ItemRequisitionApprover;
 use App\Models\Location;
+use App\Models\User;
+use App\Models\UserModel;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use RealRashid\SweetAlert\Facades\Alert;
 use Symfony\Component\VarDumper\Cloner\Data;
 
 class itemRequisitionController extends Controller
@@ -100,9 +105,10 @@ class itemRequisitionController extends Controller
                 })
                 ->addColumn('Action', function ($row) {
                     if ($row->Active == 1) {
-                        $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-danger mr-10" onClick="notificationBeforeChange(event,this)" ><i class="lni lni-power-switch"></i></a>';
                     } else if ($row->Active == 0) {
-                        $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn = '<a href=' . route('itemreq.activate', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn .= '<a href=' . route('itemreq.detail', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-eye"></i></a>';
                     }
 
                     if ($row->Active == 1) {
@@ -128,10 +134,27 @@ class itemRequisitionController extends Controller
     public function create()
     {
         $item = Item::all();
+        $roleid = 19;
+        
+        $approver = ApproverMaster::where('RequesterId', $roleid)->get();
+        $dataOrder = null;
+        for ($i=0; $i < count($approver); $i++) { 
+            $user = $approver->where('ApprovalOrder', $i+1);
+            $j=0;
+            $detailUser = [];
+            foreach ($user as $key => $user) {
+                $detailUser[$j] = UserModel::where('RoleId', $user->ApproverId)->get();
+                // $detailUser[$j]->jabatan = $user->ApprovalId;
+                $j++;
+            }
+            if($detailUser != null){
+                $dataOrder[$i] = $detailUser;
+            }
+        }
         $location = Location::all();
         session()->pull('temp-file', 'default');
         session(['temp-file' => []]);
-        return view('ItemRequisition.create3', compact('item', 'location'));
+        return view('ItemRequisition.create3', compact('item', 'location','dataOrder'));
     }
 
     /**
@@ -199,7 +222,25 @@ class itemRequisitionController extends Controller
             File::move(public_path('/images/temp/' . $file), public_path($filepath));
         }
 
-        return response()->redirectToRoute('itemreq.index')->withToastSuccess('Item Requisition has been created');
+        //Insert Ke Approver
+        $approver = $request->approver;
+        foreach ($approver as $approver) {
+            $detailApprover = explode("_",$approver);
+            $userApprover = UserModel::where('UserId', $detailApprover[0])->first();
+            $dataApprover = [
+                'ItemRequisitionApproverId' => (string) Str::uuid(),
+                'ItemRequisition' => $Uuid,
+                'UserId' => $userApprover->UserId,
+                'Order' => $detailApprover[1],
+                'CreatedBy' => "Ben",
+                'UpdatedBy' => "Ben",
+            ];
+
+            ItemRequisitionApprover::create($dataApprover);
+        }
+        
+        Alert::success('Success', 'Berhasil Membuat Data Requisition');
+        return redirect()->route('itemreq.index');
     }
 
     /**
@@ -211,6 +252,45 @@ class itemRequisitionController extends Controller
     public function show($id)
     {
         //
+        $itemreq = ItemRequisition::where('ItemRequisitionId', $id)->first();
+        $detailreq = DB::table('ItemRequisitionDetail')->where('ItemRequisitionId', $id)->get();
+        $uploaditem = DB::table('ItemRequisitionUpload')->where('ItemRequisitionId', $id)->get();
+        session()->pull('temp-file', 'default');
+        session(['temp-file' => []]);
+        $data = [
+            'itemreq' => $itemreq,
+            'detailreq' => $detailreq,
+            'uploaditem' => $uploaditem
+        ];
+        for ($i = 0; $i < count($data['detailreq']); $i++) {
+            $item = Item::where('ItemId', $data['detailreq'][$i]->ItemId)->first();
+            $data['detailreq'][$i] = [
+                'ItemRequisitionId' => $data['detailreq'][$i]->ItemRequisitionId,
+                'ItemId' => $data['detailreq'][$i]->ItemId,
+                'ItemQty' => $data['detailreq'][$i]->ItemQty,
+                'NameItem' => $item->Name,
+                'TypeItem' => $item->ItemBehavior
+            ];
+        }
+        session(['upload-file' => $data['uploaditem']]);
+
+        $roleid = 19;
+        $approver = ApproverMaster::where('RequesterId', $roleid)->get();
+        $dataOrder = null;
+        for ($i=0; $i < count($approver); $i++) { 
+            $user = $approver->where('ApprovalOrder', $i+1);
+            $j=0;
+            $detailUser = [];
+            foreach ($user as $key => $user) {
+                $detailUser[$j] = UserModel::where('RoleId', $user->ApproverId)->get();
+                $j++;
+            }
+            if($detailUser != null){
+                $dataOrder[$i] = $detailUser;
+            }
+        }
+        $approverChecked = ItemRequisitionApprover::where('ItemRequisition', $id)->get();
+        return view('ItemRequisition.detail', compact('data', 'dataOrder', 'approverChecked'));
     }
 
     /**
@@ -245,7 +325,26 @@ class itemRequisitionController extends Controller
             ];
         }
         session(['upload-file' => $data['uploaditem']]);
-        return view('ItemRequisition.edit', compact('data'));
+
+        $roleid = 19;
+        $approver = ApproverMaster::where('RequesterId', $roleid)->get();
+        $dataOrder = null;
+        for ($i=0; $i < count($approver); $i++) { 
+            $user = $approver->where('ApprovalOrder', $i+1);
+            $j=0;
+            $detailUser = [];
+            foreach ($user as $key => $user) {
+                $detailUser[$j] = UserModel::where('RoleId', $user->ApproverId)->get();
+                // $detailUser[$j]->jabatan = $user->ApprovalId;
+                $j++;
+            }
+            if($detailUser != null){
+                $dataOrder[$i] = $detailUser;
+            }
+        }
+
+        $approverChecked = ItemRequisitionApprover::where('ItemRequisition', $id)->get();
+        return view('ItemRequisition.edit', compact('data', 'dataOrder', 'approverChecked'));
     }
 
     /**
@@ -335,8 +434,27 @@ class itemRequisitionController extends Controller
             }
         }
 
+        //Insert Ke Approver
 
-        return redirect()->route('itemreq.index')->withToastSuccess('Item Requisition has been updated');
+        ItemRequisitionApprover::where('ItemRequisition', $id)->delete();
+        $approver = $request->approver;
+        foreach ($approver as $approver) {
+            $detailApprover = explode("_",$approver);
+            $userApprover = UserModel::where('UserId', $detailApprover[0])->first();
+            $dataApprover = [
+                'ItemRequisitionApproverId' => (string) Str::uuid(),
+                'ItemRequisition' => $id,
+                'UserId' => $userApprover->UserId,
+                'Order' => $detailApprover[1],
+                'CreatedBy' => "Ben",
+                'UpdatedBy' => "Ben",
+            ];
+
+            ItemRequisitionApprover::create($dataApprover);
+        }
+
+        Alert::success('Success', 'Berhasil Mengupdate Data Requisition');
+        return redirect()->route('itemreq.index');
     }
 
     /**
@@ -349,7 +467,9 @@ class itemRequisitionController extends Controller
     {
         $data = ItemRequisition::where('ItemRequisitionId', $id);
         $data->update(['IsPermanentDelete' => 1]);
-        return redirect()->route('itemreq.index')->withToastSuccess('Item has been deleted');
+        
+        Alert::success('Success', 'Berhasil Menghapus Data Requisition');
+        return redirect()->route('itemreq.index');
     }
 
     public function activate($id)
@@ -360,7 +480,8 @@ class itemRequisitionController extends Controller
         } else {
             ItemRequisition::where('ItemRequisitionId', $id)->update(['Active' => 1]);
         }
-        return redirect()->route('itemreq.index')->withToastSuccess('Status has been updated');
+        Alert::success('Success', 'Berhasil Mengubah Status Requisition');
+        return redirect()->route('itemreq.index');
     }
 
     public function dropzoneExample()

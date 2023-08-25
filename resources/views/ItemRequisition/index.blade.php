@@ -71,9 +71,27 @@
         <!-- End Row -->
     </div>
 </section>
-@endsection
 
-@section('content')
+
+<!-- Change Status Requisition Modals -->
+<div id="activateStatus" class="modal fade bd-example-modal-mb" tabindex="-1" role="dialog" aria-labelledby="add-categori" aria-hidden="true">
+    <div class="modal-dialog modal-mb modal-dialog-centered">
+      <div class="modal-content card-style ">
+            <div class="modal-header px-0">
+                <h5 class="text-bold" id="exampleModalLabel">Submit Requisition</h5>
+            </div>
+          <div class="modal-body px-0">
+                <p class="mb-40">Apakah anda yakin ingin Mensubmit Data Requisition ini?</p>
+
+                <div class="action d-flex flex-wrap justify-content-end">
+                    <button class="btn btn-outline-danger" data-bs-dismiss="modal">Back</button>
+                    <a href="" class="btn btn-primary ml-5" id="changeSubmit">Submit</a>
+                </div>
+            </form>
+          </div>
+      </div>
+    </div>
+</div>
 @endsection
 
 @push('js')
@@ -82,6 +100,15 @@
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 <script type="text/javascript">
+
+function notificationBeforeChange(event, el) {
+            event.preventDefault(); {
+            $('#activateStatus').modal('show');
+            console.log($(el).attr('href'));
+            $("#changeSubmit").attr('href', $(el).attr('href'));
+            }
+        }
+
     $(document).ready(function() {
         var table = $('#itemrequisition').DataTable({
             processing: true,

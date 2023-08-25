@@ -51,6 +51,7 @@ Route::group(['middleware'=>'menu.access:SuperAdmin|Admin Lokasi|7.2'], function
 
 Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi'], function(){
     Route::get('/itemrequisition', [itemRequisitionController::class, 'index'])->name('itemreq.index');
+    Route::get('/itemrequisition/detail/{id}', [itemRequisitionController::class, 'show'])->name('itemreq.detail');
     Route::get('/itemrequisition/create', [itemRequisitionController::class, 'create'])->name('itemreq.create');
     Route::post('/itemrequisition/store', [itemRequisitionController::class, 'store'])->name('itemreq.store');
     Route::get('/itemrequisition/delete/{id}', [itemRequisitionController::class, 'destroy'])->name('itemreq.delete');

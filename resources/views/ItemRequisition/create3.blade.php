@@ -127,15 +127,41 @@
 
                     <!-- Section Approval -->
                     <div class="invoice-header mb-4">
-                        <h3>Approver</h3>
+                        <div class="row">
+                            <div class="col-lg-11">
+                                <h3>Approver</h3>
+
+                            </div>
+                            <div class="col-lg-1 text-end">
+                                <div class="form-check checkbox-style mb-10">
+                                    <input class="form-check-input"type="checkbox" id="checkAll">
+                                </div>
+                            </div>
+                        </div>
+
                         <hr class="border-2">
+                        @foreach ($dataOrder as $key => $app)
+                            <h5 class="mb-2">Order Ke-{{$key+1}}</h5>
+                                @foreach ($app as $jabatan)
+                                    @foreach($jabatan as $personal)
+                                    <div class="form-check checkbox-style mb-10">
+                                        <input
+                                        class="form-check-input"type="checkbox" id="toggleSwitch1"
+                                        name="approver[]" value="{{$personal->UserId}}_{{$key+1}}" form="ItemReqForm"
+                                        />
+                                        <label class="form-check-label" for="toggleSwitch1">{{$personal->Fullname}} - {{$personal->fk_role->RoleName}}</label>
+                                    </div>
+                                    @endforeach
+                                @endforeach
+                                <div class="mb-20"></div>
+                        @endforeach
                     </div>
                     <!-- End Section Approval -->
 
                     <!-- button Submit -->
                     <div class="row">
                         <div class="col-lg-12 text-end">
-                            <input type="submit" class="btn btn-primary" form="ItemReqForm"/>
+                            <input type="submit" class="btn btn-primary" form="ItemReqForm" />
                             <a href="{{route('itemreq.index')}}" class="btn btn-outline-danger">Back</a>
                         </div>
                     </div>
@@ -232,6 +258,11 @@
         itemDiv.find(".btn-danger").click(function() {
             $(this).closest(".item").remove();
         });
+
+    });
+    
+    $("#checkAll").click(function(){
+        $('input:checkbox').not(this).prop('checked', this.checked);
     });
 </script>
 @endpush
