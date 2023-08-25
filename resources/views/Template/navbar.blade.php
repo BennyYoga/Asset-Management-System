@@ -4,15 +4,15 @@
             <div class="col-lg-8 col-md-8 col-6">
                 <div class="header-left d-flex align-items-center">
                     <div class="menu-toggle-btn mr-20">
-                        <button id="menu-toggle" class="main-btn primary-btn btn-hover">
-                            <i class="lni lni-chevron-left me-2"></i> Menu
+                        <button id="menu-toggle" class="btn btn-default">
+                            <i class="fa-solid fa-bars"></i>
                         </button>
                     </div>
-                    <div class="header-search d-none d-md-flex">
-                        {{-- <form action="#">
-                <input type="text" placeholder="Search..." />
-                <button><i class="lni lni-search-alt"></i></button>
-              </form> --}}
+                    {{-- <div class="header-search d-none d-md-flex">
+                        <form action="#">
+                            <input type="text" placeholder="Search..." />
+                            <button><i class="lni lni-search-alt"></i></button>
+                        </form>
                         <div class="header-right flex align-items-center">
                             <div class="filter-box ml-15 d-none d-md-flex me-2">
                                 <button class="" id="filter">
@@ -24,7 +24,7 @@
                             </div>
                         </div>
 
-                    </div>
+                    </div> --}}
                 </div>
             </div>
             <div class="col-lg-4 col-md-4 col-6">
