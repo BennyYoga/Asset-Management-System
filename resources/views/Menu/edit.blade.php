@@ -1,0 +1,94 @@
+@extends('Template.template')
+
+@section('title','Assets Management System | Create Category')
+
+{{-- kalau ada css tambahan selain dari template.blade --}}
+@push('css')
+<link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+<link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+@endpush
+
+@section('content')
+<section class="tab-components">
+    <div class="container-fluid">
+        <!-- ========== title-wrapper start ========== -->
+        <div class="title-wrapper pt-30">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    {{-- @if (session('success'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('success') }}
+                    </div>
+                    @endif --}}
+                    <div class="title mb-30">
+                        <h2>Add Project</h2>
+                    </div>
+                </div>
+                <!-- end col -->
+                <div class="col-md-6">
+                    <div class="breadcrumb-wrapper mb-30">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="project.index">Project</a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    Create
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
+                    {{-- <div>
+                        <button class="btn btn-primary w3-right">Add</button>
+                    </div> --}}
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+        </div>
+    
+    <form action="{{route('menu.update', $menu->MenuId)}}" method="post">
+        @csrf
+        @method('POST')
+        <div class="form-elements-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- input style start -->
+                    <div class="card-style mb-30">
+                        <div class="row">
+                        <div class="input-style-1 col-lg-6">
+                            <label>Menu Name</label>
+                            <input type="text" placeholder="Menu Name" name="MenuName" required value="{{$menu->MenuName}}"/>
+                        </div>
+                        </div>
+                        <div class="input-style-1 col-lg-6">
+                        <label>Menu Description</label>
+                        <input type="text" placeholder="Menu Description" name="MenuDesc" value="{{$menu->MenuDesc}}"/>
+                        </div>
+                        <div class="input-style-1 col-lg-6">
+                            <label>Menu Icon</label>
+                            <input type="text" placeholder="Menu Icon" name="MenuIcon"value="{{$menu->MenuIcon}}"/>
+                    </div>
+                        </div>
+                        </div>
+                            <div class="card-footer mb">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <a href="{{route('menu.index')}}" class="btn btn-outline-danger">Back</a>
+                            </div>
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+        </div>
+        <!-- end wrapper -->
+</section>
+<script>
+</script>
+@endsection

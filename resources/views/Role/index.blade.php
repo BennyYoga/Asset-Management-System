@@ -46,9 +46,6 @@
                     </div>
                 </div>
                 <div class="d-flex justify-content-end mb-3">
-                    @if(session('user')->RoleId == 1)
-                    <a href="{{route('roles.create')}}" class="btn btn-primary" style="margin-right: 10px;">Add Role Location</a>
-                    @endif
                     <a href="{{route('role.create')}}" class="btn btn-primary">Add Role</a>
                 </div>
             </div>
@@ -100,12 +97,10 @@
                 {
                     data: 'RoleName',
                     name: 'RoleName',
-                    class: "text-center"
                 },
                 {
                     data: 'Location',
                     name: 'Location',
-                    class: "text-center"
                 },
                 {
                     data: 'Action',
@@ -119,7 +114,7 @@
             ],
             order: [
                 [
-                    1, 'desc'
+                    0, 'asc'
                 ]
             ]
         });

@@ -16,6 +16,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
+        // dd(UserModel::where('RoleId', 17)->first()->UserId);
         if ($request->ajax()) {
             if (session('role')->RoleName == 'SuperAdmin') {
                 $users = UserModel::whereHas('fk_role', function ($query) {
@@ -54,7 +55,7 @@ class UserController extends Controller
     {
         if ($request->ajax()) {
             $admins = UserModel::whereHas('fk_role', function ($query) {
-                $query->where('RoleName', 'Admin Lokasi');
+                $query->where('RoleName', 'like', '%Admin Lokasi%');
             })->get();
         
             return DataTables::of($admins)
@@ -77,15 +78,21 @@ class UserController extends Controller
     public function create()
     {
         $role = Role::where('RoleId', session('user')->RoleId)->first();
-        $locations = Location::where('LocationId', $role->LocationId)->first();
+        
+        // $locations = Location::where('LocationId', $role->LocationId)->get();
+        // dd($locations);
     
         if ($role) {
             if ($role->RoleName == 'SuperAdmin') {
-                $location = Role::all();
+                $location = Role::where('IsEditable', 1)->get();
+                $locationIds = $location->pluck('LocationId')->toArray();
+
+                // Mengambil lokasi-lokasi yang sesuai dengan LocationId yang ditemukan
+                $locations = Location::whereIn('LocationId', $locationIds)->get();
                 return view('User.create', compact('location', 'locations'));
             } else {
                 $location = Role::where('LocationId', $role->LocationId)
-                                ->whereNotIn('RoleName', ['Admin Lokasi', 'SuperAdmin'])
+                                ->whereNotIn('IsEditable', 1)
                                 ->get();       
                 return view('User.create', compact('location'));
             }
@@ -104,27 +111,33 @@ class UserController extends Controller
             'Password' => 'required',
         ]);
 
-        $data = $request->all();    
-        $data = [
-            'UserId' => (string) Str::uuid(),
-            'RoleId' => request('RoleId'),
-            'Fullname' => request('Fullname'),
-            'Active' => 1, 
-            'IsPermanentDelete' => 0, 
-            'CreatedBy' => session('user')->Fullname,
-            'Username' => request('Username'),
-            'Password' => Hash::make($request->Password),
-        ];
+        if($request->Password != $request->password_confirmation)
+        {
+            return redirect()->route('user.create')->with('error', 'Password tidak sesuai')->withInput();
+        }else{
+            $data = $request->all();    
+            $data = [
+                'UserId' => (string) Str::uuid(),
+                'RoleId' => request('RoleId'),
+                'Fullname' => request('Fullname'),
+                'Active' => 1, 
+                'IsPermanentDelete' => 0, 
+                'CreatedBy' => session('user')->Fullname,
+                'Username' => request('Username'),
+                'Password' => Hash::make($request->Password),
+            ];
         $checkusername = UserModel::where('Username', $data['Username'])->first();
         if($checkusername)
         {
             return redirect()->route('user.create')->with('error', 'Username sudah terdaftar');
 
         }else{
+            dd($data);
         // dd($data['Password']);
         UserModel::create($data);
         return redirect()->route('dashboard.index')->with('success', 'Data berhasil ditambahkan');
         }
+    }
     }
 
     public function store_admin(Request $request)

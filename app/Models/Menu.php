@@ -12,6 +12,9 @@ class Menu extends Model
     protected $table = 'Menu';
     public $timestamps = false;
 
+    protected $fillable = [
+        'MenuId', 'MenuName', 'MenuDesc', 'MenuIcon'
+    ];
     public function role()
     {
         return $this->belongsToMany(Role::class, 'MenuId');

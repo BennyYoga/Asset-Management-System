@@ -98,13 +98,11 @@
                 {
                     data: 'Fullname',
                     name: 'Fullname',
-                    class: "text-center"
                 },
                 {
                     data: 'Username',
                     name: 'Username',
                     orderable: true,
-                    class: "text-center"
                 },
                 {
                     data: 'Role',

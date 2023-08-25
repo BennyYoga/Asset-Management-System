@@ -28,12 +28,15 @@ class ProjectController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn = '';
                     $today = date('Y-m-d');
-                        // $btn = '<a href=' . route('project.edit', $row->ProjectId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                    if($today>$row['EndDate']){
+                        Project::where('ProjectId', $row->ProjectId)->update(['Active' => 0]);
+                    }
                         if ($row->Active == 1) {
-                        // $btn = '<a href=' . route('project.edit', $row->ProjectId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                            $btn .= '<a href=' . route('project.activate', $row->ProjectId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                            $btn .= '<a href=' . route('project.edit', $row->ProjectId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                            $btn .= '<a href=' . route('project.activate', $row->ProjectId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
                             return $btn;
                         } else if ($row->Active == 0) {
+                            $btn .= '<a href=' . route('project.edit', $row->ProjectId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                             $btn .= '<a href=' . route('project.activate', $row->ProjectId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
                             $btn .= '<a href=' . route('project.destroy', $row->ProjectId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
                             return $btn;
@@ -82,8 +85,8 @@ class ProjectController extends Controller
             'LocationId'=>request('LocationId'),
             'Active'=> 1,
             'IsPermanentDelete' => 0,
-            'CreatedBy' => 'lala',
-            'UpdatedBy' => 'lala',
+            'CreatedBy' => session('user')->Fullname,
+            'UpdatedBy' => session('user')->Fullname,
         ];
         Project::create($data);
         return redirect()->route('project.index')->withToastSuccess('Berhasil Menambah Data');
@@ -108,7 +111,12 @@ class ProjectController extends Controller
      */
     public function edit($id)
     {
-        return view('Dashboard.index');
+        $project = Project::where('ProjectId', $id)->first();
+        $location = Location::all();
+        if($project){
+            $projects = Project::where('IsPermanentDelete', 0)->get();
+            return view('project.edit', compact('project', 'location'));
+        }return redirect()->to('project.index')->withToastError('Data Not found');
     }
 
     /**
@@ -120,7 +128,22 @@ class ProjectController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'Name' => 'required',
+            'StartDate'=> 'required',
+            'EndDate'=> 'required', 
+        ]);
+        $data= [
+            'ProjectId' => (string) Str::uuid(),
+            'Name'=> request('Name'),
+            'StartDate'=>request('StartDate'),
+            'EndDate' => request('EndDate'),
+            'LocationId'=>request('LocationId'),
+            'IsPermanentDelete' => 0,
+            'UpdatedBy' => session('user')->Fullname,
+        ];
+        Project::where('ProjectId', $id)->update($data);
+        return redirect()->route('project.index')->withToastSuccess('Data has been updated');
     }
 
     /**
@@ -140,12 +163,15 @@ class ProjectController extends Controller
         $data = Project::where('ProjectId', $id)->first();
         $today = date('Y-m-d');
         if ($today < $data['EndDate']){
-        if ($data->Active == 1) {
-            Project::where('ProjectId', $id)->update(['Active' => 0]);
-        } else {
-            Project::where('ProjectId', $id)->update(['Active' => 1]);
-        }}
+            if ($data->Active == 1) {
+                Project::where('ProjectId', $id)->update(['Active' => 0]);
+                return redirect()->route('project.index')->withToastSuccess('Berhasil');
+            } else {
+                Project::where('ProjectId', $id)->update(['Active' => 1]);
+                return redirect()->route('project.index')->withToastSuccess('Berhasil');
+            }}
         else{
+            
             return redirect()->route('project.index')->withToastError('Tanggal Sudah Kadaluwarsa');
         }
         return redirect()->route('project.index');

@@ -65,9 +65,9 @@
                                     <th>Created By</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
+                                    <th>Location Name</th>
                                     <th>Status</th>
                                     <th>Action</th>
-                                    <th>Location Name</th>
                                 </tr>
                             </thead>
                         </table>
@@ -101,23 +101,28 @@
                 {
                     data: 'Name',
                     name: 'Name',
-                    class: "text-center"
+
                 },
                 {
                     data: 'CreatedBy',
                     name: 'CreatedBy',
                     orderable: true,
-                    class: "text-center"
+
                 },
                 {
                     data: 'StartDate',
                     name: 'StartDate',
-                    class: "text-center"
+
                 },
                 {
                     data: 'EndDate',
                     name: 'EndDate',
-                    class: "text-center"
+
+                },
+                {
+                    data: 'Location',
+                    name: 'Location',
+
                 },
                 {
                     data: 'Active',
@@ -131,20 +136,12 @@
                 {
                     data: 'action',
                     name: 'action',
-                    id:'printProject',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'Location',
-                    name: 'Location',
-                    class: "text-center"
                 },
 
             ],
             order: [
                 [
-                    1, 'asc'
+                    6, 'desc'
                 ]
             ]
         });

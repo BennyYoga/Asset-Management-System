@@ -20,21 +20,15 @@ class MenuController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $menu = Menu::all();
+            $menu = Menu::orderBy('MenuId', 'asc')->get();
             return DataTables::of($menu)
                 ->addColumn('action', function ($row) {
-                    // $btn = '<a href=' . route('menu.edit', $row->MenuId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                    // return $btn;
+                    $btn = '<a href=' . route('menu.edit', $row->MenuId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                    return $btn;
                 })
-                ->addColumn('RoleAccess', function($row){
-                    $roles = $row->menurole();
-            
-                if ($roles) {
-                    return implode(' || ', $roles);
-                }
-            
-                return '';
-                
+                ->addColumn('Parent', function($row){
+                    $parent = Menu::where('MenuId', $row->ParentId)->first();
+                    return $parent ?$parent->MenuName : '';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -62,8 +56,9 @@ class MenuController extends Controller
     public function edit($id)
     {
         $menu = Menu::where('MenuId', $id)->first();
+        $parent =Menu::where('MenuId', $menu->ParentId)->first();
         if($menu){
-        return view ('menu.edit', compact('menu'));
+        return view ('menu.edit', compact('menu', 'parent'));
         }else{
             return redirect()->back()->with('error', 'Menu Tidak ditemukan');
         }
@@ -86,13 +81,15 @@ class MenuController extends Controller
         $data = [
             'MenuName' => request('MenuName'),
             'MenuDesc' => request('MenuDesc'), 
+            'MenuIcon'=>request('MenuIcon'),
         ];
+        // dd($data);
         $menu = Menu::where('MenuId', $id)->first();
         if($menu){
-            $menu->update($data);
-            return redirect()->to('menu.index')->withToastSucces('Berhasil Update Menu');
+            Menu::where('MenuId', $id)->update($data);
+            return redirect()->route('menu.index')->withToastSuccess('Data has been updated');
         }else
-        return redirect()->to('menu.index');
+        return redirect()->route('menu.index')->withToastError('Failed');
     }
 
 }
