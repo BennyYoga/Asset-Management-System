@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Asset Monitoring System | Create Item')
+@section('title','Asset Monitoring System | Edit Item Requisition')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -31,7 +31,7 @@
                 </div>
                 @endif --}}
                 <div class="title mb-30">
-                    <h2>Add Data Item</h2>
+                    <h2>Edit Requisition</h2>
                 </div>
             </div>
             <!-- end col -->
@@ -40,10 +40,10 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="item.index">Item</a>
+                                <a href="item.index">Requisition</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">
-                                Create
+                                Edit
                             </li>
                         </ol>
                     </nav>
@@ -56,25 +56,34 @@
         </div>
         <!-- end row -->
     </div>
-    <form action="{{ route('itemreq.store') }}" id="ItemReqForm" method="post">
+    <form action="{{ route('itemreq.update', $data['itemreq']->ItemRequisitionId) }}" id="ItemReqForm" method="post">
         @csrf
+        @method('PUT')
     </form>
     <div class="form-elements-wrapper">
         <div class="row">
             <div class="col-sm-12">
                 <!-- input style start -->
                 <div class="card-style mb-30">
+
+                    <div class="invoice-header mb-4">
+                        <h3>Main Data Requisition</h3>
+                        <hr class="border-2">
+                    </div>
+
                     <div class="row mt-3">
-                        <div class="col-lg-12">
+                        <div class="col-lg-6">
 
                             <input type="hidden" id="ReqId" form="ItemReqForm" value="{{$data['itemreq']->ItemRequisitionId}}">
+                            <input type="hidden" id="itemHidden" value="{{$data['item']}}">
+                            <input type="hidden" id="detailHidden" value="{{$data['detailreq']}}">
 
                             <div class="select-style-1">
                                 <label>Select Location</label>
                                 <div class="select-position">
-                                    <select name="LocationId" id="LocationId" form="ItemReqForm" required>
+                                    <select name="LocationTo" id="LocationId" form="ItemReqForm" required>
                                         @foreach ($data['location'] as $loc)
-                                        @if($data['itemreq']->LocationId == $loc->LocationId)
+                                        @if($data['itemreq']->LocationTo == $loc->LocationId)
                                         <option value="{{ $loc->LocationId }}" selected>{{$loc->Name}}</option>
                                         @else if
                                         <option value="{{ $loc->LocationId }}">{{$loc->Name}}</option>
@@ -86,11 +95,48 @@
                             <!-- end input -->
 
                             <div class="input-style-1">
+                                <label>Transaction Date</label>
+                                <input type="date" id="Tanggal" name="Tanggal" form="ItemReqForm" value="{{ date('Y-m-d', strtotime($data['itemreq']->Tanggal)) }}">
+                                @error('Tanggal') <span class="text-danger">{{$message}}</span> @enderror
+                            </div>
+                            <!-- end input -->
+
+                            <div class="input-style-1">
                                 <label>Notes</label>
                                 <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes" form="ItemReqForm">{{$data['itemreq']->Notes}}</textarea>
                                 @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
                             </div>
                             <!-- end input -->
+                        </div>
+
+
+                        <div class="col-lg-6">
+                            <div class="input-style-1">
+                                <label>Your File</label>
+                                @foreach (session('upload-file') as $key => $item)
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-1">
+                                                <i class="lni lni-empty-file fs-2 text-body-secondary"></i>
+                                            </div>
+                                            <div class="col-lg-9">
+                                                <a href="{{ asset($item->FilePath) }}" target="_blank">
+                                                    <p class="fs-6 text-body-secondary">{{basename($item->FilePath)}}</p>
+                                                </a>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <a href="#" class="deleteFile" data-item-id="{{$item->RequisitionUploadId}}">
+                                                    <i class="lni lni-trash-can fs-3 m-auto text-danger"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+
+
                             <div class="input-style-1">
                                 <label>Upload Your File</label>
                                 <form action="{{route('dropzone.store')}}" method="post" name="file" files="true" enctype="multipart/form-data" class="dropzone" id="image-upload">
@@ -98,38 +144,55 @@
                                 </form>
                             </div>
                         </div>
-
                         <!-- End Col -->
                     </div>
 
-                    @foreach ($data['uploaditem'] as $item)
-                    <a href="{{ asset($item->FilePath) }}" target="_blank">ini filenya</a><br>
-                    @endforeach
-
-
-                    <div id="item-container">
-                        <div class="row item">
-
+                    <!-- Section Add Item -->
+                    <div class="invoice-header mb-4">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h3>Data Of Item</h3>
+                            </div>
+                            <div class="col-lg-6 text-end">
+                                <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
+                            </div>
                         </div>
+                        <hr class="border-2">
                     </div>
-                    <!-- End Row -->
+
+
                     <div class="row">
-                        <div class="col-lg-12">
-                            <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
+                        <div id="item-container">
+                            <div class="row item">
+
+                            </div>
                         </div>
+                        <!-- End Row -->
                     </div>
+                    <!-- End Section Add Item -->
+
+                    <!-- Section Approval -->
+                    <div class="invoice-header mb-4">
+                        <h3>Approver</h3>
+                        <hr class="border-2">
+                    </div>
+                    <!-- End Section Approval -->
+
+
                     <div class="row">
                         <div class="col-lg-12 text-end">
                             <input type="submit" class="btn btn-primary" form="ItemReqForm" />
                             <a href="{{route('itemreq.index')}}" class="btn btn-outline-danger">Back</a>
                         </div>
                     </div>
+
                 </div>
                 <!-- end card -->
             </div>
-            <!-- end col -->
         </div>
-        <!-- end row -->
+        <!-- end col -->
+    </div>
+    <!-- end row -->
     </div>
     <!-- end wrapper -->
 </section>
@@ -145,7 +208,13 @@
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+
 <script type="text/javascript">
+    $(document).ready(function() {
+        $('.select2').select2();
+    });
+
     Dropzone.options.imageUpload = {
         maxFilesize: 100,
         renameFile: function(file) {
@@ -156,7 +225,7 @@
         acceptedFiles: ".jpeg,.jpg,.png,.gif,.pdf,.zip",
         addRemoveLinks: true,
         timeout: 50000,
-        init : function(){
+        init: function() {
             var reqId = $('#ReqId').val();
             $.ajax({
                 url: `/dropzone/get/${reqId}`,
@@ -198,15 +267,14 @@
     };
 
     $("#add-item").click(function() {
+
         var dataObject = $('#itemHidden').val();
         dataObject = JSON.parse(dataObject);
 
         var itemDiv = $("<div>").addClass("item row");
-        console.log(itemDiv);
         itemDiv.html(`
             <div class="col-lg-8">
                 <div class="select-style-1 col-lg-12">
-                    <label>Choose Name Item</label>
                     <div class="select-position">
                         <select name="itemId[]" id="itemId" form="ItemReqForm" required>
                             <option value="" disabled selected>Choose Item</option>
@@ -218,13 +286,12 @@
             </div>
             <div class="col-lg-3">
                 <div class="input-style-1">
-                    <label>Quantity</label>
-                    <input type="number" placeholder="Quantity of Item" name="Qty[]" min="1" required form="ItemReqForm"/>
+                    <input type="number" placeholder="Quantity  " name="Qty[]" min="1" required form="ItemReqForm"/>
                     @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
                 </div>
                 <!-- end input -->
             </div>
-            <div class="col-lg-1 m-auto">
+            <div class="col-lg-1 mt-2">
                 <button class="btn btn-danger">Delete</button>
             </div>
         `);
@@ -233,6 +300,83 @@
 
         itemDiv.find(".btn-danger").click(function() {
             $(this).closest(".item").remove();
+        });
+    });
+
+    $(document).ready(function() {
+        var itemObject = $('#detailHidden').val();
+        itemObject = JSON.parse(itemObject);
+        var dataObject = $('#itemHidden').val();
+        dataObject = JSON.parse(dataObject);
+
+        var itemDiv = $("<div>").addClass("item row");
+
+        if (itemObject != null) {
+            itemObject.forEach(element => {
+                var itemDiv = $("<div>").addClass("item row");
+                var options = dataObject.map(dataItem => `<option value="${dataItem.ItemId}" ${dataItem.ItemId === element.ItemId ? 'selected' : ''}>${dataItem.Name}</option>`).join("");
+
+                itemDiv.html(`
+          <div class="col-lg-8">
+            <div class="select-style-1 col-lg-12">
+              
+              <div class="select-position">
+                <select name="itemId[]" id="itemId" form="ItemReqForm" required>
+                  ${options}
+                </select>
+              </div>
+            </div>
+            <!-- end input -->
+          </div>
+          <div class="col-lg-3">
+            <div class="input-style-1">
+              
+              <input type="number" value="${element.ItemQty}" placeholder="Quantity" name="Qty[]" min="1" required form="ItemReqForm"/>
+              @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
+            </div>
+            <!-- end input -->
+          </div>
+          <div class="col-lg-1 mt-2">
+            <button class="btn btn-danger">Delete</button>
+          </div>
+        `);
+
+                $("#item-container").append(itemDiv);
+                itemDiv.find(".btn-danger").click(function() {
+                    $(this).closest(".item").remove();
+                });
+            });
+        }
+    });
+
+    $(".deleteFile").click(function(e) {
+        e.preventDefault();
+
+        var id = $(this).data("item-id");
+        var card = $(e.target).closest('.card');
+
+        var confirmDelete = confirm("Apakah Anda yakin ingin menghapus file ini?");
+        if (!confirmDelete) {
+            return;
+        }
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: `/itemrequisition/file/delete/${id}`,
+            type: 'DELETE',
+            success: function(response) {
+                card.remove();
+                alert(response.message);
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = xhr.responseJSON.message || 'An error occurred while deleting the item.';
+                alert(errorMessage);
+            }
         });
     });
 </script>

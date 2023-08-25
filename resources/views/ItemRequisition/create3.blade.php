@@ -1,13 +1,12 @@
 @extends('Template.template')
 
-@section('title','Asset Monitoring System | Create Item')
+@section('title','Assets Monitoring System | Add Item Requisition')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
-<link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css">
 <meta name="csrf-token" content="{{ csrf_token() }}" />
 <style>
@@ -29,106 +28,125 @@
                     {{-- @if (session('success'))
                     <div class="alert alert-success" role="alert">
                         {{ session('success') }}
-                    </div>
-                    @endif --}}
-                    <div class="title mb-30">
-                        <h2>Add Data Item</h2>
-                    </div>
                 </div>
-                <!-- end col -->
-                <div class="col-md-6">
-                    <div class="breadcrumb-wrapper mb-30">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item">
-                                    <a href="item.index">Item</a>
-                                </li>
-                                <li class="breadcrumb-item active" aria-current="page">
-                                    Create
-                                </li>
-                            </ol>
-                        </nav>
-                    </div>
+                @endif --}}
+                <div class="title mb-30">
+                    <h2>Add Item Requisition</h2>
                 </div>
-                <!-- end col -->
             </div>
-            <!-- end row -->
+            <!-- end col -->
+            <div class="col-md-6">
+                <div class="breadcrumb-wrapper mb-30">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="requisition.index">Item Requisition</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                Create
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <!-- end col -->
         </div>
-        <form action="{{ route('itemreq.store') }}" id="ItemReqForm" method="post">
-            @csrf
-        </form>
-        <div class="form-elements-wrapper">
-            <input type="hidden" id="itemHidden" value="{{$item}}">
-            <div class="row">
-                <div class="col-sm-12">
-                    <!-- input style start -->
-                    <div class="card-style mb-30">
-                        <div class="col-lg-12">
-                            <div class="row mt-3">
-                                <div class="col-lg-6">
-                                    <div class="select-style-1">
-                                        <label>Select Location</label>
-                                        <div class="select-position">
-                                            <select name="LocationId" id="LocationId" form="ItemReqForm" required>
-                                                <option value="" disabled selected>Choose location</option>
-                                                @foreach ($location as $loc)
-                                                <option value="{{ $loc->LocationId }}">{{$loc->Name}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="input-style-1">
-                                        <label>Date</label>
-                                        <input type="date" id="Tanggal" name="Tanggal" form="ItemReqForm">
-                                    </div>
+        <!-- end row -->
+    </div>
+    <form action="{{ route('itemreq.store') }}" id="ItemReqForm" method="post">
+        @csrf
+    </form>
+    <div class="form-elements-wrapper">
+        <input type="hidden" id="itemHidden" value="{{$item}}">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card-style mb-30">
+
+                    <!-- Header Requisition -->
+                    <div class="invoice-header mb-4">
+                        <h3>Main Data Requisition</h3>
+                        <hr class="border-2">
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-lg-6">
+
+                            <div class="select-style-1">
+                                <label>Select Location</label>
+                                <div class="select-position">
+                                    <select name="LocationTo" id="LocationTo" form="ItemReqForm" required>
+                                        <option value="" disabled selected>Choose location</option>
+                                        @foreach ($location as $loc)
+                                        <option value="{{ $loc->LocationId }}">{{$loc->Name}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
-                            <!-- end input -->
+                            <div class="input-style-1">
+                                <label>Transaction Date</label>
+                                <input type="date" id="Tanggal" name="Tanggal" form="ItemReqForm">
+                            </div>
 
                             <div class="input-style-1">
                                 <label>Notes</label>
-                                <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes"
-                                    form="ItemReqForm"></textarea>
+                                <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes" form="ItemReqForm"></textarea>
                                 @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
                             </div>
-                            <!-- end input -->
+                        </div>
+
+                        <div class="col-lg-6">
                             <div class="input-style-1">
                                 <label>Upload Your File</label>
-                                <form action="{{route('dropzone.store')}}" method="post" name="file" files="true"
-                                    enctype="multipart/form-data" class="dropzone" id="image-upload">
+                                <form action="{{ route('dropzone.store') }}" method="post" name="file" files="true" enctype="multipart/form-data" class="dropzone" id="image-upload">
                                     @csrf
                                 </form>
                             </div>
                         </div>
-                        <!-- End Col -->
-                        <div id="item-container">
-                            <div class="row item">
+                    </div>
+                    <!-- End Main Requisition -->
 
-                            </div>
-                        </div>
-                        <!-- End Row -->
+
+                    <!-- Item Details Requisition -->
+                    <div class="invoice-header mb-4">
                         <div class="row">
-                            <div class="col-lg-12">
+                            <div class="col-lg-6">
+                                <h3>Data Of Item</h3>
+                            </div>
+                            <div class="col-lg-6 text-end">
                                 <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-12 text-end">
-                                <input type="submit" class="btn btn-primary" form="ItemReqForm" />
-                                <a href="{{route('itemreq.index')}}" class="btn btn-outline-danger">Back</a>
-                            </div>
+                        <hr class="border-2">
+                    </div>
+                    <div id="item-container">
+                        <div class="row item">
                         </div>
                     </div>
-                    <!-- end card -->
+                    <!-- End Item Details Requisition -->
+
+
+                    <!-- Section Approval -->
+                    <div class="invoice-header mb-4">
+                        <h3>Approver</h3>
+                        <hr class="border-2">
+                    </div>
+                    <!-- End Section Approval -->
+
+                    <!-- button Submit -->
+                    <div class="row">
+                        <div class="col-lg-12 text-end">
+                            <input type="submit" class="btn btn-primary" form="ItemReqForm"/>
+                            <a href="{{route('itemreq.index')}}" class="btn btn-outline-danger">Back</a>
+                        </div>
+                    </div>
+                    <!-- end button submit -->
                 </div>
-                <!-- end col -->
             </div>
-            <!-- end row -->
         </div>
-        <!-- end wrapper -->
+    </div>
 </section>
+
+
 @endsection
 
 @push('js')
@@ -188,7 +206,6 @@
         itemDiv.html(`
             <div class="col-lg-8">
                 <div class="select-style-1 col-lg-12">
-                    <label>Choose Name Item</label>
                     <div class="select-position">
                         <select name="itemId[]" id="itemId" form="ItemReqForm" required>
                             <option value="" disabled selected>Choose Item</option>
@@ -200,13 +217,12 @@
             </div>
             <div class="col-lg-3">
                 <div class="input-style-1">
-                    <label>Quantity</label>
-                    <input type="number" placeholder="Quantity of Item" name="Qty[]" min="1" required form="ItemReqForm"/>
+                    <input type="number" placeholder="Qty" name="Qty[]" min="1" required form="ItemReqForm"/>
                     @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
                 </div>
                 <!-- end input -->
             </div>
-            <div class="col-lg-1 m-auto">
+            <div class="col-lg-1 mt-2">
                 <button class="btn btn-danger">Delete</button>
             </div>
         `);

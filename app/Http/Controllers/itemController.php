@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 Use Alert;
-
+Use Button;
 
 class itemController extends Controller
 {
@@ -25,22 +25,7 @@ class itemController extends Controller
             $item  = Item::where('IsPermanentDelete', 0)->get();
             return DataTables::of($item)
                 ->addColumn('Status', function ($row) {
-                    // $btn = '<button type="button" class="btn btn-primary btn-sm">' . $data . '</button>';
-                    if ($row->Active == 0) {
-                        $data = 'Nonactive';
-                        $btn = '<button type="button" class="btn btn-danger" disabled
-                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                        ' . $data . ' 
-                        </button>';
-                        return $btn;
-                    } else if ($row->Active == 1) {
-                        $data = 'Active';
-                        $btn = '<button type="button" class="btn btn-primary" disabled
-                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                        ' . $data . ' 
-                        </button>';
-                        return $btn;
-                    }
+                    return Button::status($row->Active);
                 })
                 ->addColumn('ItemBehavior', function ($row) {
                     if ($row['ItemBehavior'] == 1) {
@@ -61,16 +46,16 @@ class itemController extends Controller
                     }
                 })
                 ->addColumn('Action', function ($row) {
-                    $btn = '<a href=' . route('item.edit', $row->ItemId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                    $btn = [
+                        "Edit" => route('item.edit', $row->ItemId),
+                    ];
                     if ($row->Active == 1) {
-                        $btn = '<a href=' . route('item.edit', $row->ItemId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                        $btn .= '<a href=' . route('item.activate', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
-                        return $btn;
+                        $btn["Deactivate"] = route('item.activate', $row->ItemId);
                     } else if ($row->Active == 0) {
-                        $btn .= '<a href=' . route('item.activate', $row->ItemId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
-                        $btn .= '<a href=' . route('item.delete', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
-                        return $btn;
+                        $btn["Activate"] = route('item.activate', $row->ItemId);
+                        $btn["Delete"] = route('item.delete', $row->ItemId);
                     }
+                    return Button::Action($btn);
                 })
                 ->rawColumns(['Action', 'Status'])
                 ->make(true);
@@ -86,7 +71,6 @@ class itemController extends Controller
      */
     public function create()
     {
-        //
         $category = Category::all();
         return view('item.create', compact('category'));
     }
@@ -105,12 +89,13 @@ class itemController extends Controller
                 'Name' => 'required',
                 'Unit' => 'required',
                 'Status' => 'required',
+                'Code' => 'required',
             ]
         );
 
-        $Uuid = (string) Str::uuid();
         $data = [
             'ItemId' => (string) Str::uuid(),
+            'Code' => request('Code'),
             'Name' => request('Name'),
             'Unit' => request('Unit'),
             'ItemBehavior' => (int) request('ItemBehavior'),
@@ -123,8 +108,6 @@ class itemController extends Controller
             'Active' =>request('Status')
         ];
 
-        // dd($data);
-
         Item::create($data);
         foreach ($request->Category as $category) {
             $data = [
@@ -134,7 +117,7 @@ class itemController extends Controller
             DB::table('CategoryItem')->insert($data);
         }
 
-        return view('item.index')->with('success', 'Item has been added');
+        return redirect()->route('item.index')->with('success', 'Item has been added');
     }
 
     /**
@@ -197,19 +180,15 @@ class itemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-        // dd($id);
-
         Item::where('ItemId', $id)->update([
-                'Name' => $request->Name,
-                'Unit' => $request->Unit,
-                'ItemBehavior' => (int) $request->ItemBehavior,
-                'AlertHourMaintenance' => (int) $request->AlertHourMaintenance,
-                'AlertConsumable' => (int) $request->AlertConsumable,
-                'Active' => (int) $request->Status,
-            ]);
+            'Name' => $request->Name,
+            'Code' => $request->Code,
+            'Unit' => $request->Unit,
+            'ItemBehavior' => (int) $request->ItemBehavior,
+            'AlertHourMaintenance' => (int) $request->AlertHourMaintenance,
+            'AlertConsumable' => (int) $request->AlertConsumable,
+        ]);
 
-        // dd($request->Category);
         DB::table('CategoryItem')->where('ItemId', $id)->delete();
         if ($request->Category) {
             foreach ($request->Category as $category) {

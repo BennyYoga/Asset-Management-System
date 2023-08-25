@@ -41,7 +41,13 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="procurement.index">Item Transfer</a>
+                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="#">Request</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('itemtransfer.index')}}">Item Transfer</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Create
@@ -60,83 +66,123 @@
         <div class="form-elements-wrapper">
             <input type="hidden" id="itemHidden" value="{{$item}}">
             <div class="row">
-                <div class="col-sm-12">
-                    <!-- input style start -->
+                <div class="col-lg-12">
                     <div class="card-style mb-30">
-                        <div class="col-lg-12">
-                            <div class="row mt-3">
+                        <div class="row mt-3">
+                            <!-- Left column -->
+                            <div class="col-lg-6">
                                 <div class="col-lg-6">
                                     <div class="select-style-1">
-                                        <label>Select Destination</label>
+                                        <label>Select Location</label>
                                         <div class="select-position">
                                             <select name="LocationId" id="LocationId" form="ItemTransForm" required>
-                                                <option value="" disabled selected>Choose destination</option>
+                                                <option value="" disabled selected>Choose transfer location</option>
                                                 @foreach ($location as $location)
                                                 <option value="{{ $location->LocationId }}">{{$location->Name}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-lg-6">
                                     <div class="input-style-1">
-                                        <label>Date</label>
+                                        <label>Transaction Date</label>
                                         <input type="date" id="Tanggal" name="Tanggal" form="ItemTransForm">
                                     </div>
                                 </div>
+                                <div class="input-style-1">
+                                    <label>Notes</label>
+                                    <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes"
+                                        form="ItemTransForm"></textarea>
+                                    @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
+                                </div>
+                                <div class="input-style-1">
+                                    <label>Upload Your File</label>
+                                    <form action="{{ route('itemtransfer.dropzoneStore') }}" method="post" name="file"
+                                        files="true" enctype="multipart/form-data" class="dropzone" id="image-upload">
+                                        @csrf
+                                    </form>
+                                </div>
                             </div>
-                            <!-- end input -->
+                            <!-- End Left column -->
 
-                            <div class="input-style-1">
-                                <label>Notes</label>
-                                <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes"
-                                    form="ItemTransForm"></textarea>
-                                @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
+                            <!-- Right column -->
+                            <div class="col-lg-6">
+                                <div id="item-container">
+                                    <div class="row item">
+                                        <!-- Your item content goes here -->
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12 text-start">
+                                        <button type="button" class="btn btn-primary" id="add-item">Tambah Item</button>
+                                    </div>
+                                </div>
                             </div>
-                            <!-- end input -->
-                            <div class="input-style-1">
-                                <label>Upload Your File</label>
-                                <form action="{{ route('itemtransfer.dropzoneStore') }}" method="post" name="file"
-                                    files="true" enctype="multipart/form-data" class="dropzone" id="image-upload">
-                                    @csrf
-                                </form>
-                            </div>
-                        </div>
-                        <!-- end col -->
-                        {{--
-                    </div> --}}
-
-                    <div id="item-container">
-                        <div class="row item">
-
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
-                        </div>
-                    </div>
-                    <!-- end input -->
-                    {{-- <h6 class="mb-25">Procurement Detail</h6>
-                    <div class="row">
-                        <div class="input-style-1 col-lg-12">
-                            <label>Item</label>
-                            <div>
-                                <textarea placeholder="Notes" name="Notes" cols="30" rows="5"></textarea>
-                            </div>
-                        </div>
-                    </div> --}}
-                    <div class="row">
-                        <div class="col-lg-12 text-end">
-                            <input type="submit" class="btn btn-primary" form="ItemTransForm"></input>
-                            <a href="{{route('itemtransfer.index')}}" class="btn btn-outline-danger">Back</a>
+                            <!-- End Right column -->
                         </div>
                     </div>
                 </div>
             </div>
+
+
         </div>
-    </div>
+        <!-- ========== title-wrapper start ========== -->
+        <div class="title-wrapper pt-30">
+            <div class="row">
+                <!-- Menambahkan class "align-items-center" untuk membuat elemen berada pada garis vertikal yang sama -->
+                <div class="col-md-6">
+                    <div class="title mb-30">
+                        <h2>Approver</h2>
+                    </div>
+                </div>
+                <!-- end col -->
+                <div class="col-md-6 d-flex justify-content-end align-items-center">
+                    <!-- Menggunakan class "d-flex justify-content-end" untuk meletakkan elemen pada ujung kanan -->
+                    <div class="form-check checkbox-style mb-20">
+                        <label for="checkbox-1">Select All</label>
+                        <input type="checkbox" class="form-check-input" value id="checkbox-1" form="ItemTransForm">
+                    </div>
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+        </div>
+
+        <div class="form-elements-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card-style mb-30">
+                        <div class="row mt-3">
+                            <!-- Left column -->
+                            <div class="col-lg-6">
+                                <h6 class="mb-10">Approval 1</h6>
+                                <div class="form-check checkbox-style mb-30">
+                                    <input type="checkbox" class="form-check-input" id="checkbox-2" form="ItemTransForm">
+                                    <label for="checkbox-2">Nama Pegawai/Jabatan</label>
+                                </div>
+                                <div class="form-check checkbox-style mb-30">
+                                    <input type="checkbox" class="form-check-input" id="checkbox-3" form="ItemTransForm">
+                                    <label for="checkbox-3">Nama Pegawai/Jabatan</label>
+                                </div>
+                                <h6 class="mb-10">Approval 2</h6>
+                                <div class="form-check checkbox-style mb-30">
+                                    <input type="checkbox" class="form-check-input" id="checkbox-4" form="ItemTransForm">
+                                    <label for="checkbox-4">Nama Pegawai/Jabatan</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 text-end">
+                                <input type="submit" class="btn btn-primary" form="ItemTransForm"
+                                    value="Request Approval"></input>
+                                <a href="{{route('itemtransfer.index')}}" class="btn btn-outline-danger">Back</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
     </div>
 </section>
 @endsection

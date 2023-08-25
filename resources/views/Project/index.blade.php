@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title', 'Asset Management System | Category')
+@section('title', 'Asset Management System | Project')
 
 
 @push('css')
@@ -36,10 +36,10 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="#">Project</a>
+                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
-                                    Page
+                                    Project
                                 </li>
                             </ol>
                         </nav>

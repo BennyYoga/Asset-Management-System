@@ -40,7 +40,13 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="procurement.index">Item Procurement</a>
+                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="#">Request</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('itemproc.index')}}">Item Procurement</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Edit
@@ -53,7 +59,7 @@
             </div>
             <!-- end row -->
         </div>
-        <form action="{{ route('itemproc.store') }}" id="ItemProcForm" method="post">
+        <form action="{{ route('itemproc.update', $data['itemproc']->ItemProcurementId) }}" id="ItemProcForm" method="post">
             @csrf
         </form>
         <div class="form-elements-wrapper">
@@ -63,48 +69,72 @@
                         <div class="row mt-3">
                             <!-- Left column -->
                             <div class="col-lg-6">
-                    
-                                <input type="hidden" id="ProcId" form="ItemProcForm" value="{{$data['itemproc']->ItemProcurementId}}">
 
+                                <input type="hidden" id="ProcId" form="ItemProcForm" value="{{$data['itemproc']->ItemProcurementId}}">
+                                <input type="hidden" id="itemHidden" value="{{$data['item']}}">
+                                <input type="hidden" id="detailHidden" value="{{$data['detailproc']}}">
+                                
                                 <div class="select-style-1">
                                     <label>Select Request</label>
                                     <div class="select-position">
                                         <select name="LocationId" id="LocationId" form="ItemProcForm" required>
                                             @foreach ($data['location'] as $location)
                                             @if ($data['itemproc']->LocationId == $location->LocationId)
-                                                <option value="{{ $location->LocationId }}" selected>{{$location->Name}}</option>
+                                            <option value="{{ $location->LocationId }}" selected>{{$location->Name}}
+                                            </option>
                                             @else
-                                                <option value="{{ $location->LocationId }}">{{$location->Name}}</option>
+                                            <option value="{{ $location->LocationId }}">{{$location->Name}}</option>
                                             @endif
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
                                 <div class="input-style-1">
-                                    <label>Date</label>
-                                    <input type="date" id="Tanggal" name="Tanggal" value="{{ old('Tanggal', date('Y-m-d')) }}" form="ItemProcForm">
+                                    <label>Transaction Date</label>
+                                    <input type="date" id="Tanggal" name="Tanggal" form="ItemProcForm" value="{{ date('Y-m-d', strtotime($data['itemproc']->Tanggal)) }}">
+                                    @error('Tanggal') <span class="text-danger">{{$message}}</span> @enderror
                                 </div>
                                 <div class="input-style-1">
                                     <label>Notes</label>
-                                    <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes"
-                                        form="ItemProcForm">{{$data['itemproc']->Notes}}</textarea>
+                                    <textarea class="input-tags" rows="4" id="Notes" name="Notes" placeholder="Notes" form="ItemProcForm">{{$data['itemproc']->Notes}}</textarea>
                                     @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
                                 </div>
-                                <label>Uploaded</label><br>
-                                @foreach ($data['uploaditem'] as $item)
-                                <a href="{{ asset($item->FilePath) }}" target="_blank">ini filenya</a><br>
-                                @endforeach
-                                <br>
+                                <!-- end input -->
+                                <div>
+                                    <label>Your File</label>
+                                    @foreach ($data['uploaditem'] as $key => $item)
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="row align-items-center">
+                                                <div class="col-lg-1">
+                                                    <i class="lni lni-empty-file fs-2 text-body-secondary"></i>
+                                                </div>
+                                                <div class="col-lg-9">
+                                                    <a href="{{ asset($item->FilePath) }}" target="_blank">
+                                                        <p class="fs-6 text-body-secondary">{{basename($item->FilePath)}}</p>
+                                                    </a>
+                                                </div>
+                                                <div class="col-lg-2">
+                                                    <a href="#" class="deleteFile" data-item-id="{{$item->ProcurementUploadId}}">
+                                                        <i class="lni lni-trash-can fs-3 m-auto text-danger"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                
+
                                 <div class="input-style-1">
                                     <label>Upload Your File</label>
-                                    <form action="{{ route('itemproc.dropzoneStore') }}" method="post" name="file"
-                                        files="true" enctype="multipart/form-data" class="dropzone" id="image-upload">
+                                    <form action="{{ route('itemproc.dropzoneStore') }}" method="post" name="file" files="true" enctype="multipart/form-data" class="dropzone" id="image-upload">
                                         @csrf
                                     </form>
                                 </div>
                             </div>
                             <!-- End Left column -->
-                            
+
                             <!-- Right column -->
                             <div class="col-lg-6">
                                 <div id="item-container">
@@ -113,7 +143,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-12 text-start">
+                                    <div class="col-lg-12">
                                         <button type="button" class="btn btn-primary" id="add-item">Tambah Item</button>
                                     </div>
                                 </div>
@@ -129,10 +159,10 @@
                     </div>
                 </div>
             </div>
-        
-            
+
+
         </div>
-        
+
 </section>
 @endsection
 
@@ -154,7 +184,7 @@
             var time = dt.getTime();
             return time + file.name;
         },
-        acceptedFiles: ".jpeg,.jpg,.png,.gif,.pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.txt,.zip,.rar",
+        acceptedFiles: ".jpeg,.jpg,.png,.gif,.pdf,.zip",
         addRemoveLinks: true,
         timeout: 50000,
         init: function() {
@@ -199,13 +229,13 @@
     };
 
     $("#add-item").click(function() {
-        var dataObject = $('#ProcId').val();
+        var dataObject = $('#itemHidden').val();
         dataObject = JSON.parse(dataObject);
 
         var itemDiv = $("<div>").addClass("item row");
         console.log(itemDiv);
         itemDiv.html(`
-            <div class="col-lg-6">
+            <div class="col-lg-7">
                 <div class="select-style-1 col-lg-12">
                     <label>Choose Name Item</label>
                     <div class="select-position">
@@ -225,7 +255,7 @@
                 </div>
                 <!-- end input -->
             </div>
-            <div class="col-lg-1 m-auto">
+            <div class="col-lg-1 mt-auto mb-auto">
                 <button class="btn btn-danger">Delete</button>
             </div>
         `);
@@ -235,6 +265,76 @@
         itemDiv.find(".btn-danger").click(function() {
             $(this).closest(".item").remove();
         });
+    });
+
+    $(document).ready(function() {
+        var itemObject = $('#detailHidden').val();
+        itemObject = JSON.parse(itemObject);
+        var dataObject = $('#itemHidden').val();
+        dataObject = JSON.parse(dataObject);
+
+        var itemDiv = $("<div>").addClass("item row");
+
+        if (itemObject != null) {
+            itemObject.forEach(element => {
+                var itemDiv = $("<div>").addClass("item row");
+                var options = dataObject.map(dataItem => `<option value="${dataItem.ItemId}" ${dataItem.ItemId === element.ItemId ? 'selected' : ''}>${dataItem.Name}</option>`).join("");
+
+                itemDiv.html(`
+          <div class="col-lg-7">
+            <div class="select-style-1 col-lg-12">
+              <label>Choose Name Item</label>
+              <div class="select-position">
+                <select name="itemId[]" id="itemId" form="ItemProcForm" required>
+                  ${options}
+                </select>
+              </div>
+            </div>
+            <!-- end input -->
+          </div>
+          <div class="col-lg-3">
+            <div class="input-style-1">
+              <label>Quantity</label>
+              <input type="number" value="${element.ItemQty}" placeholder="Quantity" name="Qty[]" min="1" required form="ItemProcForm"/>
+              @error('Qty') <span class="text-danger">{{$message}}</span> @enderror
+            </div>
+            <!-- end input -->
+          </div>
+          <div class="col-lg-1 mt-auto mb-auto">
+            <button class="btn btn-danger">Delete</button>
+          </div>
+        `);
+
+                $("#item-container").append(itemDiv);
+                itemDiv.find(".btn-danger").click(function() {
+                    $(this).closest(".item").remove();
+                });
+            });
+        }
+    });
+
+    $(".deleteFile").click(function(e) {
+        e.preventDefault();
+        var id = $(this).data("item-id");
+        var card = $(e.target).closest('.card');
+        $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            }),
+            $.ajax({
+                url: `/itemprocurement/file/delete/${id}`,
+                type: 'DELETE',
+                success: function(response) {
+                    var card = $(e.target).closest('.card');
+                    card.remove();
+                    alert(response.message);
+                },
+                error: function(xhr, status, error) {
+                    var errorMessage = xhr.responseJSON.message || 'An error occurred while deleting the item.';
+                    alert(errorMessage);
+                }
+            })
     });
 </script>
 @endpush

@@ -16,6 +16,7 @@ class Item extends Model
     // protected $guarded = ['ItemId'];
     protected $fillable = [
         'ItemId' ,
+            'Code' ,
             'Name' ,
             'Unit' ,
             'ItemBehavior',

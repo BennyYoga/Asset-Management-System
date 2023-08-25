@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Assets Management System | Create Category')
+@section('title','Assets Management System | Create Project')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -35,7 +35,10 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="project.index">Project</a>
+                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('project.index')}}">Project</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Create

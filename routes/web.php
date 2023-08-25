@@ -14,10 +14,13 @@ use App\Http\Controllers\ItemDisposingController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\RoleController;
-use App\Models\Menu;
+use App\Http\Controllers\MasterController;
+use App\Models\Category;
 use App\Models\Role;
+use App\Models\Menu;
 use Illuminate\Routing\RouteGroup;
 use Illuminate\Support\Facades\Route;
 
@@ -53,7 +56,8 @@ Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi|8.1'], functio
     Route::get('/itemrequisition/delete/{id}', [itemRequisitionController::class, 'destroy'])->name('itemreq.delete');
     Route::get('/itemrequisition/activate/{id}', [itemRequisitionController::class, 'activate'])->name('itemreq.activate');
     Route::get('/itemrequisition/edit/{id}', [itemRequisitionController::class, 'edit'])->name('itemreq.edit');
-    Route::post('/itemrequisition/update/{id}', [itemRequisitionController::class, 'update'])->name('itemreq.update');
+    Route::put('/itemrequisition/update/{id}', [itemRequisitionController::class, 'update'])->name('itemreq.update');
+    Route::delete('/itemrequisition/file/delete/{id}', [itemRequisitionController::class, 'deleteFile'])->name('itemreq.delete.file');
 });
 
 Route::get('dropzone/example',[itemRequisitionController::class, 'dropzoneExamaple']);
@@ -94,6 +98,7 @@ Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi|8.2'], functio
     Route::post('/itemprocurement/update/{id}', [ItemProcurementController::class, 'update'])->name('itemproc.update');
     Route::get('/itemprocurement/delete/{id}', [ItemProcurementController::class, 'destroy'])->name('itemproc.destroy');
     Route::get('/itemprocurement/activate/{id}', [ItemProcurementController::class, 'activate'])->name('itemproc.activate');
+    Route::delete('/itemprocurement/file/delete/{id}', [ItemProcurementController::class, 'deleteFile'])->name('itemproc.delete.file');
 });
 Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi'], function() {
     Route::get('/itemtransfer', [ItemTransferController::class, 'index'])->name('itemtransfer.index');
@@ -178,8 +183,16 @@ Route::get('tampil', [AuthController::class, 'tampil'])->name('tampil');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
 Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');
 
+<<<<<<< HEAD
 Route::group(['middleware'=> 'menu.access:SuperAdmin'], function() {
 Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
 Route::get('menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
 Route::post('menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
 });
+=======
+Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
+
+Route::get('job', [JobController::class, 'index'])->name('job.index');
+Route::get('/master/requisition', [MasterController::class, 'masterApprovalReq'])->name('master.req');
+Route::get('/master/requisition/setting/{id}', [MasterController::class, 'masterApprovalReqSetting'])->name('master.req.setting');
+>>>>>>> ec3ad9d6052413f6ee06eb02e9fdbaab9a099c2f

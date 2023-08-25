@@ -253,37 +253,37 @@ h6,
 
 h1,
 .h1 {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
 }
 
 h2,
 .h2 {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 600;
 }
 
 h3,
 .h3 {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 500;
 }
 
 h4,
 .h4 {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
 }
 
 h5,
 .h5 {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
 }
 
 h6,
 .h6 {
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -359,9 +359,13 @@ h6,
   color: inherit;
 }
 
-.btn-sm {
+/* .btn-sm {
   padding: 10px 20px;
   font-weight: 400;
+} */
+
+.btn-action {
+    padding: 4px 8px;
 }
 
 /* buttons hover effect */
@@ -1912,8 +1916,13 @@ h6,
 
 /* ========== header css ========== */
 .header {
-  padding: 30px 0;
-  background: #fff;
+    padding: 10px 0;
+    background: #fff;
+    height: 60px;
+  }
+.header #menu-toggle,
+.header .profile-info h6 {
+    font-size: 14px;
 }
 .header .header-left .menu-toggle-btn .main-btn {
   padding: 0px 15px;
@@ -2107,8 +2116,8 @@ h6,
   -webkit-box-shadow: 0px 21px 25px rgba(218, 223, 227, 0.8);
   -moz-box-shadow: 0px 21px 25px rgba(218, 223, 227, 0.8);
   box-shadow: 0px 21px 25px rgba(218, 223, 227, 0.8);
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   margin-left: 16px;
   position: relative;
@@ -2647,7 +2656,7 @@ h6,
 /* =========== Sidebar css =========== */
 .sidebar-nav-wrapper {
   background: #fff;
-  width: 250px;
+  width: 15%;
   padding: 20px 0px;
   height: 100vh;
   position: fixed;
@@ -2794,7 +2803,7 @@ h6,
   display: flex;
   align-items: center;
   color: #5d657b;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   width: 100%;
   position: relative;
@@ -2834,7 +2843,6 @@ h6,
 }
 .sidebar-nav-wrapper .sidebar-nav ul .nav-item a .icon {
   margin-right: 12px;
-  font-size: 18px;
 }
 .sidebar-nav-wrapper .sidebar-nav ul .nav-item a .icon svg {
   fill: currentColor;
@@ -2886,7 +2894,7 @@ h6,
   -ms-transition: all 0.3s ease-out 0s;
   -o-transition: all 0.3s ease-out 0s;
   transition: all 0.3s ease-out 0s;
-  margin-left: 250px;
+  margin-left: 15%;
   min-height: 100vh;
   padding-bottom: 85px;
   position: relative;
@@ -4887,4 +4895,26 @@ h6,
 
 .fw-900 {
   font-weight: 900;
+}
+
+aside::-webkit-scrollbar {
+    width: 5px;
+}
+aside::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+aside::-webkit-scrollbar-thumb {
+    background: #e4e4e4;
+}
+aside::-webkit-scrollbar-thumb:hover {
+    background: #4a6cf7;
+}
+
+.dataTables_wrapper .dataTables_length label,
+.dataTables_wrapper table th,
+.dataTables_wrapper table td,
+.dataTables_wrapper .pagination a,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_filter label {
+    font-size: 14px;
 }

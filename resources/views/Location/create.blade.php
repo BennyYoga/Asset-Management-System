@@ -32,7 +32,10 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="location.index">Location</a>
+                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('location.index')}}">Locations</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
                                     Create

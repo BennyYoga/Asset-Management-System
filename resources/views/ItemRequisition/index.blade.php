@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Asset Monitoring System | Dashboard')
+@section('title','Asset Monitoring System | Item Requisition')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -26,10 +26,13 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
-                                    <a href="#">Item Requisition</a>
+                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="#">Request</a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
-                                    Page
+                                    Item Requisition
                                 </li>
                             </ol>
                         </nav>
@@ -51,8 +54,9 @@
                             <thead>
                                 <tr class="text-center">
                                     <th>No</th>
-                                    <th>Tanggal</th>
-                                    <th>Lokasi</th>
+                                    <th>Tanggal Dibuat</th>
+                                    <th>Lokasi Tujuan</th>
+                                    <th>Tanggal Request</th>
                                     <th>Jumlah Barang</th>
                                     <th>Status</th>
                                     <th>Active</th>
@@ -83,36 +87,32 @@
             processing: true,
             serverSide: true,
             ajax: "",
-            columns: [
-                {
+            columns: [{
                     data: 'No',
-                    render: function (data, type, row, meta) {
-                    // Menghitung nomor urut berdasarkan halaman dan jumlah baris yang ditampilkan
-                    var startIndex = meta.settings._iDisplayStart;
-                    var index = meta.row + startIndex + 1;
+                    render: function(data, type, row, meta) {
+                        var startIndex = meta.settings._iDisplayStart;
+                        var index = meta.row + startIndex + 1;
 
-                    return index;
-                },
-                orderable: false,
-                searchable: false
+                        return index;
+                    },
+                    orderable: false,
+                    searchable: false
                 },
                 {
-                    data: 'Tanggal',
-                    name: 'Tanggal',
-                    render: function (data, type, row) {
-                        // Mengubah tampilan tanggal dari 'Y-m-d H:i:s' menjadi 'Y-m-d' (hanya tanggal)
-                        var date = new Date(data);
-                        var formattedDate = date.toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                        return formattedDate;
-                    }
+                    'name': 'dibuat',
+                    'data': {
+                        '_': 'dibuat.display',
+                        'sort': 'dibuat.timestamp'
+                    },
+
                 },
                 {
                     data: 'Lokasi',
                     name: 'Lokasi',
+                },
+                {
+                    data: 'Tanggal',
+                    name: 'Tanggal',
                 },
                 {
                     data: 'JumlahBarang',
@@ -129,9 +129,10 @@
                 {
                     data: 'Action',
                     name: 'Action',
-                    orderable: false,
-                    searchable: false,
                 }
+            ],
+            order: [
+                [1, "DESC"]
             ],
         });
     });

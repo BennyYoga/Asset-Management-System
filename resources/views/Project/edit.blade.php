@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title','Assets Management System | Create Category')
+@section('title','Assets Management System | Create Local Admin')
 
 {{-- kalau ada css tambahan selain dari template.blade --}}
 @push('css')
@@ -26,7 +26,11 @@
                     </div>
                     @endif --}}
                     <div class="title mb-30">
+<<<<<<< HEAD:resources/views/Project/edit.blade.php
                         <h2>Add Project</h2>
+=======
+                        <h2>Add Local Admin</h2>
+>>>>>>> ec3ad9d6052413f6ee06eb02e9fdbaab9a099c2f:resources/views/Role/createAdminLocal.blade.php
                     </div>
                 </div>
                 <!-- end col -->
@@ -35,10 +39,17 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
+<<<<<<< HEAD:resources/views/Project/edit.blade.php
                                     <a href="project.index">Project</a>
+=======
+                                    <a href="{{ route('dashboard.index') }}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('role.index') }}">Role</a>
+>>>>>>> ec3ad9d6052413f6ee06eb02e9fdbaab9a099c2f:resources/views/Role/createAdminLocal.blade.php
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page">
-                                    Create
+                                    Create Local Admin
                                 </li>
                             </ol>
                         </nav>
