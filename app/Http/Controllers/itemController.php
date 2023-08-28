@@ -10,6 +10,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 Use Alert;
 Use Button;
+use Illuminate\Support\Facades\File;
 
 class itemController extends Controller
 {
@@ -71,6 +72,8 @@ class itemController extends Controller
      */
     public function create()
     {
+        session()->pull('temp-file', 'default');
+        session(['temp-file' => []]);
         $category = Category::all();
         return view('item.create', compact('category'));
     }
@@ -83,18 +86,17 @@ class itemController extends Controller
      */
     public function store(Request $request)
     {
-        //
         $request->validate(
             [
                 'Name' => 'required',
                 'Unit' => 'required',
-                'Status' => 'required',
                 'Code' => 'required',
             ]
         );
 
+        $uuid = (string) Str::uuid();
         $data = [
-            'ItemId' => (string) Str::uuid(),
+            'ItemId' => $uuid,
             'Code' => request('Code'),
             'Name' => request('Name'),
             'Unit' => request('Unit'),
@@ -105,7 +107,7 @@ class itemController extends Controller
             'CreatedBy' => 32,
             'CreatedByLocation' => 11,
             'UpdatedBy' => 32,
-            'Active' =>request('Status')
+            'Active' => 1
         ];
 
         Item::create($data);
@@ -115,6 +117,24 @@ class itemController extends Controller
                 'CategoryId' => $category,
             ];
             DB::table('CategoryItem')->insert($data);
+        }
+
+        //insert ke table ItemProcurementUpload
+        $file = session('temp-file');
+        foreach ($file as $file) {
+            $filepath = ('images/item/'.$uuid.'/'.$file);
+            $folderPath = public_path('images/item/'.$uuid);
+            if (!File::isDirectory($folderPath)) File::makeDirectory($folderPath, $mode = 0777, true, true);
+
+            $dataFile = [
+                'ItemUploadId' => (string) Str::uuid(),
+                'ItemId' => $uuid,
+                'FilePath' => $filepath,
+                'UploadedBy' => session('user')->Fullname,
+            ];
+
+            DB::table('ItemUpload')->insert($dataFile);
+            File::move(public_path('/images/temp/'.$file), public_path($filepath));
         }
 
         return redirect()->route('item.index')->with('success', 'Item has been added');
@@ -144,6 +164,10 @@ class itemController extends Controller
         $CategoryItem = DB::table('CategoryItem')->where('ItemId', $id)->get();
         $selectedCategory = [];
         $unselectedCategory = [];
+        $uploads = DB::table('ItemUpload')->where('ItemId', $id)->get();
+
+        session()->pull('temp-file', 'default');
+        session(['temp-file' => []]);
 
         foreach ($category as $category) {
             $isCategorySelected = false;
@@ -168,7 +192,7 @@ class itemController extends Controller
                 array_push($unselectedCategory, $data);
             }
         }
-        return view('Item.edit', compact('item', 'selectedCategory', 'unselectedCategory'));
+        return view('Item.edit', compact('item', 'selectedCategory', 'unselectedCategory', 'uploads'));
     }
 
     /**
@@ -199,6 +223,25 @@ class itemController extends Controller
                 DB::table('CategoryItem')->insert($data);
             }
         }
+
+        //insert ke table ItemProcurementUpload
+        $file = session('temp-file');
+        foreach ($file as $file) {
+            $filepath = ('images/item/'.$id.'/'.$file);
+            $folderPath = public_path('images/item/'.$id);
+            if (!File::isDirectory($folderPath)) File::makeDirectory($folderPath, $mode = 0777, true, true);
+
+            $dataFile = [
+                'ItemUploadId' => (string) Str::uuid(),
+                'ItemId' => $id,
+                'FilePath' => $filepath,
+                'UploadedBy' => session('user')->Fullname,
+            ];
+
+            DB::table('ItemUpload')->insert($dataFile);
+            File::move(public_path('/images/temp/'.$file), public_path($filepath));
+        }
+
         return redirect()->route('item.index')->with('success', 'Item has been updated');
     }
 
@@ -224,5 +267,38 @@ class itemController extends Controller
             Item::where('ItemId', $id)->update(['Active' => 1]);
         }
         return redirect()->route('item.index')->with('success', 'Status has been updated');
+    }
+
+    public function dropzoneStore(Request $request)
+    {
+        $image = $request->file('file');
+        session()->push('temp-file', $image->getClientOriginalName());
+        // $imageName = time().'.'.$image->extension();
+        $image->move(public_path('images/temp/'), $image->getClientOriginalName());
+
+        return response()->json(['success' => $image->getClientOriginalName()]);
+    }
+
+    public function dropzoneGet($id)
+    {
+        $data = DB::table('ItemRequisitionUpload')->where('ItemRequisitionId', $id)->get();
+        return response()->json(['success' => pathinfo($data[0]->FilePath)]);
+    }
+
+    public function dropzoneDestroy(Request $request)
+    {
+        $filename = $request->filename;
+        $path = public_path() . '/images/temp/' . $filename;
+        if (file_exists($path)) {
+            unlink($path);
+        }
+        return $filename;
+    }
+    public function deleteFile($id)
+    {
+        $file = DB::table('ItemUpload')->where('ItemUploadId', $id)->first();
+        unlink(public_path($file->FilePath));
+        DB::table('ItemUpload')->where('ItemUploadId', $id)->delete();
+        return response()->json(['message' => 'File deleted successfully'], 200);
     }
 }
