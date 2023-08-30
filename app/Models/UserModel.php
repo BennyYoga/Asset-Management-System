@@ -13,8 +13,8 @@ class UserModel extends Authenticatable
     public $timestamps = false;
     // protected $fillable =['Username','Fullname', 'Password', 'UserId', 'RoleId', 'Active', 'IsPermanentDelete', 'CreatedBy'];
 
-    protected $guarded = ['id'];
-    protected $password = 'Password';
+  
+    protected $password ='Password';
     protected $username = 'Username';
     protected $hidden = [
         'Password', 'remember_token',
@@ -74,10 +74,10 @@ class UserModel extends Authenticatable
     }
     public function menuRole()
     {
-        $roles = Menu::pluck('MenuId')->toArray();
-        $checkrolemenu = Role::join('RoleMenu', 'Role.RoleId', '=', 'RoleMenu.RoleId')
-            ->where('Role.RoleId', $this->RoleId)
-            ->whereIn('RoleMenu.MenuId', $roles)->get();
+        $roles = Role::pluck('RoleId')->toArray();
+        $checkrolemenu = Menu::join('RoleMenu', 'Menu.MenuId', '=', 'RoleMenu.MenuId')
+        ->where('RoleMenu.RoleId', $this->RoleId)
+        ->whereIn('RoleMenu.RoleId', $roles)->get();
         return $checkrolemenu;
     }
 }

@@ -8,6 +8,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
 <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 @endpush
 
 @section('content')
@@ -23,7 +26,7 @@
                     </div>
                     @endif --}}
                     <div class="title mb-30">
-                        <h2>Add Local Admin</h2>
+                        <h2>Add Project</h2>
                     </div>
                 </div>
                 <!-- end col -->
@@ -32,6 +35,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
+                                    <a href="project.index">Project</a>
                                     <a href="{{ route('dashboard.index') }}">Dashboard</a>
                                 </li>
                                 <li class="breadcrumb-item">
@@ -52,7 +56,7 @@
             <!-- end row -->
         </div>
     
-    <form action="{{route('roleadminlocal.store')}}" method="post" id="category">
+    <form action="{{route('project.update', $project->ProjectId)}}" method="post">
         @csrf
         @method('POST')
         <div class="form-elements-wrapper">
@@ -61,24 +65,43 @@
                     <!-- input style start -->
                     <div class="card-style mb-30">
                         <div class="row">
+                        <div class="input-style-1 col-lg-6">
+                            <label>Name</label>
+                            <input type="text" placeholder="Project Name" name="Name" required value="{{$project->Name}}"/>
+                        </div>
+                        </div>
+                        <div class="input-style-1 col-lg-6">
+                        <label>StartDate</label>
+                        <input type="text" placeholder="Start Date" name="StartDate" required class="datepicker" value="{{$project->StartDate}}"/>
+                        </div>
+                        <div class="input-style-1 col-lg-6">
+                            <label>EndDate</label>
+                            <input type="text" placeholder="End Date" name="EndDate" required class="datepicker" value="{{$project->EndDate}}"/>
+                        </div>
+                        <!-- end input -->
+                        <!-- end input -->
+
+                        <div class="row">
+                        </div>
                         <div class="select-style-1 col-lg-6">
-                            <label>Choose Location</label>
+                            <label>Choose Head</label>
                             <div class="select-position">
                                 <select name="LocationId" id="LocationId" style="width:100%">
-                                  <option value="" selected disabled> Select Location</option>
-                                  @foreach($location as $lc)
-                                  <option value="<?= $lc->LocationId?>">
-                                  <?= $lc->Name?>
+                                  <option value="" selected >Select Location</option>
+                                  @foreach($location as $location)
+                                  <option value="<?= $location->LocationId?>"@if($location->LocationId == $project->LocationId) selected @endif>
+                                  <?= $location->Name?>
                                   </option>
                                   @endforeach
                                 </select>
                               </div>
                         </div>
+                        </div>
                         <!-- end input -->
                         </div>
                             <div class="card-footer mb">
                                 <button type="submit" class="btn btn-primary">Submit</button>
-                                <a href="{{route('role.index')}}" class="btn btn-outline-danger">Back</a>
+                                <a href="{{route('project.index')}}" class="btn btn-outline-danger">Back</a>
                             </div>
                     </div>
                     <!-- end card -->
@@ -89,10 +112,11 @@
         </div>
         <!-- end wrapper -->
 </section>
-@include('sweetalert::alert')
-@if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
+<script>
+  $(document).ready(function() {
+    $('.datepicker').datepicker({
+      dateFormat: 'yy-mm-dd' // Format tanggal yang diinginkan
+    });
+  });
+</script>
 @endsection

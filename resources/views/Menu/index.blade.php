@@ -2,7 +2,6 @@
 
 @section('title', 'Assets Management System | Menu')
 
-
 @push('css')
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
@@ -45,12 +44,6 @@
                         </nav>
                     </div>
                 </div>
-                <div class="d-flex justify-content-end mb-3">
-                    @if(session('user')->RoleId == 1)
-                    <a href="{{route('roles.create')}}" class="btn btn-primary" style="margin-right: 10px;">Add Role Location</a>
-                    @endif
-                    <a href="{{route('role.create')}}" class="btn btn-primary">Add Role</a>
-                </div>
             </div>
         </div>
         <!-- ========== title-wrapper end ========== -->
@@ -63,10 +56,10 @@
                         <table class="table" id="category">
                             <thead>
                                 <tr class="text-center">
-                                    <th>No</th>
-                                    <th>Menu Name</th>
-                                    <th class="text-center">Menu Description</th>
-                                    <th> Role has Acces </th>
+                                    <th>#</th>
+                                    <th style="width:120px;">Menu Name</th>
+                                    <th> Parent </th>
+                                    <th>Description</th>
                                     <th> Action </th>
                                 </tr>
                             </thead>
@@ -79,55 +72,56 @@
     </div>
 </section>
 @endsection
+
 @push('js')
 @include('sweetalert::alert')
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 <script type="text/javascript">
-    
     $(document).ready(function() {
         var table = $('#category').DataTable({
             processing: true,
             serverSide: true,
             ajax: "",
-            columns: [{
+            "order": [[0, "asc"]],
+            "columnDefs": [
+                { "targets": 'data-sort', "orderable": true },
+                {
+                    "targets": 'menu-id',
+                    "orderData": [0], 
+                    "orderable": true
+                }
+            ],
+            columns: [
+                {
                     data: 'id',
                     name: 'id',
                     render: function(data, type, row, meta) {
                         return meta.row + meta.settings._iDisplayStart + 1;
-                    }
+                    },
+                    orderable: true,
                 },
                 {
                     data: 'MenuName',
                     name: 'MenuName',
-                    class: "text-center"
+                },
+                {
+                    data: 'Parent',
+                    name: 'Parent',
                 },
                 {
                     data: 'MenuDesc',
                     name: 'MenuDesc',
-                    class: "text-right"
                 },
-                // {
-                //     data: 'Action',
-                //     name: 'Action',
-                //     class: "Action"
-                // },
+                // ... Kolom Action ...
                 {
-                    data: 'RoleAccess',
-                    name: 'RoleAccess',
+                    data:'action',
+                    name:'action',
+                    class:'text-center'
                 },
-
             ],
-            order: [
-                [
-                    1, 'asc'
-                ]
-            ]
         });
     });
-    
-
 </script>
- 
 @endpush
