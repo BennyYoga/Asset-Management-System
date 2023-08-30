@@ -10,47 +10,66 @@ use Illuminate\Support\Facades\DB;
 
 class MasterController extends Controller
 {
-    public function masterApprovalReq(Request $request){
+    public function masterApprovalReq(Request $request)
+    {
         if ($request->ajax()) {
-            $appreq = ApproverMaster::select('RequesterId','ApprovalOrder','ModuleId')
-                ->orderBy('RequesterId')
-                ->orderBy('ApprovalOrder')
+            $appreq = ApproverMaster::where('ModuleId', 1)
+                ->join('Role as r1', 'ApproverMaster.RequesterId', '=', 'r1.RoleId')
+                ->select('ApproverMaster.*', 'r1.RoleName as RequesterRoleName')
+                ->orderBy('ApproverMasterId', 'desc')
                 ->get();
-            return DataTables::of($appreq)
-            ->addColumn('RoleName', function ($row) {
-                $name = Role::where('RoleId', $row->RequesterId)->first();
-                return $name->RoleName;
-            })
-            ->addColumn('combined_info', function($row) {
-                return "{$row->RequesterId} - Order: {$row->ApprovalOrder}";
-            })
-            ->addColumn('Approver1', function ($row) {
+            
+            $processedData = [];
+    
+            foreach ($appreq as $row) {
+                $key = $row->RequesterId;
+    
+                if (!isset($processedData[$key])) {
+                    $processedData[$key] = [
+                        'ApproverMasterId' => $row->ApproverMasterId,
+                        'RoleName' => $row->RequesterRoleName,
+                        'Approver1' => [],
+                        'Approver2' => [],
+                        'UpdatedBy' => $row->UpdatedBy,
+                        'UpdatedDate' => $row->UpdatedDate,
+                    ];
+                }
+    
                 if ($row->ApprovalOrder == 1) {
-                    $approver1 = Role::where('RoleId', $row->ApproverId)->first();
-                    return $approver1 ? $approver1->RoleName : '';
-                } else {
-                    return '';
+                    $approverName = Role::where('RoleId', $row->ApproverId)->value('RoleName');
+                    $processedData[$key]['Approver1'][] = $approverName;
+                } elseif ($row->ApprovalOrder == 2) {
+                    $approverName = Role::where('RoleId', $row->ApproverId)->value('RoleName');
+                    $processedData[$key]['Approver2'][] = $approverName;
                 }
-            })
-            ->addColumn('Approver2', function ($row) {
-                if ($row->ApprovalOrder == 2) {
-                    $approver2 = Role::where('RoleId', $row->ApproverId)->first();
-                    return $approver2 ? $approver2->RoleName : '';
-                } else {
-                    return '';
-                }
-            })
-            ->addColumn('Action', function($row){
-                $btn = '<a href=' . route('master.req.setting', $row->ApproverMasterId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
-                return $btn;
-            })
-            ->rawColumns(['Action'])
-            ->make(true);
+            }
+    
+            $finalProcessedData = [];
+    
+            foreach ($processedData as $key => $data) {
+                $finalProcessedData[] = [
+                    'ApproverMasterId' => $data['ApproverMasterId'],
+                    'Requester' => $data['RoleName'],
+                    'Approver1' => implode(', ', $data['Approver1']),
+                    'Approver2' => implode(', ', $data['Approver2']),
+                    'UpdatedBy' => $data['UpdatedBy'],
+                    'UpdatedDate' => $data['UpdatedDate'],
+                ];
+            }
+    
+            return DataTables::of($finalProcessedData)
+                ->addColumn('Action', function ($row) {
+                    $btn = '<a href=' . route('master.req.setting', $row['ApproverMasterId']) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
+                    return $btn;
+                })
+                ->rawColumns(['Action', 'Approver1', 'Approver2'])
+                ->make(true);
         }
-
+    
         return view('Master.requisition');
     }
-
+    
+    
     public function masterApprovalReqSetting(Request $request, $id){
         if ($request->ajax()) {
             $applist = ApproverMaster::where('ApproverMasterId', $id)->get();
@@ -69,6 +88,7 @@ class MasterController extends Controller
         }
 
         $appreq = ApproverMaster::where('ApproverMasterId', $id)->firstOrFail();
+        $requester = Role::where('RoleId', $appreq->RequesterId)->first();
         $role = Role::all();
         $approver = DB::table('ApproverMaster')->where('ApproverMasterId', $id)->get();
         $selectedApprover = [];
@@ -102,21 +122,22 @@ class MasterController extends Controller
             }
         }
 
-        return view('Master.requisitionSetting',compact('appreq','selectedApprover','unselectedApprover','id'));
+        $selectedApprovalOrder = $appreq->ApprovalOrder;
+        $approversWithSelectedOrder = ApproverMaster::where('ApprovalOrder', $selectedApprovalOrder)
+        ->pluck('ApproverId')
+        ->toArray();
+
+        return view('Master.requisitionSetting',compact('appreq','selectedApprover','unselectedApprover','id', 'requester','approversWithSelectedOrder'));
     }
 
     public function saveApprovalReqSetting(Request $request, $id) {
-        // Validasi input jika diperlukan
     
         $appreq = new ApproverMaster();
         $appreq->RequesterId = $request->input('RequesterId');
         $appreq->ApprovalOrder = $request->input('ApprovalOrder');
-        // ... mengisi atribut-atribut lain sesuai form
     
-        // Simpan instance ke database
         $appreq->save();
     
-        // Redirect ke halaman yang sesuai atau tampilkan pesan sukses
         return view('Master.requisitionSetting');
     }
     

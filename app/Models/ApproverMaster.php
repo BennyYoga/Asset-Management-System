@@ -24,7 +24,11 @@ class ApproverMaster extends Model
         'UpdatedDate'
         ];
 
-        public function role() {
+        public function requester() {
             return $this->belongsTo(Role::class, 'RequesterId', 'RoleId');         
+        }
+
+        public function approver() {
+            return $this->belongsTo(Role::class, 'ApproverId', 'RoleId');         
         }
 }

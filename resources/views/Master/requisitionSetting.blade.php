@@ -29,7 +29,7 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <div class="title mb-30">
-                        <h2>Setting Approval Requisition: {{ $appreq->role->RoleName }}</h2>
+                        <h2>Setting Approval Requisition: {{ $requester->RoleName }}</h2>
                     </div>
                 </div>
                 <!-- end col -->
@@ -64,7 +64,7 @@
                                     <label>Employee Level</label>
                                     <div class="select-position">
                                         <select name="RequesterId" id="RequesterId" required>
-                                            <option value="{{ $appreq->RequesterId }}" selected>{{ $appreq->role->RoleName }}</option>
+                                            <option value="{{ $appreq->RequesterId }}" selected>{{ $requester->RoleName }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -80,10 +80,16 @@
                                     <label>Approver Level</label>
                                     <div class="select-position input-tags">
                                         <select class="js-example-basic-single form-" id="tags" multiple name="Approver[]">
-                                            @for($i =0; $i < count($unselectedApprover); $i++) <option value="{{$unselectedApprover[$i]['RoleId']}}">{{$unselectedApprover[$i]['RoleName']}}</option>
-                                                @endfor
-                                                @for($i =0; $i < count($selectedApprover); $i++) <option selected="selected" value="{{$selectedApprover[$i]['RoleId']}}">{{$selectedApprover[$i]['RoleName']}}</option>
-                                                    @endfor
+                                            @foreach($unselectedApprover as $unselected)
+                                                <option value="{{ $unselected['RoleId'] }}">{{ $unselected['RoleName'] }}</option>
+                                            @endforeach
+                                            @foreach($selectedApprover as $selected)
+                                                @if(in_array($selected['RoleId'], $approversWithSelectedOrder))
+                                                    <option selected="selected" value="{{ $selected['RoleId'] }}">{{ $selected['RoleName'] }}</option>
+                                                @else
+                                                    <option value="{{ $selected['RoleId'] }}">{{ $selected['RoleName'] }}</option>
+                                                @endif
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -161,7 +167,6 @@
                     return "Approval #" + data;
                 }
             },
-                
             {data: 'RoleName', name: 'RoleName'},
             {data: 'Action', name: 'Action', orderable: false, searchable: false},
         ],
