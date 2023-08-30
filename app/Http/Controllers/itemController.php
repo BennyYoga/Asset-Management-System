@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 Use Alert;
-
+Use Button;
+use Illuminate\Support\Facades\File;
 
 class itemController extends Controller
 {
@@ -25,22 +26,7 @@ class itemController extends Controller
             $item  = Item::where('IsPermanentDelete', 0)->get();
             return DataTables::of($item)
                 ->addColumn('Status', function ($row) {
-                    // $btn = '<button type="button" class="btn btn-primary btn-sm">' . $data . '</button>';
-                    if ($row->Active == 0) {
-                        $data = 'Nonactive';
-                        $btn = '<button type="button" class="btn btn-danger" disabled
-                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                        ' . $data . ' 
-                        </button>';
-                        return $btn;
-                    } else if ($row->Active == 1) {
-                        $data = 'Active';
-                        $btn = '<button type="button" class="btn btn-primary" disabled
-                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                        ' . $data . ' 
-                        </button>';
-                        return $btn;
-                    }
+                    return Button::status($row->Active);
                 })
                 ->addColumn('ItemBehavior', function ($row) {
                     if ($row['ItemBehavior'] == 1) {
@@ -61,16 +47,16 @@ class itemController extends Controller
                     }
                 })
                 ->addColumn('Action', function ($row) {
-                    $btn = '<a href=' . route('item.edit', $row->ItemId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                    $btn = [
+                        "Edit" => route('item.edit', $row->ItemId),
+                    ];
                     if ($row->Active == 1) {
-                        $btn = '<a href=' . route('item.edit', $row->ItemId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                        $btn .= '<a href=' . route('item.activate', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
-                        return $btn;
+                        $btn["Deactivate"] = route('item.activate', $row->ItemId);
                     } else if ($row->Active == 0) {
-                        $btn .= '<a href=' . route('item.activate', $row->ItemId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
-                        $btn .= '<a href=' . route('item.delete', $row->ItemId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
-                        return $btn;
+                        $btn["Activate"] = route('item.activate', $row->ItemId);
+                        $btn["Delete"] = route('item.delete', $row->ItemId);
                     }
+                    return Button::Action($btn);
                 })
                 ->rawColumns(['Action', 'Status'])
                 ->make(true);
@@ -86,7 +72,8 @@ class itemController extends Controller
      */
     public function create()
     {
-        //
+        session()->pull('temp-file', 'default');
+        session(['temp-file' => []]);
         $category = Category::all();
         return view('item.create', compact('category'));
     }
@@ -99,18 +86,18 @@ class itemController extends Controller
      */
     public function store(Request $request)
     {
-        //
         $request->validate(
             [
                 'Name' => 'required',
                 'Unit' => 'required',
-                'Status' => 'required',
+                'Code' => 'required',
             ]
         );
 
-        $Uuid = (string) Str::uuid();
+        $uuid = (string) Str::uuid();
         $data = [
-            'ItemId' => (string) Str::uuid(),
+            'ItemId' => $uuid,
+            'Code' => request('Code'),
             'Name' => request('Name'),
             'Unit' => request('Unit'),
             'ItemBehavior' => (int) request('ItemBehavior'),
@@ -120,10 +107,8 @@ class itemController extends Controller
             'CreatedBy' => 32,
             'CreatedByLocation' => 11,
             'UpdatedBy' => 32,
-            'Active' =>request('Status')
+            'Active' => 1
         ];
-
-        // dd($data);
 
         Item::create($data);
         foreach ($request->Category as $category) {
@@ -134,7 +119,25 @@ class itemController extends Controller
             DB::table('CategoryItem')->insert($data);
         }
 
-        return view('item.index')->with('success', 'Item has been added');
+        //insert ke table ItemProcurementUpload
+        $file = session('temp-file');
+        foreach ($file as $file) {
+            $filepath = ('images/item/'.$uuid.'/'.$file);
+            $folderPath = public_path('images/item/'.$uuid);
+            if (!File::isDirectory($folderPath)) File::makeDirectory($folderPath, $mode = 0777, true, true);
+
+            $dataFile = [
+                'ItemUploadId' => (string) Str::uuid(),
+                'ItemId' => $uuid,
+                'FilePath' => $filepath,
+                'UploadedBy' => session('user')->Fullname,
+            ];
+
+            DB::table('ItemUpload')->insert($dataFile);
+            File::move(public_path('/images/temp/'.$file), public_path($filepath));
+        }
+
+        return redirect()->route('item.index')->with('success', 'Item has been added');
     }
 
     /**
@@ -161,6 +164,10 @@ class itemController extends Controller
         $CategoryItem = DB::table('CategoryItem')->where('ItemId', $id)->get();
         $selectedCategory = [];
         $unselectedCategory = [];
+        $uploads = DB::table('ItemUpload')->where('ItemId', $id)->get();
+
+        session()->pull('temp-file', 'default');
+        session(['temp-file' => []]);
 
         foreach ($category as $category) {
             $isCategorySelected = false;
@@ -185,7 +192,7 @@ class itemController extends Controller
                 array_push($unselectedCategory, $data);
             }
         }
-        return view('Item.edit', compact('item', 'selectedCategory', 'unselectedCategory'));
+        return view('Item.edit', compact('item', 'selectedCategory', 'unselectedCategory', 'uploads'));
     }
 
     /**
@@ -197,19 +204,15 @@ class itemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-        // dd($id);
-
         Item::where('ItemId', $id)->update([
-                'Name' => $request->Name,
-                'Unit' => $request->Unit,
-                'ItemBehavior' => (int) $request->ItemBehavior,
-                'AlertHourMaintenance' => (int) $request->AlertHourMaintenance,
-                'AlertConsumable' => (int) $request->AlertConsumable,
-                'Active' => (int) $request->Status,
-            ]);
+            'Name' => $request->Name,
+            'Code' => $request->Code,
+            'Unit' => $request->Unit,
+            'ItemBehavior' => (int) $request->ItemBehavior,
+            'AlertHourMaintenance' => (int) $request->AlertHourMaintenance,
+            'AlertConsumable' => (int) $request->AlertConsumable,
+        ]);
 
-        // dd($request->Category);
         DB::table('CategoryItem')->where('ItemId', $id)->delete();
         if ($request->Category) {
             foreach ($request->Category as $category) {
@@ -220,6 +223,25 @@ class itemController extends Controller
                 DB::table('CategoryItem')->insert($data);
             }
         }
+
+        //insert ke table ItemProcurementUpload
+        $file = session('temp-file');
+        foreach ($file as $file) {
+            $filepath = ('images/item/'.$id.'/'.$file);
+            $folderPath = public_path('images/item/'.$id);
+            if (!File::isDirectory($folderPath)) File::makeDirectory($folderPath, $mode = 0777, true, true);
+
+            $dataFile = [
+                'ItemUploadId' => (string) Str::uuid(),
+                'ItemId' => $id,
+                'FilePath' => $filepath,
+                'UploadedBy' => session('user')->Fullname,
+            ];
+
+            DB::table('ItemUpload')->insert($dataFile);
+            File::move(public_path('/images/temp/'.$file), public_path($filepath));
+        }
+
         return redirect()->route('item.index')->with('success', 'Item has been updated');
     }
 
@@ -245,5 +267,38 @@ class itemController extends Controller
             Item::where('ItemId', $id)->update(['Active' => 1]);
         }
         return redirect()->route('item.index')->with('success', 'Status has been updated');
+    }
+
+    public function dropzoneStore(Request $request)
+    {
+        $image = $request->file('file');
+        session()->push('temp-file', $image->getClientOriginalName());
+        // $imageName = time().'.'.$image->extension();
+        $image->move(public_path('images/temp/'), $image->getClientOriginalName());
+
+        return response()->json(['success' => $image->getClientOriginalName()]);
+    }
+
+    public function dropzoneGet($id)
+    {
+        $data = DB::table('ItemRequisitionUpload')->where('ItemRequisitionId', $id)->get();
+        return response()->json(['success' => pathinfo($data[0]->FilePath)]);
+    }
+
+    public function dropzoneDestroy(Request $request)
+    {
+        $filename = $request->filename;
+        $path = public_path() . '/images/temp/' . $filename;
+        if (file_exists($path)) {
+            unlink($path);
+        }
+        return $filename;
+    }
+    public function deleteFile($id)
+    {
+        $file = DB::table('ItemUpload')->where('ItemUploadId', $id)->first();
+        unlink(public_path($file->FilePath));
+        DB::table('ItemUpload')->where('ItemUploadId', $id)->delete();
+        return response()->json(['message' => 'File deleted successfully'], 200);
     }
 }

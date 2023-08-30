@@ -154,7 +154,7 @@
                                 <h3>Data Of Item</h3>
                             </div>
                             <div class="col-lg-6 text-end">
-                                <button type="button" class="btn btn-success" id="add-item">Tambah Item</button>
+                                <button type="button" class="btn btn-primary" id="add-item">Tambah Item</button>
                             </div>
                         </div>
                         <hr class="border-2">
@@ -171,18 +171,51 @@
                     </div>
                     <!-- End Section Add Item -->
 
-                    <!-- Section Approval -->
+                    <!-- Section Approval -->                    
                     <div class="invoice-header mb-4">
-                        <h3>Approver</h3>
+                        <div class="row">
+                            <div class="col-lg-11">
+                                <h3>Approver</h3>
+
+                            </div>
+                            <div class="col-lg-1 text-end">
+                                <div class="form-check checkbox-style mb-10">
+                                    <input class="form-check-input"type="checkbox" id="checkAll">
+                                </div>
+                            </div>
+                        </div>
+
                         <hr class="border-2">
+                        @foreach ($dataOrder as $key => $app)
+                            <h5 class="mb-2">Order Ke-{{$key+1}}</h5>
+                                @foreach ($app as $jabatan)
+                                    @foreach($jabatan as $personal)
+                                    <div class="form-check checkbox-style mb-10">
+                                        @if($approverChecked->whereIn('UserId', $personal->UserId)->count() > 0)
+                                        <input
+                                        class="form-check-input"type="checkbox" id="toggleSwitch1"
+                                        name="approver[]" value="{{$personal->UserId}}_{{$key+1}}" form="ItemReqForm" checked
+                                        />
+                                        @else
+                                        <input
+                                        class="form-check-input"type="checkbox" id="toggleSwitch1"
+                                        name="approver[]" value="{{$personal->UserId}}_{{$key+1}}" form="ItemReqForm"
+                                        />
+                                        @endif
+                                        <label class="form-check-label" for="toggleSwitch1">{{$personal->Fullname}} - {{$personal->fk_role->RoleName}}</label>
+                                    </div>
+                                    @endforeach
+                                @endforeach
+                                <div class="mb-20"></div>
+                        @endforeach
                     </div>
                     <!-- End Section Approval -->
 
 
                     <div class="row">
                         <div class="col-lg-12 text-end">
-                            <input type="submit" class="btn btn-primary" form="ItemReqForm" />
                             <a href="{{route('itemreq.index')}}" class="btn btn-outline-danger">Back</a>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal">Submit</button>
                         </div>
                     </div>
 
@@ -196,6 +229,27 @@
     </div>
     <!-- end wrapper -->
 </section>
+
+
+<div id="modal" class="modal fade bd-example-modal-mb" tabindex="-1" role="dialog" aria-labelledby="add-categori" aria-hidden="true">
+    <div class="modal-dialog modal-mb modal-dialog-centered">
+      <div class="modal-content card-style ">
+            <div class="modal-header px-0">
+                <h5 class="text-bold" id="exampleModalLabel">Submit Requisition</h5>
+            </div>
+          <div class="modal-body px-0">
+                <p class="mb-40">Apakah anda yakin ingin Mensubmit Data Requisition ini?</p>
+
+                <div class="action d-flex flex-wrap justify-content-end">
+                    <button class="btn btn-outline-danger" data-bs-dismiss="modal">Back</button>
+                    <button type="submit" class="btn btn-primary ml-5" form="ItemReqForm">Submit</a>
+                </div>
+            </form>
+          </div>
+      </div>
+    </div>
+</div>
+
 @endsection
 
 @push('js')
@@ -211,6 +265,10 @@
 
 
 <script type="text/javascript">
+    $("#checkAll").click(function(){
+        $('input:checkbox').not(this).prop('checked', this.checked);
+    });
+
     $(document).ready(function() {
         $('.select2').select2();
     });
