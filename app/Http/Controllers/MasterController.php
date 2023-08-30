@@ -79,7 +79,7 @@ class MasterController extends Controller
             $processedData = [];
 
             foreach ($applist as $row) {
-                $key = $row->RequesterId;
+                $key = $row->ApprovalOrder;
 
                 if (!isset($processedData[$key])) {
                     $processedData[$key] = [
@@ -119,16 +119,14 @@ class MasterController extends Controller
         $approver = DB::table('ApproverMaster')->where('RequesterId', $id)->get();
         $selectedApprover = [];
         $unselectedApprover = [];
-        // $appreq = ApproverMaster::where('ApproverMasterId', $id)->first();
-        // $data = [
-        //     'appreq' => $appreq,
-        // ];
+        $order = ApproverMaster::where('RequesterId', $id)->get();
+        
 
         foreach ($role as $role) {
             $isApproverSelected = false;
 
             for ($i = 0; $i < count($approver); $i++) {
-                if ($approver[$i]->RequesterId == $role['RoleId']) {
+                if ($approver[$i]->ApproverId == $role['RoleId']) {
                     $isApproverSelected = true;
                     break;
                 }
@@ -153,7 +151,7 @@ class MasterController extends Controller
         ->pluck('ApproverId')
         ->toArray();
 
-        return view('Master.requisitionSetting',compact('appreq','selectedApprover','unselectedApprover','id', 'requester','approversWithSelectedOrder'));
+        return view('Master.requisitionSetting',compact('appreq','selectedApprover','unselectedApprover','id', 'requester','approversWithSelectedOrder', 'order'));
     }
 
     public function saveApprovalReqSetting(Request $request, $id) {
