@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserModel;
 use App\Models\Role;
+use Illuminate\Support\Str;
 use App\Models\RoleMenu;
 use Illuminate\Support\Facades\Session;
 
@@ -28,12 +29,19 @@ class CheckAccessMenu
         if (!$user) {
             return redirect()->back()->with('warning', 'Silahkan Login Terlebih Dahulu');
         }
-        $users = UserModel::where('RoleId', $user->RoleId)->first();
     
+        $users = UserModel::where('RoleId', $user->RoleId)->first();
+        $role = Role:: where('RoleId', $user->RoleId)->first();
+        // Periksa apakah pengguna memiliki peran "Admin Lokasi"
+        if (in_array('Admin Lokasi', $roles) && Str::contains($role->RoleName, 'Admin Lokasi')) {
+            return $next($request);
+        }
+    
+        // Lanjutkan dengan pemeriksaan lain seperti sebelumnya
         $checkrolemenu = $users->RoleMenu($roles);
     
         if ($checkrolemenu) {
-            return $next($request);
+            return $next($request); 
         } else {
             $check = Role::where('RoleId', $user->RoleId)->first();
             foreach ($roles as $a) {
@@ -46,6 +54,7 @@ class CheckAccessMenu
     
         // return redirect()->back()->withToastWarning('Halaman Tidak tersedia untuk anda');
     }
+    
     
             // abort(403, 'Unauthorized'); // Replace 'unauthorized' with the route name you want to redirect unauthorized users to.
         

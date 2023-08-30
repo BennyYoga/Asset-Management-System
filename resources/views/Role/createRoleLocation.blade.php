@@ -79,9 +79,9 @@
                                     @error('Name') <span class="text-danger">{{$message}}</span> @enderror
                                 </div>
                                 @if(session('user')->RoleId == 1)
-                                <div class="select-sm select-style-1">
-                                <div class="select-position">
-                                <select name="ParentId" id="ParentId" style="width:100%">
+                                <div class="select-style-1">
+                                <div class="input-tags">
+                                <select class="js-example-basic-single" name="LocationId" id="LocationId" style="width:100%">
                                   <option value="" selected disabled> Select Location</option>
                                   @foreach($location as $lc)
                                   <option value="<?= $lc->LocationId?>">

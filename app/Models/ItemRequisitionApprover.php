@@ -15,7 +15,7 @@ class ItemRequisitionApprover extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'ItemRequisitionApprover',
+        'ItemRequisitionApproverId',
         'ItemRequisition',
         'UserId',
         'Order',
@@ -27,4 +27,9 @@ class ItemRequisitionApprover extends Model
         'CreatedBy',
         'UpdatedBy',
     ];
+
+    public function User()
+    {
+        return $this->hasOne(UserModel::class, 'UserId', 'UserId');
+    }
 }
