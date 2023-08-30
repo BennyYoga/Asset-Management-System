@@ -142,9 +142,7 @@
         serverSide: true,
         ajax: {
             url: "{{ route('master.req.setting', ['id' => $id]) }}",
-            data: function (d) {
-                // Anda bisa menambahkan data tambahan jika diperlukan
-                // Misalnya: d.additionalParam = value;
+            data: function (d) {;
             }
         },
         columns: [
@@ -167,7 +165,7 @@
                     return "Approval #" + data;
                 }
             },
-            {data: 'RoleName', name: 'RoleName'},
+            {data: 'Approver', name: 'Approver'},
             {data: 'Action', name: 'Action', orderable: false, searchable: false},
         ],
     });    

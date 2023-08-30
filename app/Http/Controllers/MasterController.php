@@ -27,6 +27,7 @@ class MasterController extends Controller
                 if (!isset($processedData[$key])) {
                     $processedData[$key] = [
                         'ApproverMasterId' => $row->ApproverMasterId,
+                        'RequesterId' => $row->RequesterId,
                         'RoleName' => $row->RequesterRoleName,
                         'Approver1' => [],
                         'Approver2' => [],
@@ -49,6 +50,7 @@ class MasterController extends Controller
             foreach ($processedData as $key => $data) {
                 $finalProcessedData[] = [
                     'ApproverMasterId' => $data['ApproverMasterId'],
+                    'RequesterId' => $data['RequesterId'],
                     'Requester' => $data['RoleName'],
                     'Approver1' => implode(', ', $data['Approver1']),
                     'Approver2' => implode(', ', $data['Approver2']),
@@ -59,7 +61,7 @@ class MasterController extends Controller
     
             return DataTables::of($finalProcessedData)
                 ->addColumn('Action', function ($row) {
-                    $btn = '<a href=' . route('master.req.setting', $row['ApproverMasterId']) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
+                    $btn = '<a href=' . route('master.req.setting', $row['RequesterId']) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
                     return $btn;
                 })
                 ->rawColumns(['Action', 'Approver1', 'Approver2'])
@@ -72,25 +74,49 @@ class MasterController extends Controller
     
     public function masterApprovalReqSetting(Request $request, $id){
         if ($request->ajax()) {
-            $applist = ApproverMaster::where('ApproverMasterId', $id)->get();
-            return DataTables::of($applist)
-            ->addColumn('RoleName', function ($row) {
-                $name = Role::where('RoleId', $row->ApproverId)->first();
-                return $name->RoleName;
-            })
+            $applist = ApproverMaster::where('RequesterId', $id)->get();
+            
+            $processedData = [];
+
+            foreach ($applist as $row) {
+                $key = $row->RequesterId;
+
+                if (!isset($processedData[$key])) {
+                    $processedData[$key] = [
+                        'RequesterId' => $row->RequesterId,
+                        'ApprovalOrder' => $row->ApprovalOrder,
+                        'Approver' => [],
+                    ];
+                }
+
+                $approverName = Role::where('RoleId', $row->ApproverId)->value('RoleName');
+                $processedData[$key]['Approver'][] = $approverName;
+            }
+
+            $finalProcessedData = [];
+
+            foreach ($processedData as $key => $data) {
+                $finalProcessedData[] = [
+                    'RequesterId' => $data['RequesterId'],
+                    'ApprovalOrder' => $data['ApprovalOrder'],
+                    'Approver' => implode(', ', $data['Approver']),
+                ];
+            }
+
+            return DataTables::of($finalProcessedData)
             ->addColumn('Action', function($row){
-                $btn = '<a href=' . route('master.req.setting', $row->ApproverMasterId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil"></i></a>';
-                $btn .= '<a href=' . route('master.req.setting', $row->ApproverMasterId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
+                $btn = '<a href=' . route('master.req.setting', $row['RequesterId']) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil"></i></a>';
+                $btn .= '<a href=' . route('master.req.setting', $row['RequesterId']) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
                 return $btn;
             })
-            ->rawColumns(['Action'])
+            ->rawColumns(['Action', 'Approver'])
             ->make(true);
         }
 
-        $appreq = ApproverMaster::where('ApproverMasterId', $id)->firstOrFail();
+        $appreq = ApproverMaster::where('RequesterId', $id)->firstOrFail();
         $requester = Role::where('RoleId', $appreq->RequesterId)->first();
         $role = Role::all();
-        $approver = DB::table('ApproverMaster')->where('ApproverMasterId', $id)->get();
+        $approver = DB::table('ApproverMaster')->where('RequesterId', $id)->get();
         $selectedApprover = [];
         $unselectedApprover = [];
         // $appreq = ApproverMaster::where('ApproverMasterId', $id)->first();
@@ -102,7 +128,7 @@ class MasterController extends Controller
             $isApproverSelected = false;
 
             for ($i = 0; $i < count($approver); $i++) {
-                if ($approver[$i]->ApproverMasterId == $role['RoleId']) {
+                if ($approver[$i]->RequesterId == $role['RoleId']) {
                     $isApproverSelected = true;
                     break;
                 }
