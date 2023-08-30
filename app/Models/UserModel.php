@@ -38,6 +38,11 @@ class UserModel extends Authenticatable
     {
         return $this->hasOne(Role::class, 'RoleId', 'RoleId');
     }
+    
+    public function Approver()
+    {
+        return $this->belongsToMany(Role::class, 'ItemRequisitionApproverId', 'ItemRequisitionApproverId');
+    }
 
 
     public function getLocName()

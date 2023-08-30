@@ -140,21 +140,23 @@
                         </div>
 
                         <hr class="border-2">
-                        @foreach ($dataOrder as $key => $app)
-                            <h5 class="mb-2">Order Ke-{{$key+1}}</h5>
-                                @foreach ($app as $jabatan)
-                                    @foreach($jabatan as $personal)
-                                    <div class="form-check checkbox-style mb-10">
-                                        <input
-                                        class="form-check-input"type="checkbox" id="toggleSwitch1"
-                                        name="approver[]" value="{{$personal->UserId}}_{{$key+1}}" form="ItemReqForm"
-                                        />
-                                        <label class="form-check-label" for="toggleSwitch1">{{$personal->Fullname}} - {{$personal->fk_role->RoleName}}</label>
-                                    </div>
+                        @if($dataOrder)
+                            @foreach ($dataOrder as $key => $app)
+                                <h5 class="mb-2">Order Ke-{{$key+1}}</h5>
+                                    @foreach ($app as $jabatan)
+                                        @foreach($jabatan as $personal)
+                                        <div class="form-check checkbox-style mb-10">
+                                            <input
+                                            class="form-check-input"type="checkbox" id="toggleSwitch1"
+                                            name="approver[]" value="{{$personal->UserId}}_{{$key+1}}" form="ItemReqForm"
+                                            />
+                                            <label class="form-check-label" for="toggleSwitch1">{{$personal->Fullname}} - {{$personal->fk_role->RoleName}}</label>
+                                        </div>
+                                        @endforeach
                                     @endforeach
-                                @endforeach
-                                <div class="mb-20"></div>
-                        @endforeach
+                                    <div class="mb-20"></div>
+                            @endforeach
+                        @endif
                     </div>
                     <!-- End Section Approval -->
 

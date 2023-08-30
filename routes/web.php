@@ -51,14 +51,16 @@ Route::group(['middleware'=>'menu.access:SuperAdmin|Admin Lokasi|7.2'], function
 
 Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi'], function(){
     Route::get('/itemrequisition', [itemRequisitionController::class, 'index'])->name('itemreq.index');
-    Route::get('/itemrequisition/detail/{id}', [itemRequisitionController::class, 'show'])->name('itemreq.detail');
     Route::get('/itemrequisition/create', [itemRequisitionController::class, 'create'])->name('itemreq.create');
+    Route::get('/itemrequisition/detail/{id}', [itemRequisitionController::class, 'show'])->name('itemreq.detail');
     Route::post('/itemrequisition/store', [itemRequisitionController::class, 'store'])->name('itemreq.store');
     Route::get('/itemrequisition/delete/{id}', [itemRequisitionController::class, 'destroy'])->name('itemreq.delete');
     Route::get('/itemrequisition/activate/{id}', [itemRequisitionController::class, 'activate'])->name('itemreq.activate');
     Route::get('/itemrequisition/edit/{id}', [itemRequisitionController::class, 'edit'])->name('itemreq.edit');
     Route::put('/itemrequisition/update/{id}', [itemRequisitionController::class, 'update'])->name('itemreq.update');
     Route::delete('/itemrequisition/file/delete/{id}', [itemRequisitionController::class, 'deleteFile'])->name('itemreq.delete.file');
+    
+    Route::post('/itemrequisition/aprrove/store', [itemRequisitionController::class, 'approveRequisition'])->name('itemreq.approve.store');
 });
 
 Route::get('dropzone/example',[itemRequisitionController::class, 'dropzoneExamaple']);
