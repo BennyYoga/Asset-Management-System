@@ -46,7 +46,7 @@ class ProjectController extends Controller
                     $location = Location::where('LocationId', $row->LocationId)->first();
                     return $location->Name;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'status'])
                 ->make(true);
         }
 
@@ -116,7 +116,9 @@ class ProjectController extends Controller
         if($project){
             $projects = Project::where('IsPermanentDelete', 0)->get();
             return view('project.edit', compact('project', 'location'));
-        }return redirect()->to('project.index')->withToastError('Data Not found');
+        }else{
+            return redirect()->to('project.index')->withToastError('Data Not found');
+        }
     }
 
     /**
@@ -174,7 +176,5 @@ class ProjectController extends Controller
             
             return redirect()->route('project.index')->withToastError('Tanggal Sudah Kadaluwarsa');
         }
-        return redirect()->route('project.index');
-
     }
 }

@@ -70,38 +70,45 @@
                     <div class="col-lg-12">
                         <!-- input style start -->
                         <div class="card-style mb-30">
-                            <div class="input-style-1 col-lg-6">
-                                <label>User Name</label>
-                                <input type="text" placeholder="UserName" name="Username" required value="{{ old('Username') }}"/>
+                            <div class="row">
+                                <div class="input-style-1 col-lg-6">
+                                    <label>User Name</label>
+                                    <input type="text" placeholder="UserName" name="Username" required value="{{ old('Username') }}"/>
+                                </div>
+                                <div class="input-style-1 col-lg-6">
+                                    <label>Nama lengkap</label>
+                                    <input type="text" placeholder="FullName" name="Fullname" required value="{{ old('Fullname') }}" />
+                                </div>
+                                <!-- end input -->
+
                             </div>
-                            <!-- end input -->
+                            <div class="row">
+                                <div class="input-style-1 col-lg-6">
+                                    <label>Password</label>
+                                    <input type="password" placeholder="Password" id="password1" name="Password" title=""/>
+                                </div>
+                        <!-- input style start -->
                             <div class="input-style-1 col-lg-6">
-                                <label>Nama lengkap</label>
-                                <input type="text" placeholder="FullName" name="Fullname" required value="{{ old('Fullname') }}" />
-                            </div>
-                            <div class="select-style-1 col-lg-6">
-                                <label>Choose Role</label>
-                                <div>
-                                <select class="js-example-basic-single" style ="width:100%">
-                                    <option value="" selected disabled> Select Role</option>
-                                    @foreach($location as $location)
-                                    <option value="<?= $location->RoleId?>">
-                                    <?= $location->RoleName?> - {{ $locations->where('LocationId', $location->LocationId)->first()->Name }}
-                                    </option>
-                                    @endforeach
-                                    </select>
+                                    <label>Konfirmasi Password</label>
+                                    <input id="password" type="password" placeholder="Password confirm" name="password_confirmation" required autocomplete="current-password">
                                 </div>
                             </div>
-                            <div class="col-lg-6">
-                        <!-- input style start -->
-                            <div class="input-style-1 col-lg-12">
-                                <label>Password</label>
-                                <input type="password" placeholder="Password" id="password1" name="Password" title=""/>
-                            </div>
                             <!-- end input -->
-                            <div class="input-style-1 col-lg-12">
-                                <label>Konfirmasi Password</label>
-                                <input id="password" type="password" placeholder="Password confirm" name="password_confirmation" required autocomplete="current-password">
+                            <div class="row">
+                                <div class="select-style-1 col-lg-6">
+                                    <label>Choose Role</label>
+                                    <div>
+                                    <select class="js-example-basic-single" style ="width:100%">
+                                        <option value="" selected disabled> Select Role</option>
+                                        @foreach($location as $location)
+                                        <option value="<?= $location->RoleId?>">
+                                        <?= $location->RoleName?> - {{ $locations->where('LocationId', $location->LocationId)->first()->Name }}
+                                        </option>
+                                        @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             </div>
                             <!-- end input -->
                             </div>
@@ -139,7 +146,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <script type="text/javascript">
         $('.js-example-basic-single').select2({
-            theme: "classic",
+            theme: "bootstrap-5",
         });
         const form = document.getElementById('pegawai');
         form.addEventListener('submit', checkPassword);

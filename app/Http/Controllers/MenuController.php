@@ -87,9 +87,9 @@ class MenuController extends Controller
         $menu = Menu::where('MenuId', $id)->first();
         if($menu){
             Menu::where('MenuId', $id)->update($data);
-            return redirect()->route('menu.index')->withToastSuccess('Data has been updated');
+            return response()->json(['message' => 'Menu updated successfully'], 200);
         }else
-        return redirect()->route('menu.index')->withToastError('Failed');
+        return response()->json(['message' => 'Menu updated successfully'], 200);
     }
 
 }
