@@ -30,7 +30,7 @@ class Table {
         return $res;
     }
 
-    public static function PaddingRight ($id,$data) {
+    public static function PaddingRight ($id,$data,$value="26px") {
         $res = "";
         $section = "tbody";
         $column = "td";
@@ -41,7 +41,7 @@ class Table {
         }
         if($res!=""){
             $res = substr($res,0,-1);
-            $res .= "{ padding-right: .8em; }";
+            $res .= "{ padding-right: $value; }";
         }
         return $res;
     }

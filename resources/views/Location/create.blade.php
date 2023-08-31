@@ -13,45 +13,16 @@
 @section('content')
 <section class="tab-components">
     <div class="container-fluid">
-        <!-- ========== title-wrapper start ========== -->
-        <div class="title-wrapper pt-30">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    {{-- @if (session('success'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('success') }}
-                    </div>
-                    @endif --}}
-                    <div class="title mb-30">
-                        <h2>Add Location</h2>
-                    </div>
-                </div>
-                <!-- end col -->
-                <div class="col-md-6">
-                    <div class="breadcrumb-wrapper mb-30">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item">
-                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
-                                </li>
-                                <li class="breadcrumb-item">
-                                    <a href="{{ route('location.index')}}">Locations</a>
-                                </li>
-                                <li class="breadcrumb-item active" aria-current="page">
-                                    Create
-                                </li>
-                            </ol>
-                        </nav>
-                    </div>
-                    {{-- <div>
-                        <button class="btn btn-primary w3-right">Add</button>
-                    </div> --}}
-                </div>
-                <!-- end col -->
-            </div>
-            <!-- end row -->
-        </div>
-    
+
+        @include('Template.title',[
+            "title" => "Create New Location",
+            "breadcrumb" => [
+                "Master Data" => "#",
+                "Loction" => route('location.index'),
+                "Create" => "#",
+            ],
+        ])
+
     <form action="{{route('location.store')}}" method="post" id="location">
         @csrf
         <div class="form-elements-wrapper">
@@ -78,16 +49,6 @@
                         <!-- end input -->
                         </div>
                         <div class="row">
-                        <div class="select-style-1 col-lg-6">
-                            <label>Status</label>
-                            <div class="select-position">
-                                <select class="light-bg" name="Active" required>
-                                  <option value="" disabled selected>Select status</option>
-                                  <option value="1" >Active</option>
-                                  <option value="0" >Non-Active</option>
-                                </select>
-                              </div>
-                        </div>
                         <!-- end input -->
                         <div class="select-style-1 col-lg-6">
                             <label>Select Parent</label>
@@ -105,8 +66,8 @@
                         </div>
                         <div class="row">
                             <div class="col-lg-12 text-end">
+                                <a href="{{route('location.index')}}" class="btn btn-secondary">Back</a>
                                 <button type="submit" class="btn btn-primary">Submit</button>
-                                <a href="{{route('location.index')}}" class="btn btn-outline-danger">Back</a>
                             </div>
                         </div>
                     </div>

@@ -6,7 +6,11 @@ use App\Models\Location;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
-
+use Excel;
+use App\Exports\Sheets\InventoryTemplate;
+use App\Imports\Sheets\InventorySheet;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class inventoryController extends Controller
 {
@@ -18,7 +22,11 @@ class inventoryController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $req = DB::table('Inventory')->get();
+            $req = DB::table('Inventory')
+                ->when($request->loc,function($query) use($request) {
+                    $query->where("LocationId",$request->loc);
+                })
+                ->get();
             return DataTables::of($req)
                 ->addColumn('Location', function ($row) {
                     $lokasi = Location::where('LocationId', $row->LocationId)->first();
@@ -103,5 +111,19 @@ class inventoryController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function template()
+    {
+        return Excel::download(new InventoryTemplate(), 'inventory template.xlsx');
+    }
+
+    public function import (Request $r) {
+        $r->validate([ 'file'=>'required|file|mimes:xlsx', ]);
+        $file = $r->file('file');
+        $name = Str::uuid() ."-". Str::replace(" ","",$file->getClientOriginalName());
+        Storage::putFileAs('public', $file, $name);
+        Excel::import(new InventorySheet, $name, "public");
+        return redirect()->route('inventory.index')->with('success', 'Inventory has been imported');
     }
 }
