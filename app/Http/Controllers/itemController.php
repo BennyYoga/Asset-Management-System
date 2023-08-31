@@ -11,6 +11,10 @@ use Illuminate\Support\Str;
 Use Alert;
 Use Button;
 use Illuminate\Support\Facades\File;
+use App\Exports\ItemTemplate;
+use App\Imports\Items;
+use Excel;
+use Illuminate\Support\Facades\Storage;
 
 class itemController extends Controller
 {
@@ -21,30 +25,34 @@ class itemController extends Controller
      */
     public function index(Request $request)
     {
-        //
         if ($request->ajax()) {
             $item  = Item::where('IsPermanentDelete', 0)->get();
             return DataTables::of($item)
                 ->addColumn('Status', function ($row) {
                     return Button::status($row->Active);
                 })
+                ->addColumn('Code', function ($row) {
+                    return $row->Code;
+                })
                 ->addColumn('ItemBehavior', function ($row) {
+                    $res = "";
                     if ($row['ItemBehavior'] == 1) {
-                        return 'Hour Usage Monitor';
+                        $res .= 'Hour Usage Monitor';
                     } else if ($row['ItemBehavior'] == 2) {
-                        return 'Consumable';
+                        $res .= 'Consumable';
                     } else if ($row['ItemBehavior'] == 3) {
-                        return 'Non Consumable';
+                        $res .= 'Non Consumable';
                     }
+                    if ($row['ItemBehavior'] == 1) {
+                        $res .= " (".$row['AlertHourMaintenance'] . ' Hour)';
+                    } else if ($row['ItemBehavior'] == 2) {
+                        $res .= " (".$row['AlertConsumable'] . ' Unit)';
+                    } else if ($row['ItemBehavior'] == 3) {
+                        $res .= '';
+                    }
+                    return $res;
                 })
                 ->addColumn('Alert', function ($row) {
-                    if ($row['ItemBehavior'] == 1) {
-                        return ($row['AlertHourMaintenance'] . ' Hour');
-                    } else if ($row['ItemBehavior'] == 2) {
-                        return ($row['AlertConsumable'] . ' Item');
-                    } else if ($row['ItemBehavior'] == 3) {
-                        return '-';
-                    }
                 })
                 ->addColumn('Action', function ($row) {
                     $btn = [
@@ -100,13 +108,14 @@ class itemController extends Controller
             'Code' => request('Code'),
             'Name' => request('Name'),
             'Unit' => request('Unit'),
+            'UseType' => request('UseType'),
             'ItemBehavior' => (int) request('ItemBehavior'),
             'AlertHourMaintenance' => (int) request('AlertHourMaintenance'),
             'AlertConsumable' => (int) request('AlertConsumable'),
             'IsPermanentDelete' => 0,
-            'CreatedBy' => 32,
+            'CreatedBy' => session('user')->UserId,
             'CreatedByLocation' => 11,
-            'UpdatedBy' => 32,
+            'UpdatedBy' => session('user')->UserId,
             'Active' => 1
         ];
 
@@ -208,9 +217,11 @@ class itemController extends Controller
             'Name' => $request->Name,
             'Code' => $request->Code,
             'Unit' => $request->Unit,
+            'UseType' => $request->UseType,
             'ItemBehavior' => (int) $request->ItemBehavior,
             'AlertHourMaintenance' => (int) $request->AlertHourMaintenance,
             'AlertConsumable' => (int) $request->AlertConsumable,
+            'UpdatedBy' => session('user')->UserId,
         ]);
 
         DB::table('CategoryItem')->where('ItemId', $id)->delete();
@@ -300,5 +311,19 @@ class itemController extends Controller
         unlink(public_path($file->FilePath));
         DB::table('ItemUpload')->where('ItemUploadId', $id)->delete();
         return response()->json(['message' => 'File deleted successfully'], 200);
+    }
+
+    public function template()
+    {
+        return Excel::download(new ItemTemplate(), 'item template.xlsx');
+    }
+
+    public function import (Request $r) {
+        $r->validate([ 'file'=>'required|file|mimes:xlsx', ]);
+        $file = $r->file('file');
+        $name = Str::uuid() ."-". Str::replace(" ","",$file->getClientOriginalName());
+        Storage::putFileAs('public', $file, $name);
+        Excel::import(new Items, $name, "public");
+        return redirect()->route('item.index')->with('success', 'Items has been imported');
     }
 }

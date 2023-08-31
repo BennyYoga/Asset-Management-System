@@ -7,6 +7,7 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
+Use Button;
 use Illuminate\Support\Facades\DB;
 
 class LocationController extends Controller
@@ -23,37 +24,25 @@ class LocationController extends Controller
             return DataTables::of($location)
                 ->addIndexColumn()
                 ->addColumn('Status', function ($row) {
-                    // $btn = '<button type="button" class="btn btn-primary btn-sm">' . $data . '</button>';
-                    if ($row->Active == 0) {
-                        $data = 'Nonactive';
-                        $btn = '<button type="button" class="btn btn-danger" disabled
-                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                        ' . $data . ' 
-                        </button>';
-                        return $btn;
-                    } else if ($row->Active == 1) {
-                        $data = 'Active';
-                        $btn = '<button type="button" class="btn btn-primary" disabled
-                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;">
-                        ' . $data . ' 
-                        </button>';
-                        return $btn;
-                    }
+                    return Button::status($row->Active);
                 })
                 ->addColumn('Action', function ($row) {
+                    $btn = [
+                        "Edit" => route('location.edit', $row->LocationId),
+                        "Href" => [
+                            "url" => route("inventory.index")."?loc=".$row->LocationId,
+                            "color" => "info",
+                            "title" => "Inventory",
+                            "icon" => "fa-solid fa-warehouse",
+                        ],
+                    ];
                     if ($row->Active == 1) {
-                        $btn = '<a href=' . route('location.activate', $row->LocationId) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn["Deactivate"] = route('location.activate', $row->LocationId);
                     } else if ($row->Active == 0) {
-                        $btn = '<a href=' . route('location.activate', $row->LocationId) . ' style="font-size:20px" class="text-primary mr-10"><i class="lni lni-power-switch"></i></a>';
+                        $btn["Activate"] = route('location.activate', $row->LocationId);
+                        $btn["Delete"] = route('location.destroy', $row->LocationId);
                     }
-                
-                    if ($row->Active == 1) {
-                        $btn .= '<a href=' . route('location.edit', $row->LocationId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                        return $btn;
-                    } else if ($row->Active == 0) {
-                        $btn .= '<a href=' . route('location.destroy', $row->LocationId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
-                        return $btn;
-                    }
+                    return Button::Action($btn);
                 })
                 ->rawColumns(['Action', 'Status'])
                 ->make(true);
@@ -83,7 +72,6 @@ class LocationController extends Controller
         $request->validate([
             'HaveProcurementProcess' => 'required',
             'Name' => 'required',
-            'Active' => 'required',
         ]);
 
         $data = [
@@ -92,9 +80,9 @@ class LocationController extends Controller
             'IsPermanentDelete' => 0,
             'HaveProcurementProcess' => $request->HaveProcurementProcess,
             'Name' => $request->Name,
-            'Active' => $request->Active,
+            'Active' => 1,
         ];
-        
+
         if ($request->input('ParentId') === '') {
             $data['ParentId'] = null;
         }
@@ -148,16 +136,15 @@ class LocationController extends Controller
             'IsPermanentDelete' => 0,
             'HaveProcurementProcess' => $request->HaveProcurementProcess,
             'Name' => $request->Name,
-            'Active' => $request->Active,
         ];
-        
+
         if ($request->input('ParentId') === '') {
             $data['ParentId'] = null; // Set nilai ParentId menjadi NULL
         }
         $data['CreatedBy'] = session('user')->Fullname;
         $data['UpdatedBy'] = session('user')->Fullname;
         Location::find($LocationId)->update($data);
-        
+
         return redirect()->route('location.index')->with('success', 'Lokasi berhasil diubah.');
     }
 
@@ -205,4 +192,4 @@ class LocationController extends Controller
         }
         return redirect()->route('location.index');
     }
-}   
+}

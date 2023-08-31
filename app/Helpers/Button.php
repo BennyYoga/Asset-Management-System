@@ -7,6 +7,7 @@ class Button {
     public static function Action ($buttons) {
         $res = "<div class='btn-group' role='group' aria-label='Action'>";
         foreach($buttons as $k => $v){
+            if($k=="Href") $res .= static::Href($v);
             if($k=="Detail") $res .= static::Detail($v);
             if($k=="Edit") $res .= static::Edit($v);
             if($k=="Activate") $res .= static::Activate($v);
@@ -15,6 +16,12 @@ class Button {
         }
         $res .= "</div>";
         return $res;
+    }
+
+    public static function Href ($data) {
+        return "<a href='$data[url]' class='btn btn-default btn-sm text-$data[color]' title='$data[title]'>
+            <i class='$data[icon]'></i>
+        </a>";
     }
 
     public static function Detail ($url) {

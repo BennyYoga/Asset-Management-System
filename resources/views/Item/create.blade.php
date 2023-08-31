@@ -85,14 +85,14 @@
 
                             <div class="col-lg-6">
                                 <div class="select-sm select-style-1">
-                                    <label>Category Item</label>
-                                    <div class="select-position input-tags">
-                                        <select class="js-example-basic-single form-" id="tags" multiple name="Category[]" form="itemForm">
-                                            @foreach($category as $c)
-                                                <option value="{{$c->CategoryId}}">{{$c->Name}}</option>
-                                            @endforeach
+                                    <label>Item Type</label>
+                                    <div class="select-position">
+                                        <select class="light-bg" name="UseType" form="itemForm" required>
+                                            <option selected disabled>Choose Item Type</option>
+                                            <option value="single">Single</option>
+                                            <option value="group">Group</option>
                                         </select>
-                                        @error('Category') <span class="text-danger">{{$message}}</span> @enderror
+                                        @error('UseType') <span class="text-danger">{{$message}}</span> @enderror
                                     </div>
                                 </div>
                             </div>
@@ -123,7 +123,21 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
+                            <div class="col-lg-12">
+                                <div class="select-sm select-style-1">
+                                    <label>Category Item</label>
+                                    <div class="select-position input-tags">
+                                        <select class="js-example-basic-single form-" id="tags" multiple name="Category[]" form="itemForm">
+                                            @foreach($category as $c)
+                                                <option value="{{$c->CategoryId}}">{{$c->Name}}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('Category') <span class="text-danger">{{$message}}</span> @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
                                 <div class="input-style-1">
                                     <label>Upload Your File</label>
                                     <form action="{{route('dropzone.store')}}" method="post" name="file" files="true" enctype="multipart/form-data" class="dropzone" id="image-upload">

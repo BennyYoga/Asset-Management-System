@@ -13,45 +13,16 @@
 @section('content')
 <section class="tab-components">
     <div class="container-fluid">
-        <!-- ========== title-wrapper start ========== -->
-        <div class="title-wrapper pt-30">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    {{-- @if (session('success'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('success') }}
-                    </div>
-                    @endif --}}
-                    <div class="title mb-30">
-                        <h2>Edit Location</h2>
-                    </div>
-                </div>
-                <!-- end col -->
-                <div class="col-md-6">
-                    <div class="breadcrumb-wrapper mb-30">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item">
-                                    <a href="{{ route('dashboard.index')}}">Dashboard</a>
-                                </li>
-                                <li class="breadcrumb-item">
-                                    <a href="{{ route('location.index')}}">Locations</a>
-                                </li>
-                                <li class="breadcrumb-item active" aria-current="page">
-                                    Edit
-                                </li>
-                            </ol>
-                        </nav>
-                    </div>
-                    {{-- <div>
-                        <button class="btn btn-primary w3-right">Add</button>
-                    </div> --}}
-                </div>
-                <!-- end col -->
-            </div>
-            <!-- end row -->
-        </div>
-    
+
+        @include('Template.title',[
+            "title" => "Edit Location",
+            "breadcrumb" => [
+                "Master Data" => "#",
+                "Location" => route('location.index'),
+                "Edit" => "#",
+            ],
+        ])
+
     <form action="{{route('location.update', ['id'=>$location->LocationId])}}" method="post" id="location">
         @csrf
         @method('POST')
@@ -70,8 +41,8 @@
                             <label>Have Procurement Process</label>
                             <div class="select-position">
                                 <select class="light-bg" name="HaveProcurementProcess" required>
-                                    <option value="0" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 0) ? "selected" : ""; ?>>Yes</option>  
-                                    <option value="1" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 1) ? "selected" : ""; ?>>No</option>  
+                                    <option value="0" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 0) ? "selected" : ""; ?>>Yes</option>
+                                    <option value="1" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 1) ? "selected" : ""; ?>>No</option>
                                 </select>
                               </div>
                        </div>
@@ -82,20 +53,11 @@
                                 <label>Have Procurement Process</label>
                                 <div class="select-position">
                                     <select class="light-bg" name="HaveProcurementProcess" required>
-                                        <option value="0" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 0) ? "selected" : ""; ?>>Yes</option>  
-                                        <option value="1" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 1) ? "selected" : ""; ?>>No</option>  
+                                        <option value="0" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 0) ? "selected" : ""; ?>>Yes</option>
+                                        <option value="1" <?php echo (isset($location->HaveProcurementProcess) && $location->HaveProcurementProcess == 1) ? "selected" : ""; ?>>No</option>
                                     </select>
                                   </div>
                            </div> --}}
-                        <div class="select-style-1 col-lg-6">
-                            <label>Status</label>
-                            <div class="select-position">
-                                <select class="light-bg" name="Active" required>
-                                    <option value="0" <?php echo (isset($location->Active) && $location->Active == 0) ? "selected" : ""; ?>>Non-active</option>  
-                                    <option value="1" <?php echo (isset($location->Active) && $location->Active == 1) ? "selected" : ""; ?>>Active</option>  
-                                </select>
-                              </div>
-                        </div>
                         <!-- end input -->
                         <div class="select-style-1 col-lg-6">
                             <label>Select Parent</label>
@@ -112,8 +74,8 @@
                         </div>
                         <div class="row">
                             <div class="col-lg-12 text-end">
+                                <a href="{{route('location.index')}}" class="btn btn-secondary">Back</a>
                                 <button type="submit" class="btn btn-primary">Submit</button>
-                                <a href="{{route('location.index')}}" class="btn btn-outline-danger">Back</a>
                             </div>
                         </div>
                     </div>

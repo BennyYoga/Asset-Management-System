@@ -48,6 +48,8 @@ Route::group(['middleware'=>'menu.access:SuperAdmin|Admin Lokasi|7.2'], function
     Route::get('item/delete/{id}', [itemController::class, 'destroy'])->name('item.delete');
     Route::get('item/activate/{id}', [itemController::class, 'activate'])->name('item.activate');
     Route::delete('item/file/delete/{id}', [ItemController::class, 'deleteFile'])->name('item.delete.file');
+    Route::get('item/template', [itemController::class, 'template'])->name('item.template');
+    Route::post('item/import', [itemController::class, 'import'])->name('item.import');
 });
 
 Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi'], function(){
@@ -69,6 +71,8 @@ Route::get  ('dropzone/get/{id}', [itemRequisitionController::class, 'dropzoneGe
 
 
 Route::get('/inventory', [inventoryController::class, 'index'])->name('inventory.index')->middleware('menu.access:SuperAdmin');
+Route::get('/inventory/template', [inventoryController::class, 'template'])->name('inventory.template')->middleware('menu.access:SuperAdmin');
+Route::post('/inventory/import', [inventoryController::class, 'import'])->name('inventory.import')->middleware('menu.access:SuperAdmin');
 
 Route::group(['middleware'=> ['menu.access:SuperAdmin|Admin Lokasi|7.1']], function(){
     Route::get('category', [CategoryController::class, 'index'])->name('category.index');

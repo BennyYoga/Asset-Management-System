@@ -78,17 +78,14 @@
 
                                 <div class="col-lg-6">
                                     <div class="select-sm select-style-1">
-                                        <label>Category Item</label>
-                                        <div class="select-position input-tags">
-                                            <select class="js-example-basic-single form-" id="tags" multiple name="Category[]" form="ItemForm">
-                                                @for($i =0; $i < count($unselectedCategory); $i++)
-                                                    <option value="{{$unselectedCategory[$i]['CategoryId']}}">{{$unselectedCategory[$i]['Name']}}</option>
-                                                @endfor
-                                                @for($i =0; $i < count($selectedCategory); $i++)
-                                                    <option selected="selected" value="{{$selectedCategory[$i]['CategoryId']}}">{{$selectedCategory[$i]['Name']}}</option>
-                                                @endfor
+                                        <label>Item Type</label>
+                                        <div class="select-position">
+                                            <select class="light-bg" name="UseType" form="itemForm" required>
+                                                <option disabled>Choose Item Type</option>
+                                                <option @if($item->UseType=="single") selected @endif value="single">Single</option>
+                                                <option @if($item->UseType=="group") selected @endif value="group">Group</option>
                                             </select>
-                                            @error('Category') <span class="text-danger">{{$message}}</span> @enderror
+                                            @error('UseType') <span class="text-danger">{{$message}}</span> @enderror
                                         </div>
                                     </div>
                                 </div>
@@ -118,7 +115,24 @@
                                     </div>
                                 </div>
 
-                                <div class="col-lg-6">
+                                <div class="col-lg-12">
+                                    <div class="select-sm select-style-1">
+                                        <label>Category Item</label>
+                                        <div class="select-position input-tags">
+                                            <select class="js-example-basic-single form-" id="tags" multiple name="Category[]" form="ItemForm">
+                                                @for($i =0; $i < count($unselectedCategory); $i++)
+                                                    <option value="{{$unselectedCategory[$i]['CategoryId']}}">{{$unselectedCategory[$i]['Name']}}</option>
+                                                @endfor
+                                                @for($i =0; $i < count($selectedCategory); $i++)
+                                                    <option selected="selected" value="{{$selectedCategory[$i]['CategoryId']}}">{{$selectedCategory[$i]['Name']}}</option>
+                                                @endfor
+                                            </select>
+                                            @error('Category') <span class="text-danger">{{$message}}</span> @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12">
                                     <div>
                                         <label>Your File</label>
                                         @foreach ($uploads as $key => $val)
@@ -194,11 +208,11 @@
                 if (Pilihan == 1) {
                     Consumable.addClass('d-none');
                     Hourly.removeClass('d-none');
-                    $("[name=AlertHourMaintenance]").val({{$item->ItemBehavior}}==1 ? {{$item->AlertHourMaintenance}} : 0)
+                    $("[name=AlertHourMaintenance]").val({{$item->ItemBehavior}}==1 ? {{$item->AlertHourMaintenance ?? 0}} : 0)
                 } else if (Pilihan == 2) {
                     Hourly.addClass('d-none');
                     Consumable.removeClass('d-none');
-                    $("[name=AlertConsumable]").val({{$item->ItemBehavior}}==2 ? {{$item->AlertConsumable}} : 0)
+                    $("[name=AlertConsumable]").val({{$item->ItemBehavior}}==2 ? {{$item->AlertConsumable ?? 0}} : 0)
                 } else if (Pilihan == 3) {
                     Consumable.addClass('d-none');
                     Hourly.addClass('d-none');

@@ -9,6 +9,7 @@ class Item extends Model
 {
     use HasFactory;
 
+    public $incrementing = false;
     protected $table = 'Item';
     const CREATED_AT = 'CreatedDate';
     const UPDATED_AT = 'UpdatedDate';
@@ -20,6 +21,7 @@ class Item extends Model
             'Name' ,
             'Unit' ,
             'ItemBehavior',
+            'UseType',
             'AlertHourMaintenance',
             'AlertConsumable',
             'Active',
@@ -28,7 +30,7 @@ class Item extends Model
             'CreatedByLocation',
             'UpdatedBy'
     ];
-    // protected $primaryKey = 'ItemId';
+    protected $primaryKey = 'ItemId';
 
     public function Category()
     {
