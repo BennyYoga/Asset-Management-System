@@ -60,8 +60,9 @@
         <!-- end row -->
     </div>
 
-    <form action="{{route('roleLocation.store')}}" method="post">
+    <form action="{{route('role.updates', $role->RoleId)}}" method="post">
         @csrf
+        
         <div class="form-elements-wrapper">
             <div class="row">
                 <div class="col-lg-12">
@@ -78,8 +79,8 @@
                                 @if(session('user')->RoleId == 1)
                                 <div class="select-sm select-style-1">
                                 <div class="select-position">
-                                <select name="ParentId" id="ParentId" style="width:100%">
-                                  <option value="{{$location->Name}}">{{$location->Name}}</option>
+                                <select name="LocationId" id="LocationId" style="width:100%">
+                                <option value="" selected disabled> Select Location</option>
                                   @foreach($locations as $lc)
                                   <option value="<?= $lc->LocationId?>">
                                   <?= $lc->Name?>

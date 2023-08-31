@@ -31,7 +31,7 @@ class ItemRequisition extends Model
 
     public function Location()
     {
-        return $this->hasMany(Location::class);
+        return $this->belongsTo(Location::class,'LocationTo', 'LocationId');
     }
 
     public function Item()

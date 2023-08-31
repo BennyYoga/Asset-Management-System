@@ -26,8 +26,11 @@ class AuthController extends Controller
     public function postLogin(Request $request)
     {
         $credentials = $request->only('Username', 'Password');
-        $user = UserModel::where('Username', $credentials['Username'])->first();
-        if($user && Hash::check($credentials['Password'], $user->Password)){
+        $username = $credentials['Username'];
+        $password = $credentials['Password'];
+        $user = UserModel::whereRaw("BINARY Username = ?", [$username])->first(); 
+        // $user = UserModel::where('Username', $credentials['Username'])->first();
+        if($user && Hash::check($password, $user->Password)){
             $rolemenu = collect($user->menuRole());
             // $request->session()->put('user', [$user, $rolemenu, $user->fk_role]);
             $request->session()->put([

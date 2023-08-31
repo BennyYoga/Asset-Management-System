@@ -35,10 +35,9 @@ class RoleController extends Controller
                         if ($row->IsEditable == 1) {
                             $btn .= '<a href="' . route('role.edits', $row->RoleId) . '" style="font-size: 20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                             $btn .= '<a href="' . route('role.edit', $row->RoleId) . '" style="font-size: 20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
+                            $btn .= '<a href="' . route('role.destroy', $row->RoleId) . '" style="font-size: 20px" class="text-danger mr-10"><i  class="lni lni-trash-can""></i></a>';
                         } elseif($row->IsEditable == 0) {
-                            $btn .= '<a href="' . route('role.edits', $row->RoleId) . '" style="font-size: 20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                             $btn .= '<a href="' . route('role.edit', $row->RoleId) . '" style="font-size: 20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
-                            $btn .= '<a href="' . route('role.destroy', $row->RoleId) . '" style="font-size: 20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
                         }
                     
                         return $btn;
@@ -61,10 +60,10 @@ class RoleController extends Controller
                         if ($row->IsEditable == 1) {
                             $btn .= '<a href="' . route('role.edits', $row->RoleId) . '" style="font-size: 20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                             $btn .= '<a href="' . route('role.edit', $row->RoleId) . '" style="font-size: 20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
+                            $btn .= '<a href="' . route('role.destroy', $row->RoleId) . '" style="font-size: 20px" class="text-danger mr-10"><i class="lni lni-trash-can""></i></a>';
+
                         } elseif($row->IsEditable == 0) {
-                            $btn .= '<a href="' . route('role.edits', $row->RoleId) . '" style="font-size: 20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
                             $btn .= '<a href="' . route('role.edit', $row->RoleId) . '" style="font-size: 20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
-                            $btn .= '<a href="' . route('role.destroy', $row->RoleId) . '" style="font-size: 20px" class="text-danger mr-10"><i class="lni lni-power-switch"></i></a>';
                         }
                     
                         return $btn;
@@ -101,7 +100,7 @@ class RoleController extends Controller
         $data = [
             'RoleName' => $request->RoleName,
             'LocationId' => request('LocationId'),
-            'IsEditable' => 1, 
+            'IsEditable' => 1,
         ];
         Role::create($data);
         return redirect()->to('role.index')->withToastSucces('Role Berhasil Ditambahkan');
@@ -110,7 +109,7 @@ class RoleController extends Controller
                 'RoleName' => $request->RoleName,
                 'LocationId' => $location->LocationId,
                 // 'LocationId' => request('LocationId'),
-                'IsEditable' => 1, 
+                'IsEditable' => 1,
             ];
             Role::create($data);
             return redirect()->to('role')->withToastSucces('Role Berhasil Ditambahkan');
@@ -140,13 +139,16 @@ class RoleController extends Controller
         $menu = Menu::leftJoin('RoleMenu', function ($join) use ($id) {
             $join->on('Menu.MenuId', '=', 'RoleMenu.MenuId')
                 ->where('RoleMenu.RoleId', '=', $id);
-        })->whereNotIn('Menu.MenuId', [2, 3, 4])
+        })
         ->select('Menu.*', 'RoleMenu.RoleId AS RoleId')
         ->get();
-        // dd($menu);
         $roleMenus = $menu->pluck('RoleId');
+        $parentMenus = Menu::whereIn('MenuId', $menu->pluck('ParentId')->toArray())
+        ->select('MenuId', 'MenuName')
+        ->get()
+        ->keyBy('MenuId'); 
     
-        return view('role.edit', compact('role', 'menu', 'roleMenus'));
+        return view('role.edit', compact('role', 'menu', 'roleMenus', 'parentMenus'));
     }
 
     public function update(Request $request, $menuId, $roleId)
@@ -157,13 +159,11 @@ class RoleController extends Controller
         ->first();
 
     if ($rolemenu) {
-        // Remove menu from the role menu
         DB::table('RoleMenu')
             ->where('RoleId', $roleId)
             ->where('MenuId', $menuId)
             ->delete();
     } else {
-        // Add menu to the role menu
         DB::table('RoleMenu')
             ->insert(['RoleId' => $roleId, 'MenuId' => $menuId]);
     }
@@ -173,13 +173,38 @@ class RoleController extends Controller
 
 public function edits($id)
 {
-    $role = Role::where('RoleId', $id)->first();
-    $location = Location::where('LocationId', $role->LocationId)->first();
+    $role = Role::where('RoleId',$id)->first();
+
     $locations = Location::all();
-    if($role)
-    {
-        return view('Role.edits', compact('role', 'locations', 'location'));
+    
+    if ($role) {
+        return view('Role.edits', compact('role', 'locations')); 
     }
+}
+
+public function updates(Request $request, $id) 
+{
+    $request->validate([
+        'RoleName' => 'required',
+    ]);
+
+    $role = Role::where('RoleId', $id)->first();
+
+    if (!$role) {
+        return redirect()->route('role.index')->withToastError('Role not found');
+    }
+
+    $data = [
+        'RoleName' => $request->RoleName,
+        'LocationId' => $request->LocationId,
+    ];
+    if (session('role')->RoleName != 'SuperAdmin') {
+        $data['LocationId'] = session('user')->LocationId;
+    }
+
+    Role::where('RoleId', $id)->update($data);
+
+    return redirect()->route('role.index')->withToastSuccess('Data updated successfully');
 }
 
 public function destroy($id)
@@ -189,8 +214,9 @@ public function destroy($id)
         // dd(session('user')->RoleId == $role->RoleId);
         return redirect()->route('role.index')->withToastError('Gagal Menghapus Data');
     }else{
-        $role->delete();
-        return redirect()->to('role.index')->withSuccessMessage('Berhasil Menghapus data');
+        Role::where('RoleId', $id)->delete();
+        // $role->delete();
+        return redirect()->route('role.index')->withSuccessMessage('Berhasil Menghapus data');
     }
     
 }
