@@ -82,25 +82,28 @@
                                         <label>Approval Order</label>
                                         <div class="select-position">
                                             <select name="ApprovalOrder" id="ApprovalOrder" required>
-                                                @foreach ($order as $order)
-                                                    <option value="{{ $order->ApprovalOrder }}">{{ 'Approval #' . $order->ApprovalOrder }}</option>                                                    
+                                                @foreach($approvalOrders as $order)
+                                                    <option value="{{ $order }}"
+                                                        {{ $selectedApprovalOrder == $order ? 'selected' : '' }}>
+                                                        {{ 'Approval #' . $order }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="select-sm select-style-1">
+                                    <div class="select-sm select-style-1" id="approver-level-form">
                                         <label>Approver Level</label>
                                         <div class="select-position input-tags">
                                             <select class="js-example-basic-single form-" id="tags" multiple name="Approver[]">
-                                                @for($i = 0; $i < count($unselectedApprover); $i++)
-                                                    <option value="{{ $unselectedApprover[$i]['RoleId'] }}">{{ $unselectedApprover[$i]['RoleName'] }}</option>
-                                                @endfor
-                                                @for($i = 0; $i < count($selectedApprover); $i++)
-                                                    <option value="{{ $selectedApprover[$i]['RoleId'] }}" selected>{{ $selectedApprover[$i]['RoleName'] }}</option>
-                                                @endfor
+                                                @foreach($allApprovers as $approver)
+                                                <option {{ in_array($approver['RoleId'], $approversWithSelectedOrder) ? 'selected' : '' }}
+                                                    value="{{ $approver['RoleId'] }}">
+                                                    {{ $approver['RoleName'] }}
+                                                </option>
+                                                @endforeach
                                             </select>
                                         </div>
-                                    </div>
+                                    </div>                                    
                                     <div class="row">
                                         <div class="col-lg-12 text-end">
                                             <input type="submit" class="btn btn-primary" value="Save"></input>
@@ -148,11 +151,7 @@
         var table = $('#applist').DataTable({
             processing: true,
             serverSide: true,
-            ajax: {
-                url: "{{ route('master.req.setting', ['id' => $id]) }}",
-                data: function (d) {;
-                }
-            },
+            ajax: "{{ route('master.req.setting', ['id' => $id]) }}",
             columns: [
                 {   
                 data: 'No',
@@ -175,18 +174,46 @@
                 },
                 {data: 'Approver', name: 'Approver'},
                 {data: 'Action', name: 'Action', orderable: false, searchable: false},
-            ],
-        });    
-    });
+                ],
+            }); 
+            table.columns.adjust().draw();
 
-    $('.js-example-basic-single').select2({
+            $('.js-example-basic-single').select2({
             theme: "classic",
+            });
+            $('#tags').on("select2:open",()=>{
+                $(".input-tags .selection").css("background","rgba(0,0,0,0)")
+            }).on("select2:close",()=>{
+                $(".input-tags .selection").css("background","rgba(239, 239, 239, 0.5)")
+            });   
         });
 
-    $('#tags').on("select2:open",()=>{
-            $(".input-tags .selection").css("background","rgba(0,0,0,0)")
-        }).on("select2:close",()=>{
-            $(".input-tags .selection").css("background","rgba(239, 239, 239, 0.5)")
-        })
-    </script>
+        $('#ApprovalOrder').on('change', function() {
+        var selectedApprovalOrder = $(this).val();
+        $.ajax({
+            url: "{{ route('master.req.setting', $id) }}",
+            type: "GET",
+            data: { approvalOrder: selectedApprovalOrder }, // Mengirim nilai Approval Order yang baru
+            success: function(data) {
+                var approverLevelOptions = '';
+                
+                // Memeriksa apakah ada data yang sesuai dengan Approval Order yang dipilih
+                if (data.data.length > 0) {
+                    // Mengisi kotak form dengan data selected yang sesuai
+                    approverLevelOptions = '<option selected="selected" value="' + data.data[0].RoleId + '">' + data.data[0].RoleName + '</option>';
+                }
+                
+                // Menambahkan opsi dropdown untuk semua role
+                var allApprovers = {!! json_encode($allApprovers) !!};
+                allApprovers.forEach(function(role) {
+                    var isRoleSelected = (data.approversWithSelectedOrder.indexOf(role.RoleId.toString()) !== -1) ? 'selected="selected"' : '';
+                    approverLevelOptions += '<option ' + isRoleSelected + ' value="' + role.RoleId + '">' + role.RoleName + '</option>';
+                });
+                
+                $('#tags').html(approverLevelOptions);
+                $('.js-example-basic-single').select2();
+            }
+        });
+    });
+    </script>  
 @endpush

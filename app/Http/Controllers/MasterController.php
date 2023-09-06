@@ -71,88 +71,78 @@ class MasterController extends Controller
         return view('Master.requisition');
     }
     
-    
-    public function masterApprovalReqSetting(Request $request, $id){
-        if ($request->ajax()) {
-            $applist = ApproverMaster::where('RequesterId', $id)->get();
-            
-            $processedData = [];
-
-            foreach ($applist as $row) {
-                $key = $row->ApprovalOrder;
-
-                if (!isset($processedData[$key])) {
-                    $processedData[$key] = [
-                        'RequesterId' => $row->RequesterId,
-                        'ApprovalOrder' => $row->ApprovalOrder,
-                        'Approver' => [],
+    public function masterApprovalReqSetting(Request $request, $id)
+        {
+            if ($request->ajax()) {
+                $applist = ApproverMaster::where('RequesterId', $id)->get();
+                $processedData = [];
+        
+                foreach ($applist as $row) {
+                    $key = $row->ApprovalOrder;
+        
+                    if (!isset($processedData[$key])) {
+                        $processedData[$key] = [
+                            'RequesterId' => $row->RequesterId,
+                            'ApprovalOrder' => $row->ApprovalOrder,
+                            'Approver' => [],
+                        ];
+                    }
+        
+                    $approverName = Role::where('RoleId', $row->ApproverId)->value('RoleName');
+                    $processedData[$key]['Approver'][] = $approverName;
+                }
+        
+                $finalProcessedData = [];
+        
+                foreach ($processedData as $key => $data) {
+                    $finalProcessedData[] = [
+                        'RequesterId' => $data['RequesterId'],
+                        'ApprovalOrder' => $data['ApprovalOrder'],
+                        'Approver' => implode(', ', $data['Approver']),
                     ];
                 }
-
-                $approverName = Role::where('RoleId', $row->ApproverId)->value('RoleName');
-                $processedData[$key]['Approver'][] = $approverName;
-            }
-
-            $finalProcessedData = [];
-
-            foreach ($processedData as $key => $data) {
-                $finalProcessedData[] = [
-                    'RequesterId' => $data['RequesterId'],
-                    'ApprovalOrder' => $data['ApprovalOrder'],
-                    'Approver' => implode(', ', $data['Approver']),
-                ];
-            }
-
-            return DataTables::of($finalProcessedData)
-            ->addColumn('Action', function($row){
-                $btn = '<a href=' . route('master.req.setting', $row['RequesterId']) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil"></i></a>';
-                $btn .= '<a href=' . route('master.req.setting', $row['RequesterId']) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
-                return $btn;
-            })
-            ->rawColumns(['Action', 'Approver'])
-            ->make(true);
-        }
-
-        $appreq = ApproverMaster::where('RequesterId', $id)->firstOrFail();
-        $requester = Role::where('RoleId', $appreq->RequesterId)->first();
-        $role = Role::all();
-        $approver = DB::table('ApproverMaster')->where('RequesterId', $id)->get();
-        $selectedApprover = [];
-        $unselectedApprover = [];
-        $order = ApproverMaster::where('RequesterId', $id)->get();
         
-
-        foreach ($role as $role) {
-            $isApproverSelected = false;
-
-            for ($i = 0; $i < count($approver); $i++) {
-                if ($approver[$i]->ApproverId == $role['RoleId']) {
-                    $isApproverSelected = true;
-                    break;
-                }
+                return DataTables::of($finalProcessedData)
+                ->addColumn('Action', function($row){
+                    $btn = '<a href=' . route('master.req.setting', $row['RequesterId']) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil"></i></a>';
+                    $btn .= '<a href=' . route('master.req.setting', $row['RequesterId']) . ' style="font-size:20px" class="text-danger mr-10"><i class="lni lni-trash-can"></i></a>';
+                    return $btn;
+                })
+                ->rawColumns(['Action', 'Approver'])
+                ->make(true);
             }
-            if ($isApproverSelected) {
-                $data = [
-                    'RoleId' => $role['RoleId'],
-                    'RoleName' => $role['RoleName'],
-                ];
-                array_push($selectedApprover, $data);
-            } else {
-                $data = [
-                    'RoleId' => $role['RoleId'],
-                    'RoleName' => $role['RoleName'],
-                ];
-                array_push($unselectedApprover, $data);
-            }
+        
+            $appreq = ApproverMaster::where('RequesterId', $id)->firstOrFail();
+            $requester = Role::where('RoleId', $appreq->RequesterId)->first();
+            $role = Role::all();
+            $approver = DB::table('ApproverMaster')->where('RequesterId', $id)->get();
+            $selectedApprover = [];
+            $unselectedApprover = [];
+            $order = ApproverMaster::where('RequesterId', $id)->get();
+        
+            $approvalOrders = ApproverMaster::where('RequesterId', $id)
+                ->distinct('ApprovalOrder')
+                ->pluck('ApprovalOrder');
+        
+            $selectedApprovalOrder = $appreq->ApprovalOrder;
+            $selectedRequesterId = $appreq->RequesterId;
+        
+            $approversWithSelectedOrder = ApproverMaster::where('ApprovalOrder', $selectedApprovalOrder)
+                ->where('RequesterId', $selectedRequesterId)
+                ->pluck('ApproverId')
+                ->toArray();
+        
+                $allApprovers = Role::all(['RoleId', 'RoleName']);
+    
+                return view('Master.requisitionSetting', compact(
+                    'appreq', 'selectedApprover', 'unselectedApprover', 'id',
+                    'requester', 'approversWithSelectedOrder', 'order', 'approvalOrders', 'selectedApprovalOrder', 'selectedRequesterId', 'role', 'approver', 'allApprovers'
+                ));
         }
-
-        $selectedApprovalOrder = $appreq->ApprovalOrder;
-        $approversWithSelectedOrder = ApproverMaster::where('ApprovalOrder', $selectedApprovalOrder)
-        ->pluck('ApproverId')
-        ->toArray();
-
-        return view('Master.requisitionSetting',compact('appreq','selectedApprover','unselectedApprover','id', 'requester','approversWithSelectedOrder', 'order'));
-    }
+        
+    
+    
+    
 
     public function saveApprovalReqSetting(Request $request, $id) {
     
