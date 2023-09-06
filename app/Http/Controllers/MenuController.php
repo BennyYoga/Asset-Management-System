@@ -23,7 +23,7 @@ class MenuController extends Controller
             $menu = Menu::orderBy('MenuId', 'asc')->get();
             return DataTables::of($menu)
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href=' . route('menu.edit', $row->MenuId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                    $btn = '<a href="javascript:void(0)" data-id="'.$row->MenuId.'" class="editProduct text-warning mr-10" style="font-size: 20px" data-toggle="tooltip" data-original-title="Edit"><i class="lni lni-pencil-alt"></i></a>';
                     return $btn;
                 })
                 ->addColumn('Parent', function($row){
@@ -42,54 +42,33 @@ class MenuController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         $menu = Menu::where('MenuId', $id)->first();
-        $parent =Menu::where('MenuId', $menu->ParentId)->first();
-        if($menu){
-        return view ('menu.edit', compact('menu', 'parent'));
-        }else{
-            return redirect()->back()->with('error', 'Menu Tidak ditemukan');
+        if ($menu) {
+            return response()->json($menu);
+        } else {
+            return response()->json(['error' => 'Menu not found']);
         }
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    
+    public function update(Request $request)
     {
         $request->validate([
-            'MenuName' => 'required', 
+            'MenuName' => 'required',
             'MenuDesc' => 'required',
         ]);
-
-        $data = [
-            'MenuName' => request('MenuName'),
-            'MenuDesc' => request('MenuDesc'), 
-            'MenuIcon'=>request('MenuIcon'),
-        ];
-        // dd($data);
-        $menu = Menu::where('MenuId', $id)->first();
-        if($menu){
-            Menu::where('MenuId', $id)->update($data);
-            return response()->json(['message' => 'Menu updated successfully'], 200);
-        }else
-        return response()->json(['message' => 'Menu updated successfully'], 200);
+    
+        // $menu = Menu::where('MenuId', $id)->first();
+    
+            $data =[
+            'MenuName' => $request->MenuName,
+            'MenuDesc' => $request->MenuDesc,
+            'MenuIcon' => $request->MenuIcon
+            ];
+            // dd($data);
+            Menu::where('MenuId','=',$request->post('MenuId'))->update($data);
+            return redirect()->route('menu.index')->with('success', 'Menu Updated Successfully');
     }
 
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Location;
 use App\Models\Menu;
 use App\Models\Role;
@@ -10,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Database\QueryException;
 
 use function PHPUnit\Framework\returnSelf;
 
@@ -18,9 +18,10 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         $role = Role::where('RoleId', session('user')->RoleId)->first();
+        $locations = Location::all();
         if ($role->RoleName == 'SuperAdmin') {
             if ($request->ajax()) {
-                $role = Role::OrderBy('RoleId', 'asc')->get(); 
+                $role = Role::OrderBy('IsEditable', 'asc')->get();
                 return DataTables::of($role)
                     ->addColumn('Location', function ($row) {
                         $location = Location::where('LocationId', $row->LocationId)->first();
@@ -33,9 +34,11 @@ class RoleController extends Controller
                     ->addColumn('Action', function($row){
                         $btn = '';
                         if ($row->IsEditable == 1) {
-                            $btn .= '<a href="' . route('role.edits', $row->RoleId) . '" style="font-size: 20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                            $btn = '<a href="javascript:void(0)" data-id="'.$row->RoleId.'" class="editProduct text-warning mr-10" style="font-size: 20px" data-toggle="tooltip" data-original-title="Edit"><i class="lni lni-pencil-alt"></i></a>';
                             $btn .= '<a href="' . route('role.edit', $row->RoleId) . '" style="font-size: 20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
-                            $btn .= '<a href="' . route('role.destroy', $row->RoleId) . '" style="font-size: 20px" class="text-danger mr-10"><i  class="lni lni-trash-can""></i></a>';
+                            $btn .= '<a href=' . route('role.destroy', $row->RoleId) . ' style="font-size:20px" class="text-danger mr-10" onClick="notificationBeforeChange(event,this)" ><i  class="lni lni-trash-can""></i></a>';
+
+                            // $btn .= '<a href="' . route('role.destroy', $row->RoleId) . '" style="font-size: 20px" class="text-danger mr-10"><i  class="lni lni-trash-can""></i></a>';
                         } elseif($row->IsEditable == 0) {
                             $btn .= '<a href="' . route('role.edit', $row->RoleId) . '" style="font-size: 20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
                         }
@@ -45,11 +48,11 @@ class RoleController extends Controller
                     ->rawColumns(['Action'])
                     ->make(true);
             }
-            return view('Role.index');
+            return view('Role.index', compact('locations'));
         } elseif (Str::contains($role->RoleName, 'Admin Lokasi')){
             if ($request->ajax()) {
                 $user = Role::where('RoleId', session('user')->RoleId)->first();
-                $role = Role::where('LocationId', '!=', null)->where('LocationId', $user->LocationId)->whereNotIn('RoleName', ['Admin Lokasi'])->get(); // Use 'get()' to retrieve the results
+                $role = Role::where('LocationId', '!=', null)->where('LocationId', $user->LocationId)->OrderBy('IsEditable', 'asc')->get();
                 return DataTables::of($role)
                     ->addColumn('Location', function ($row) {
                         $location = Location::where('LocationId', $row->LocationId)->first();
@@ -58,9 +61,10 @@ class RoleController extends Controller
                     ->addColumn('Action', function($row){
                         $btn = '';
                         if ($row->IsEditable == 1) {
-                            $btn .= '<a href="' . route('role.edits', $row->RoleId) . '" style="font-size: 20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
+                            $btn .= '<a href="javascript:void(0)" data-id="'.$row->RoleId.'" class="editProduct text-warning mr-10" style="font-size: 20px" data-toggle="tooltip" data-original-title="Edit"><i class="lni lni-pencil-alt"></i></a>';
                             $btn .= '<a href="' . route('role.edit', $row->RoleId) . '" style="font-size: 20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
-                            $btn .= '<a href="' . route('role.destroy', $row->RoleId) . '" style="font-size: 20px" class="text-danger mr-10"><i class="lni lni-trash-can""></i></a>';
+                            $btn .= '<a href=' . route('role.destroy', $row->RoleId) . ' style="font-size:20px" class="text-danger mr-10" onClick="notificationBeforeChange(event,this)" ><i  class="lni lni-trash-can""></i></a>';
+                            // $btn .= '<a href="' . route('role.destroy', $row->RoleId) . '" style="font-size: 20px" class="text-danger mr-10"><i class="lni lni-trash-can""></i></a>';
 
                         } elseif($row->IsEditable == 0) {
                             $btn .= '<a href="' . route('role.edit', $row->RoleId) . '" style="font-size: 20px" class="text-primary mr-10"><i class="lni lni-cog"></i></a>';
@@ -76,18 +80,12 @@ class RoleController extends Controller
     }
 
 
-    public function createAdminLocal()
-    {
-        $location = Location::all();
-        return view('Role.createAdminLocal', compact('location'));
-    }
-
     public function createRoleLocation()
     {
         // $menu = Menu::where('MenuName', '!=', 'Kelola Lokasi')->where('MenuName', '!=', 'Kelola Role')->where('MenuName', '!=', 'Master Data')->get();
-        $menu = Menu::whereNotIn('MenuName', ['Kelola Lokasi', 'Kelola Role', 'Master Data', 'Kelola Admin Lokasi', 'Kelola Role Menu', 'Kelola Menu'])->get();  
+        // $menu = Menu::whereNotIn('MenuName', ['Kelola Lokasi', 'Kelola Role', 'Master Data', 'Kelola Admin Lokasi', 'Kelola Role Menu', 'Kelola Menu'])->get();  
         $location = Location::all();
-        return view('role.createRoleLocation', compact('menu', 'location'));
+        return view('role.createRoleLocation', compact('location'));
     }
     public function storeRoleLocation(Request $request)
     {
@@ -95,42 +93,29 @@ class RoleController extends Controller
         $location = Role::where('RoleId', $user['RoleId'])->first();
         $request ->validate([
             'RoleName' => 'required',
+            'LocationId'=> 'required',
         ]);
-    if(session('user')->RoleName == 'SuperAdmin'){
+    if(session('role')->RoleId == 1){
         $data = [
             'RoleName' => $request->RoleName,
-            'LocationId' => request('LocationId'),
+            'LocationId' => $request->LocationId,
             'IsEditable' => 1,
         ];
         Role::create($data);
-        return redirect()->to('role.index')->withToastSucces('Role Berhasil Ditambahkan');
+        return redirect()->route('role.index')->with('success', 'Data Created');
+        
         }else{
             $data = [
                 'RoleName' => $request->RoleName,
                 'LocationId' => $location->LocationId,
-                // 'LocationId' => request('LocationId'),
                 'IsEditable' => 1,
             ];
             Role::create($data);
-            return redirect()->to('role')->withToastSucces('Role Berhasil Ditambahkan');
+            return redirect()->route('role.index')->with('success', 'Data Created');
+
     }
     }   
 
-    public function storeAdminLocal(Request $request)
-    {
-        $request -> validate([
-            'LocationId' => 'required',
-        ]);
-        $data =[
-            'RoleName' => 'Admin Lokasi',
-            'LocationId' => $request->LocationId,  
-            'IsEditable'=> 0,
-        ];
-
-        Role::create($data);
-        return redirect()->to('dashboard')->withToastSucces('Role Berhasil Ditambahkan');
-
-    }
 
     public function edit(Request $request, $id)
     {
@@ -173,51 +158,57 @@ class RoleController extends Controller
 
 public function edits($id)
 {
-    $role = Role::where('RoleId',$id)->first();
-
-    $locations = Location::all();
-    
+    $role = Role::where('RoleId', $id)->first();
     if ($role) {
-        return view('Role.edits', compact('role', 'locations')); 
+        return response()->json($role);
+    } else {
+        return response()->json(['error' => 'Menu not found']);
     }
 }
 
-public function updates(Request $request, $id) 
+public function updates(Request $request) 
 {
     $request->validate([
         'RoleName' => 'required',
     ]);
+    $location = Role::where('RoleId', session('user')->RoleId)->first();
 
-    $role = Role::where('RoleId', $id)->first();
-
-    if (!$role) {
-        return redirect()->route('role.index')->withToastError('Role not found');
-    }
-
+    if(session('role')->RoleId == 1){
     $data = [
         'RoleName' => $request->RoleName,
         'LocationId' => $request->LocationId,
     ];
-    if (session('role')->RoleName != 'SuperAdmin') {
-        $data['LocationId'] = session('user')->LocationId;
+    }else{
+        $data =[
+        'RoleName' => $request->RoleName,
+        'LocationId' => $location->LocationId,
+        ];
     }
+    // dd($data);
+    Role::where('RoleId','=',$request->post('RoleId'))->update($data);
 
-    Role::where('RoleId', $id)->update($data);
-
-    return redirect()->route('role.index')->withToastSuccess('Data updated successfully');
+    return redirect()->route('role.index')->with('success', 'Data updated');
 }
 
 public function destroy($id)
 {
+    try{
     $role = Role::where('RoleId', $id)->first();
     if(session('user')->RoleId == $role->RoleId){
         // dd(session('user')->RoleId == $role->RoleId);
-        return redirect()->route('role.index')->withToastError('Gagal Menghapus Data');
+    return redirect()->route('role.index')->with('error', 'Delete Failed');
     }else{
+        // if(session('role')->RoleId == 1){
+        //     return redirect()->route('role.index')->with('error', 'Delete Failed');
+        // }
         Role::where('RoleId', $id)->delete();
         // $role->delete();
-        return redirect()->route('role.index')->withSuccessMessage('Berhasil Menghapus data');
+        return redirect()->route('role.index')->with('success', 'Data Deleted');
     }
+    }catch (QueryException $e) {    
+        return redirect()->route('role.index')->with('error', 'Delete Failed');
+
+}
     
 }
 

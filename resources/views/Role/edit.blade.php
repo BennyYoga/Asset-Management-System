@@ -1,6 +1,6 @@
 @extends('Template.template')
 
-@section('title', 'Asset Management System | Role Access Edit')
+@section('title', 'Asset Management System | Role Access ')
 
 @push('css')
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
@@ -99,12 +99,8 @@
 @push('js')
 @include('sweetalert::alert')
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<link href="path/to/toggle-switch.css" rel="stylesheet">
-<script src="path/to/toggle-switch.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/plainadmin@5.0.0/dist/js/plain.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $('#table').DataTable({

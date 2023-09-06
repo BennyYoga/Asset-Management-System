@@ -46,7 +46,7 @@
           <div class="signin-wrapper">
             <div class="form-wrapper">
               <div class="text-center w-100">
-                <img class='text-center' src="{{asset('images/logo/absensi.png')}}" width="150x" alt="logo">
+                <!-- <img class='text-center' src="{{asset('images/logo/absensi.png')}}" width="150x" alt="logo"> -->
               </div>
               <br>
               <br>

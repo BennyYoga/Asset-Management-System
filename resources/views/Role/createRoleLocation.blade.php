@@ -63,7 +63,7 @@
         <!-- end row -->
     </div>
 
-    <form action="{{route('roleLocation.store')}}" method="post">
+    <form action="{{route('role.store')}}" method="post">
         @csrf
         <div class="form-elements-wrapper">
             <div class="row">

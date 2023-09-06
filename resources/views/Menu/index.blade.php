@@ -5,8 +5,8 @@
 @push('css')
 <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />\
-<link href="{{ asset('vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.js"></script>
 @endpush
 
 @section('content')
@@ -18,7 +18,6 @@
             color: red;
             }
 
-/* Ganti warna teks menjadi hijau untuk status "Active" */
             span.active {
             color: green;
             }         
@@ -67,7 +66,44 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>  
+        <div class="modal fade bd-example-modal-mb" id="ajaxModel" aria-hidden="true">
+            <div class="modal-dialog modal-mb modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="modelHeading"></h4>
+                    </div>
+                    <div class="modal-body">
+                    <form class="form-horizontal" action="{{route('menu.update')}}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                            <input type="hidden" name="MenuId" id="MenuId">
+                            <div class="form-group">
+                                <label for="MenuName" class="col-sm-6 control-label">Menu Name</label>
+                                <div class="col-sm-12">
+                                    <input type="text" class="form-control" id="MenuName" name="MenuName" placeholder="Enter Name" value="" maxlength="255" required="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-6 control-label">Menu Description</label>
+                                <div class="col-sm-12">
+                                    <textarea id="MenuDesc" name="MenuDesc" required="" placeholder="Enter Details" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-6 control-label">Menu Icon</label>
+                                <div class="col-sm-12">
+                                    <textarea id="MenuIcon" name="MenuIcon" required="" placeholder="Enter Details" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-sm-10">
+                                <button type="submit" class="btn btn-primary" value="edit-menu">Save Changes</button>
+                                <a href="" class="btn btn-secondary" id ="cancel">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         <!-- End Row -->
     </div>
 </section>
@@ -75,7 +111,7 @@
 
 @push('js')
 @include('sweetalert::alert')
-<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
 <script type="text/javascript">
@@ -85,22 +121,11 @@
             serverSide: true,
             ajax: "",
             "order": [[0, "asc"]],
-            "columnDefs": [
-                { "targets": 'data-sort', "orderable": true },
-                {
-                    "targets": 'menu-id',
-                    "orderData": [0], 
-                    "orderable": true
-                }
-            ],
             columns: [
-                {
-                    data: 'id',
-                    name: 'id',
+                {data: 'id',name: 'id',
                     render: function(data, type, row, meta) {
                         return meta.row + meta.settings._iDisplayStart + 1;
-                    },
-                    orderable: true,
+                    },orderable: true,
                 },
                 {
                     data: 'MenuName',
@@ -114,7 +139,6 @@
                     data: 'MenuDesc',
                     name: 'MenuDesc',
                 },
-                // ... Kolom Action ...
                 {
                     data:'action',
                     name:'action',
@@ -122,6 +146,21 @@
                 },
             ],
         });
+    $('body').on('click', '.editProduct', function () {
+        var MenuId = $(this).data('id');
+        $.get("{{ url('menu/edit') }}/" + MenuId, function (data) {
+            $('#modelHeading').html("Edit Menu");
+            $('#ajaxModel').modal('show');
+            $('#MenuId').val(data.MenuId);
+            $('#MenuName').val(data.MenuName);
+            $('#MenuDesc').val(data.MenuDesc);
+            $('#MenuIcon').val(data.MenuIcon);
+        });
+    });
+    $('#cancel').click(function() {
+            $('#ajaxModel').modal('hide');
+        });
+
     });
 </script>
 @endpush

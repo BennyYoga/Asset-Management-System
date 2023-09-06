@@ -39,7 +39,7 @@ Route::get('home', [dashboardController::class, 'index'])->name('dashboard.index
 Route::get('/', function () {
     return view('welcome');
 });
-Route::group(['middleware'=>'menu.access:SuperAdmin|Admin Lokasi|7.2'], function(){
+Route::group(['middleware'=>'menu.access:7.2'], function(){
     Route::get('item', [itemController::class, 'index'])->name('item.index');
     Route::get('item/create', [itemController::class, 'create'])->name('item.create');
     Route::post('item/store', [itemController::class, 'store'])->name('item.store');
@@ -49,7 +49,7 @@ Route::group(['middleware'=>'menu.access:SuperAdmin|Admin Lokasi|7.2'], function
     Route::get('item/activate/{id}', [itemController::class, 'activate'])->name('item.activate');
 });
 
-Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi|8.1'], function(){
+Route::group(['middleware'=> 'menu.access:8.1'], function(){
     Route::get('/itemrequisition', [itemRequisitionController::class, 'index'])->name('itemreq.index'); 
     Route::get('/itemrequisition/create', [itemRequisitionController::class, 'create'])->name('itemreq.create');
     Route::get('/itemrequisition/detail/{id}', [itemRequisitionController::class, 'show'])->name('itemreq.detail');
@@ -71,7 +71,7 @@ Route::get  ('dropzone/get/{id}', [itemRequisitionController::class, 'dropzoneGe
 
 Route::get('/inventory', [inventoryController::class, 'index'])->name('inventory.index')->middleware('menu.access:SuperAdmin');
 
-Route::group(['middleware'=> ['menu.access:SuperAdmin|Admin Lokasi|7.1']], function(){
+Route::group(['middleware'=> 'menu.access:7.1'], function(){
     Route::get('category', [CategoryController::class, 'index'])->name('category.index');
     Route::get('category/create', [CategoryController::class, 'create'])->name('category.create');
     Route::post('category/store', [CategoryController::class, 'store'])->name('category.store');
@@ -81,7 +81,7 @@ Route::group(['middleware'=> ['menu.access:SuperAdmin|Admin Lokasi|7.1']], funct
     Route::get('category/activate/{id}', [CategoryController::class, 'activate'])->name('category.activate');
 });
 
-Route::group(['middleware'=> 'menu.access:SuperAdmin'], function(){
+Route::group(['middleware'=> 'menu.access:2'], function(){
     Route::get('location', [LocationController::class, 'index'])->name('location.index');
     Route::get('location/create', [LocationController::class, 'create'])->name('location.create');
     Route::post('location/store', [LocationController::class, 'store'])->name('location.store');
@@ -91,7 +91,7 @@ Route::group(['middleware'=> 'menu.access:SuperAdmin'], function(){
     Route::get('location/activate/{id}', [LocationController::class, 'activate'])->name('location.activate');
 });
 
-Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi|8.2'], function(){
+Route::group(['middleware'=> 'menu.access:8.2'], function(){
     Route::get('/itemprocurement', [ItemProcurementController::class, 'index'])->name('itemproc.index');
     Route::get('/itemprocurement/create', [ItemProcurementController::class, 'create'])->name('itemproc.create');
     Route::post('/itemprocurement/store', [ItemProcurementController::class, 'store'])->name('itemproc.store');
@@ -147,21 +147,16 @@ Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi'], function(){
 });
 
 
-Route::group(['middleware'=> 'menu.access:SuperAdmin|Admin Lokasi'], function() {
+Route::group(['middleware'=> 'menu.access:4'], function() {
 
     Route::get('role', [RoleController::class, 'index'])->name('role.index');
     Route::get('role/create', [RoleController::class, 'createRoleLocation'])->name('role.create');
-    Route::post('role/store', [RoleController::class, 'storeRoleLocation'])->name('roleLocation.store');
+    Route::post('role/store', [RoleController::class, 'storeRoleLocation'])->name('role.store');
     Route::get('role/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
     Route::post('/role/update/{menuId}/{roleId}',[RoleController::class, 'update'])->name('role.update');
-    Route::post('role/updates/{id}', [RoleController::class, 'updates'])->name('role.updates');
+    Route::post('role/updates/', [RoleController::class, 'updates'])->name('role.updates');
     Route::get('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
     Route::get('role/edits/{id}', [RoleController::class, 'edits'])->name('role.edits');
-    Route::group(['middleware'=> 'menu.access:SuperAdmin'], function() {
-        Route::get('roles/create', [RoleController::class, 'createAdminLocal'])->name('roles.create');
-        Route::post('roles/store', [RoleController::class, 'storeAdminLocal'])->name('roleadminlocal.store');
-
-    });
 });
 
 
@@ -189,7 +184,7 @@ Route::get('lala', [RoleController::class, 'storeRoleLocation'])->name('lala');
 Route::group(['middleware'=> 'menu.access:SuperAdmin'], function() {
 Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
 Route::get('menu/edit/{id}', [MenuController::class, 'edit'])->name('menu.edit');
-Route::post('menu/update/{id}', [MenuController::class, 'update'])->name('menu.update');
+Route::post('menu/update/', [MenuController::class, 'update'])->name('menu.update');
 });
 Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
 

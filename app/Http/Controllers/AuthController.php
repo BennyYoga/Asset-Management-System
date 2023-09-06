@@ -83,4 +83,8 @@ class AuthController extends Controller
 //     }
 
 // }
+    public function resetPassword()
+    {
+        
+    }
 }
