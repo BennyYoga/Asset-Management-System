@@ -92,6 +92,25 @@
       </div>
     </div>
 </div>
+
+<div id="modalDelete" class="modal fade bd-example-modal-mb" tabindex="-1" role="dialog" aria-labelledby="add-categori" aria-hidden="true">
+    <div class="modal-dialog modal-mb modal-dialog-centered">
+      <div class="modal-content card-style ">
+            <div class="modal-header px-0">
+                <h5 class="text-bold" id="exampleModalLabel">Delete Requisition</h5>
+            </div>
+          <div class="modal-body px-0">
+                <p class="mb-40">Apakah anda yakin ingin menghapus data requisition ini?</p>
+                
+                <div class="action d-flex flex-wrap justify-content-end">
+                    <button class="btn btn-outline-danger" data-bs-dismiss="modal">Back</button>
+                    <a href="" class="btn btn-primary ml-5" id="deleteSubmit">Submit</a>
+                </div>
+            </form>
+          </div>
+      </div>
+    </div>
+</div>
 @endsection
 
 @push('js')
@@ -104,10 +123,18 @@
 function notificationBeforeChange(event, el) {
             event.preventDefault(); {
             $('#activateStatus').modal('show');
-            console.log($(el).attr('href'));
+            // console.log($(el).attr('href'));
             $("#changeSubmit").attr('href', $(el).attr('href'));
             }
         }
+
+    function notificationBeforeDelete(event, el) {
+            event.preventDefault(); {
+            $('#modalDelete').modal('show');
+            // console.log($(el).attr('href'));
+            $("#deleteSubmit").attr('href', $(el).attr('href'));
+        }
+    }
 
     $(document).ready(function() {
         var table = $('#itemrequisition').DataTable({

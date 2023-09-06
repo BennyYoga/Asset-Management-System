@@ -7,16 +7,13 @@ use App\Models\Item;
 use App\Models\ItemRequisition;
 use App\Models\ItemRequisitionApprover;
 use App\Models\Location;
-use App\Models\User;
 use App\Models\UserModel;
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use RealRashid\SweetAlert\Facades\Alert;
-use Symfony\Component\VarDumper\Cloner\Data;
 
 class itemRequisitionController extends Controller
 {
@@ -27,10 +24,32 @@ class itemRequisitionController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if(session('role')->RoleId == 1){
             $req  = ItemRequisition::where('IsPermanentDelete', 0)
                 ->orderBy('No', 'desc')
                 ->get();
+        }else{
+            $req  = ItemRequisition::where('IsPermanentDelete', 0)->where('LocationFrom', session('role')->LocationId)
+                ->orderBy('No', 'desc')
+                ->get();
+            $datauser = [];
+            foreach ($req as $key => $req) {
+                $itemreq = $req->ItemRequisitionApprover->where('UserId', session('user')->UserId)->first();
+                if ($itemreq){
+                    array_push($datauser, $itemreq->ItemRequisition);
+                }
+            }
+            if(count($datauser) > 1){
+                $req = $req->whereIn('ItemRequisitionId', $datauser)->get();
+            }else if(count($datauser) == 1){
+                $req = $req->where('ItemRequisitionId', $datauser[0])->get();
+            }
+        }
+
+        if ($request->ajax()) {
+            // $req  = ItemRequisition::where('IsPermanentDelete', 0)
+            //     ->orderBy('No', 'desc')
+            //     ->get();
             return DataTables::of($req)
                 ->addColumn('JumlahBarang', function ($row) {
                     $data = count(DB::table('ItemRequisitionDetail')->where('ItemRequisitionId', $row->ItemRequisitionId)->get());
@@ -113,7 +132,7 @@ class itemRequisitionController extends Controller
 
                     if ($row->Active == 1) {
                         $btn .= '<a href=' . route('itemreq.edit', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-warning mr-10"><i class="lni lni-pencil-alt"></i></a>';
-                        $btn .= '<a href=' . route('itemreq.delete', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-danger mr-10" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="hapusBtn"><i class="lni lni-trash-can"></i></a>';
+                        $btn .= '<a href=' . route('itemreq.delete', $row->ItemRequisitionId) . ' style="font-size:20px" class="text-danger mr-10" onClick="notificationBeforeDelete(event,this)"><i class="lni lni-trash-can"></i></a>';
                         return $btn;
                     } else if ($row->Active == 0) {
                         return $btn;
@@ -193,14 +212,14 @@ class itemRequisitionController extends Controller
         // Insert to Detail
         for ($i = 0; $i < count($request->itemId); $i++) {
             $duplicateInput = DB::table('ItemRequisitionDetail')->where('ItemRequisitionId', $Uuid)->where('ItemId', $request->itemId[$i])->first();
-            if($duplicateInput == null || $duplicateInput == []){
+            if ($duplicateInput == null || $duplicateInput == []) {
                 $data = [
                     'ItemRequisitionId' => $Uuid,
                     'ItemId' => $request->itemId[$i],
                     'ItemQty' => (int) $request->Qty[$i],
-                ];                
+                ];
                 DB::table('ItemRequisitionDetail')->insert($data);
-            }else{
+            } else {
                 DB::table('ItemRequisitionDetail')->where('ItemRequisitionId', $Uuid)->where('ItemId', $request->itemId[$i])->update(['ItemQty' => $duplicateInput->ItemQty + (int) $request->Qty[$i]]);
             }
         }
@@ -294,8 +313,19 @@ class itemRequisitionController extends Controller
                 $dataOrder[$i] = $detailUser;
             }
         }
-        $approverChecked = ItemRequisitionApprover::where('ItemRequisition', $id)->get();
-        return view('ItemRequisition.detail', compact('data', 'dataOrder', 'approverChecked'));
+        $approverChecked = ItemRequisitionApprover::where('ItemRequisition', $id)->orderBy('Order', 'asc')->get();
+        $fillerApprover = ItemRequisitionApprover::where('ItemRequisition', $id)->where('IsApproved', 1)->orderBy('Order', 'desc')->first();
+
+        $indeks = 0;
+        if ($fillerApprover != null) {
+            foreach ($approverChecked as $key => $element) {
+                if ($element->ItemRequisitionApproverId == $fillerApprover->ItemRequisitionApproverId) {
+                    $indeks = $fillerApprover->Order;
+                }
+            }
+        }
+
+        return view('ItemRequisition.detail', compact('data', 'dataOrder', 'approverChecked', 'indeks'));
     }
 
     /**
@@ -532,7 +562,6 @@ class itemRequisitionController extends Controller
 
     public function approveRequisition(Request $request)
     {
-
         $messages = [
             'Notes.required' => 'Notes tidak boleh kosong',
         ];
@@ -540,13 +569,12 @@ class itemRequisitionController extends Controller
             'Notes' => 'required',
         ], $messages);
 
-        $uuid = (string) Str::uuid();
-
-        if (!$request->Approve && !$request->Reject) {
+        if (!$request->approverChoose) {
             Alert::error('Error', 'Form Pilihan Tidak Boleh Kosong');
             return redirect()->back();
         }
-        if ($request->Approve) {
+
+        if ($request->approverChoose === 'Approve') {
             $data = [
                 'UserId' => session('user')->UserId,
                 'Notes' => $request->Notes,
@@ -564,6 +592,16 @@ class itemRequisitionController extends Controller
             ];
         }
         ItemRequisitionApprover::where('ItemRequisitionApproverId', $request->ItemRequisitionApproverId)->Update($data);
+        $status = ItemRequisitionApprover::where('ItemRequisition', $request->ItemRequisitionId)->get();
+        $topOrder = ItemRequisitionApprover::where('ItemRequisition', $request->ItemRequisitionId)->orderBy('Order', 'desc')->first();
+
+        if ($status->where('IsDeliced', true)->count() > 0) {
+            ItemRequisition::where('ItemRequisitionId', $request->ItemRequisitionId)->update(['Status' => 0]);
+        }
+        if ($status->where('IsApproved', true)->count() == $topOrder->Order) {
+            ItemRequisition::where('ItemRequisitionId', $request->ItemRequisitionId)->update(['Status' => 1]);
+        }
+
         Alert::success('Success', 'Berhasil Mengubah Menggapprove Requsition');
         return redirect()->route('itemreq.index');
     }

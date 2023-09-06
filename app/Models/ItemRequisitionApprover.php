@@ -32,4 +32,9 @@ class ItemRequisitionApprover extends Model
     {
         return $this->hasOne(UserModel::class, 'UserId', 'UserId');
     }
+
+    public function ItemRequisition()
+    {
+        return $this->belongsTo(ItemRequisition::class, 'ItemRequisition', 'ItemRequisition');
+    }
 }

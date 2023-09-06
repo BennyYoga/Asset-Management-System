@@ -19,7 +19,7 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     {{-- @if (session('success'))
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert alert-success" role="ale  rt">
                         {{ session('success') }}
                 </div>
                 @endif --}}
@@ -167,7 +167,7 @@
                     <form action="{{ route('itemreq.approve.store') }}" id="approveRequisition"  method="post">
                         @csrf
                     </form>
-                    @php $order = 0; @endphp
+                    @php $order = 0; $submitted = false;@endphp
                     @foreach($approverChecked as $key => $app)
                         @if($order != $app->Order)
                             <h5 class="mb-2">Order Ke-{{$order+1}}</h5>
@@ -176,41 +176,118 @@
                         
                         <!-- Pengecekan Untuk Rejcet/Approve Requisition -->
                         @if(session('user')->UserId == $app->UserId)
-                            <!-- Pengecekan ketika Approver Telah mengsubmit -->
+                            <!-- Pengecekan ketika Approver Telah mengsubmit rquisition atau belum-->
                             @if(!$app->IsDeliced && !$app->IsApproved && !$app->Notes)
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-lg-1">
-                                            <i class="lni lni-user fs-4"></i>
-                                        </div>
-                                        <div class="col-lg-7 mb-2">
-
-                                            <input type="hidden" name="ItemRequisitionApproverId" form="approveRequisition" value="{{$app->ItemRequisitionApproverId}}">
-
-                                            <p><b>{{$app->User->Fullname}} - {{$app->User->fk_role->RoleName}}</b></p>
-                                        </div>
-                                        <div class="form-check col-lg-2">
-                                            <input class="form-check-input" type="radio" name="Approve" id="flexRadioDefault1" form="approveRequisition">
-                                            <label class="form-check-label" for="flexRadioDefault1">
-                                                Approve Requisition
-                                            </label>
-                                        </div>
-                                        <div class="form-check col-lg-2">
-                                            <input class="form-check-input" type="radio" name="Reject" id="flexRadioDefault2" form="approveRequisition">
-                                            <label class="form-check-label" for="flexRadioDefault2">
-                                                Reject Requisition
-                                            </label>
+                                <!-- Pengecekan Apakah order diatasnya telah mengisi atau belum -->
+                                @if($app->Order == 1 || ($app->Order == ($indeks+1)))
+                                    <!-- Pengecekan Apakah order diatasnya ditolak -->
+                                    @if($app->Order == 1 || ($app->Order >= 2 && $approverChecked[$indeks]->IsDeliced != 1))
+                                        <!-- Mengecek Temannya apakah ada yang menolak atau belum -->
+                                        @php
+                                            $orderFriendCheck = $approverChecked->where('Order', $app->Order)->where('IsApproved', 1)->first();
+                                            $submitted = true;
+                                        @endphp
+                                        @if(!$orderFriendCheck)
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-lg-1">
+                                                            <i class="lni lni-user fs-4"></i>
+                                                        </div>
+                                                        <div class="col-lg-7 mb-2">
+                                                            <input type="hidden" name="ItemRequisitionId" form="approveRequisition" value="{{$data['itemreq']->ItemRequisitionId}}">
+                                                            <input type="hidden" name="ItemRequisitionApproverId" form="approveRequisition" value="{{$app->ItemRequisitionApproverId}}">
+            
+                                                            <p><b>{{$app->User->Fullname}} - {{$app->User->fk_role->RoleName}}</b></p>
+                                                        </div>
+                                                        <div class="form-check col-lg-2">
+                                                            <input class="form-check-input" type="radio" name="approverChoose" value="Approve" id="flexRadioDefault1" form="approveRequisition">
+                                                            <label class="form-check-label" for="flexRadioDefault1">
+                                                                Approve Requisition
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check col-lg-2">
+                                                            <input class="form-check-input" type="radio" name="approverChoose" value="Reject" id="flexRadioDefault1" form="approveRequisition">
+                                                            <label class="form-check-label" for="flexRadioDefault2">
+                                                                Reject Requisition
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                                    
+                                                    <div class="input-style-3">
+                                                        <textarea placeholder="Notes" rows="5" form="approveRequisition" name="Notes"></textarea>
+                                                        <span class="icon"><i class="lni lni-text-format"></i></span>
+                                                    </div>
+                                                    @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
+                                                </div>
+                                            </div>
+                                            
+                                        @else
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-lg-1">
+                                                            <i class="lni lni-user fs-4"></i>
+                                                        </div>
+                                                        <div class="col-lg-11">
+                                                            <p><b>{{$app->User->Fullname}} - {{$app->User->fk_role->RoleName}}</b></p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-1">
+                                                            <p><b>Notes :</b></p>
+                                                        </div>
+                                                        <div class="col-lg-11">
+                                                            <p>{{$app->Notes}}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @else
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-lg-1">
+                                                    <i class="lni lni-user fs-4"></i>
+                                                </div>
+                                                <div class="col-lg-11">
+                                                    <p><b>{{$app->User->Fullname}} - {{$app->User->fk_role->RoleName}}</b></p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-1">
+                                                    <p><b>Notes :</b></p>
+                                                </div>
+                                                <div class="col-lg-11">
+                                                    <p>{{$app->Notes}}</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                                    
-                                    <div class="input-style-3">
-                                        <textarea placeholder="Notes" rows="5" form="approveRequisition" name="Notes"></textarea>
-                                        <span class="icon"><i class="lni lni-text-format"></i></span>
+                                    @endif
+                                @else
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-1">
+                                                <i class="lni lni-user fs-4"></i>
+                                            </div>
+                                            <div class="col-lg-11">
+                                                <p><b>{{$app->User->Fullname}} - {{$app->User->fk_role->RoleName}}</b></p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-1">
+                                                <p><b>Notes :</b></p>
+                                            </div>
+                                            <div class="col-lg-11">
+                                                <p>{{$app->Notes}}</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    @error('Notes') <span class="text-danger">{{$message}}</span> @enderror
                                 </div>
-                            </div>
+                                @endif
                             @else
                             <div class="card mb-3">
                                 <div class="card-body">
@@ -295,13 +372,21 @@
                         @endif
                     @endforeach
                     <!-- End Approval Requisition -->
-
+                    @if($submitted == true)
                     <div class="row">
                         <div class="col-lg-12 text-end">
                             <a href="{{route('itemreq.index')}}" class="btn btn-outline-danger">Back</a>
-                            <button type="submit" class="btn btn-primary" form="approveRequisition">Submit</button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#submitModal">Sumbit</button>
+                            <!-- <button type="submit" class="btn btn-primary" form="approveRequisition">Submit</button> -->
                         </div>
                     </div>
+                    @else
+                    <div class="row">
+                        <div class="col-lg-12 text-end">
+                            <a href="{{route('itemreq.index')}}" class="btn btn-outline-danger">Back</a>
+                        </div>
+                    </div>
+                    @endif
                 </div>
                 <!-- end card -->
             </div>
@@ -312,6 +397,25 @@
     </div>
     <!-- end wrapper -->
 </section>
+
+<div id="submitModal" class="modal fade bd-example-modal-mb" tabindex="-1" role="dialog" aria-labelledby="add-categori" aria-hidden="true">
+    <div class="modal-dialog modal-mb modal-dialog-centered">
+      <div class="modal-content card-style ">
+            <div class="modal-header px-0">
+                <h5 class="text-bold" id="exampleModalLabel">Submit Requisition</h5>
+            </div>
+          <div class="modal-body px-0">
+                <p class="mb-40">Apakah anda yakin ingin Mensubmit Data Requisition ini?</p>
+
+                <div class="action d-flex flex-wrap justify-content-end">
+                    <button class="btn btn-outline-danger" data-bs-dismiss="modal">Back</button>
+                    <button type="submit" class="btn btn-primary ml-5" form="approveRequisition">Submit</button>
+                </div>
+            </form>
+          </div>
+      </div>
+    </div>
+</div>
 
 @endsection
 

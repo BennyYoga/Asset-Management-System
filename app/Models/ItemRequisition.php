@@ -39,4 +39,9 @@ class ItemRequisition extends Model
         return $this->belongsToMany(Item::class, 'ItemRequisitionDetail', 'ItemRequisitonId', 'ItemId');
     }
 
+    public function ItemRequisitionApprover()
+    {
+        return $this->hasMany(ItemRequisitionApprover::class, 'ItemRequisition', 'ItemRequisitionId');
+    }
+
 }

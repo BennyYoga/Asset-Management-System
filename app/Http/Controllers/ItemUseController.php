@@ -101,6 +101,7 @@ class ItemUseController extends Controller
     public function create()
     {
         //
+        return view('itemuse.create');
     }
 
     /**

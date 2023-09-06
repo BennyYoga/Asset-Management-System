@@ -197,3 +197,4 @@ Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
 Route::get('job', [JobController::class, 'index'])->name('job.index');
 Route::get('/master/requisition', [MasterController::class, 'masterApprovalReq'])->name('master.req');
 Route::get('/master/requisition/setting/{id}', [MasterController::class, 'masterApprovalReqSetting'])->name('master.req.setting');
+Route::get('/master/requisition/ApprovalOrder/{id}/{jabatan}', [MasterController::class, 'getLevel'])->name('master.get.level');
